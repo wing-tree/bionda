@@ -1,0 +1,85 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "469c8e8beb73701583684e0786d80779",
+    "entities": [
+      {
+        "tableName": "forecast",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`items` TEXT NOT NULL, `requestDate` TEXT NOT NULL, `requestTime` TEXT NOT NULL, PRIMARY KEY(`requestDate`, `requestTime`))",
+        "fields": [
+          {
+            "fieldPath": "items",
+            "columnName": "items",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "requestDate",
+            "columnName": "requestDate",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "requestTime",
+            "columnName": "requestTime",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "requestDate",
+            "requestTime"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "notice",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`notificationId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `checked` INTEGER NOT NULL, `hour` INTEGER NOT NULL, `minute` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "notificationId",
+            "columnName": "notificationId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "checked",
+            "columnName": "checked",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hour",
+            "columnName": "hour",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "minute",
+            "columnName": "minute",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "notificationId"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '469c8e8beb73701583684e0786d80779')"
+    ]
+  }
+}
