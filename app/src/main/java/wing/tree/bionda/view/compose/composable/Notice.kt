@@ -1,10 +1,9 @@
 package wing.tree.bionda.view.compose.composable
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.with
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,7 +26,6 @@ import wing.tree.bionda.data.extension.EMPTY
 import wing.tree.bionda.data.model.Notice
 import wing.tree.bionda.view.state.NoticeState
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun Notice(
     state: NoticeState,
@@ -38,9 +36,12 @@ fun Notice(
         targetState = state,
         modifier = modifier,
         transitionSpec = {
-            fadeIn() with fadeOut()
+            fadeIn() togetherWith fadeOut()
         },
-        label = String.EMPTY
+        label = String.EMPTY,
+        contentKey = {
+            it::class.qualifiedName
+        }
     ) {
         when (it) {
             NoticeState.Loading -> Loading(modifier = Modifier.fillMaxSize())
