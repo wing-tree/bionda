@@ -46,6 +46,7 @@ android {
 }
 
 dependencies {
+    api("com.jakewharton.timber:timber:5.0.1")
     api("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.5")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.core:core-ktx:1.10.1")

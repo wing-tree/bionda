@@ -2,6 +2,7 @@
 
 package wing.tree.bionda.data.model
 
+import wing.tree.bionda.data.extension.isNull
 import wing.tree.bionda.data.model.Result.Complete
 import wing.tree.bionda.data.model.Result.Loading
 import kotlin.contracts.ExperimentalContracts
@@ -44,13 +45,41 @@ inline fun <T> Result<T>.onSuccess(action: (value: T) -> Unit): Result<T> {
 }
 
 @OptIn(ExperimentalContracts::class)
-inline fun <T> Result<T>.onFailure(action: (exception: Throwable) -> Unit): Result<T> {
+inline fun <T> Result<T>.onFailure(action: (throwable: Throwable) -> Unit): Result<T> {
     contract {
         callsInPlace(action, InvocationKind.AT_MOST_ONCE)
     }
 
     if (this is Complete.Failure) {
         action(throwable)
+    }
+
+    return this
+}
+
+@OptIn(ExperimentalContracts::class)
+inline fun <T> Complete<T>.ifFailure(defaultValue: (throwable: Throwable) -> Complete<T>): Complete<T> {
+    contract {
+        callsInPlace(defaultValue, InvocationKind.AT_MOST_ONCE)
+    }
+
+    if (this is Complete.Failure) {
+        return defaultValue(throwable)
+    }
+
+    return this
+}
+
+@OptIn(ExperimentalContracts::class)
+inline fun <T> Complete<T>.ifNull(defaultValue: () -> Complete<T>): Complete<T> {
+    contract {
+        callsInPlace(defaultValue, InvocationKind.AT_MOST_ONCE)
+    }
+
+    if (this is Complete.Success) {
+        if (data.isNull()) {
+            return defaultValue()
+        }
     }
 
     return this

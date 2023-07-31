@@ -1,7 +1,6 @@
 package wing.tree.bionda.view.compose.composable
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
@@ -20,7 +19,6 @@ import wing.tree.bionda.data.model.CodeValue
 import wing.tree.bionda.model.Forecast
 import wing.tree.bionda.view.state.ForecastState
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun Forecast(
     state: ForecastState,
