@@ -6,7 +6,9 @@ import android.content.Context
 import android.content.Intent
 import android.icu.util.Calendar
 import android.os.Build
-import wing.tree.bionda.constant.EXTRA_NOTICE
+import wing.tree.bionda.constant.EXTRA_NOTIFICATION_ID
+import wing.tree.bionda.data.extension.ONE
+import wing.tree.bionda.data.extension.date
 import wing.tree.bionda.data.extension.hourOfDay
 import wing.tree.bionda.data.extension.minute
 import wing.tree.bionda.data.model.Notice
@@ -20,7 +22,7 @@ class AlarmScheduler(private val context: Context) {
 
     fun schedule(notice: Notice) {
         val pendingIntent = Intent(context, AlarmReceiver::class.java).apply {
-            putExtra(EXTRA_NOTICE, notice)
+            putExtra(EXTRA_NOTIFICATION_ID, notice.notificationId)
         }
             .let {
                 PendingIntent.getBroadcast(
@@ -32,13 +34,15 @@ class AlarmScheduler(private val context: Context) {
             }
 
         val triggerAtMillis = koreaCalendar().apply {
-            timeInMillis = System.currentTimeMillis()
-
             clear(Calendar.SECOND)
             clear(Calendar.MILLISECOND)
 
             hourOfDay = notice.hour
             minute = notice.minute
+
+            if (timeInMillis < System.currentTimeMillis()) {
+                date += Int.ONE
+            }
         }
             .timeInMillis
 

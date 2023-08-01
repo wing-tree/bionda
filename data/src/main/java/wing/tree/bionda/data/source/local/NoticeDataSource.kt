@@ -6,8 +6,8 @@ import wing.tree.bionda.data.model.Notice
 class NoticeDataSource(private val noticeDao: NoticeDao) {
     fun load() = noticeDao.load()
 
-    suspend fun insert(notice: Notice) {
-        noticeDao.insert(notice)
+    suspend fun insert(notice: Notice): Long {
+        return noticeDao.insert(notice)
     }
 
     suspend fun delete(notice: Notice) {
@@ -16,5 +16,9 @@ class NoticeDataSource(private val noticeDao: NoticeDao) {
 
     suspend fun update(notice: Notice) {
         noticeDao.update(notice)
+    }
+
+    suspend fun get(notificationId: Long): Notice? {
+        return noticeDao.get(notificationId)
     }
 }

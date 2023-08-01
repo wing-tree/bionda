@@ -7,17 +7,18 @@ import androidx.room.PrimaryKey
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import wing.tree.bionda.data.extension.ZERO
+import wing.tree.bionda.data.extension.int
 
 @Entity(tableName = "notice")
 @Parcelize
 data class Notice(
     @PrimaryKey(autoGenerate = true)
-    val notificationId: Int = Int.ZERO,
+    val notificationId: Long = Long.ZERO,
     val checked: Boolean = true,
     val hour: Int,
     val minute: Int
 ) : Parcelable {
     @IgnoredOnParcel
     @get:Ignore
-    val requestCode: Int get() = notificationId
+    val requestCode: Int get() = notificationId.int
 }

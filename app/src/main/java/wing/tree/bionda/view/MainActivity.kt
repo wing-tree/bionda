@@ -117,6 +117,12 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
 
                         Notice(
                             state = state.noticeState,
+                            onClick = {
+
+                            },
+                            onLongClick = {
+                                viewModel.delete(it)
+                            },
                             onCheckedChange = { notice, checked ->
                                 viewModel.update(notice.copy(checked = checked))
                             },

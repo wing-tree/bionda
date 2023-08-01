@@ -17,8 +17,8 @@ class NoticeRepository(private val noticeDataSource: NoticeDataSource) {
         Complete.Failure(it)
     }
 
-    suspend fun add(notice: Notice) {
-        noticeDataSource.insert(notice)
+    suspend fun add(notice: Notice): Long {
+        return noticeDataSource.insert(notice)
     }
 
     suspend fun update(notice: Notice) {
@@ -27,5 +27,9 @@ class NoticeRepository(private val noticeDataSource: NoticeDataSource) {
 
     suspend fun delete(notice: Notice) {
         noticeDataSource.delete(notice)
+    }
+
+    suspend fun get(notificationId: Long): Notice? {
+        return noticeDataSource.get(notificationId)
     }
 }

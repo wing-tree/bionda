@@ -11,24 +11,28 @@ import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.IntentCompat
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import wing.tree.bionda.LocationProvider
+import timber.log.Timber
+import wing.tree.bionda.provider.LocationProvider
 import wing.tree.bionda.R
-import wing.tree.bionda.constant.EXTRA_NOTICE
+import wing.tree.bionda.constant.EXTRA_NOTIFICATION_ID
+import wing.tree.bionda.data.extension.NEGATIVE_ONE
+import wing.tree.bionda.data.extension.ONE_SECOND
 import wing.tree.bionda.data.extension.baseDate
 import wing.tree.bionda.data.extension.baseTime
+import wing.tree.bionda.data.extension.int
 import wing.tree.bionda.data.model.Notice
-import wing.tree.bionda.data.model.Result
+import wing.tree.bionda.data.model.Result.Complete
 import wing.tree.bionda.data.model.forecast.Item
 import wing.tree.bionda.data.model.onFailure
 import wing.tree.bionda.data.model.onSuccess
 import wing.tree.bionda.data.regular.baseCalendar
 import wing.tree.bionda.data.repository.ForecastRepository
+import wing.tree.bionda.data.repository.NoticeRepository
 import wing.tree.bionda.extension.toCoordinate
 import wing.tree.bionda.model.Coordinate
 import wing.tree.bionda.permissions.MultiplePermissionsChecker
@@ -45,23 +49,36 @@ class AlarmReceiver : BroadcastReceiver(), MultiplePermissionsChecker {
     @Inject
     lateinit var forecastRepository: ForecastRepository
 
+    @Inject
+    lateinit var locationProvider: LocationProvider
+
+    @Inject
+    lateinit var noticeRepository: NoticeRepository
+
+    private val coroutineScope = CoroutineScope(Dispatchers.IO)
     private val permissions = arrayOf(ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION)
-    private val supervisorScope = CoroutineScope(Dispatchers.IO.plus(SupervisorJob()))
 
     override fun onReceive(context: Context?, intent: Intent?) {
         context ?: return
         intent ?: return
 
-        val notice = IntentCompat.getParcelableExtra(
-            intent,
-            EXTRA_NOTICE,
-            Notice::class.java
-        ) ?: return
+        coroutineScope.launch {
+            val notificationId = intent.getLongExtra(EXTRA_NOTIFICATION_ID, Long.NEGATIVE_ONE)
+            val notice = noticeRepository.get(notificationId) ?: return@launch
 
-        supervisorScope.launch {
+            if (notice.checked.not()) {
+                return@launch
+            }
+
+            launch {
+                delay(Long.ONE_SECOND)
+
+                alarmScheduler.schedule(notice)
+            }
+
             if (context.checkSelfPermission(*permissions)) {
-                when (val location = LocationProvider(context).getLocation()) {
-                    is Result.Complete.Success -> {
+                when (val location = locationProvider.getLocation()) {
+                    is Complete.Success -> {
                         val baseCalendar = baseCalendar()
                         val (nx, ny) = location.data?.toCoordinate() ?: Coordinate.seoul
 
@@ -76,15 +93,19 @@ class AlarmReceiver : BroadcastReceiver(), MultiplePermissionsChecker {
                                 notice = notice
                             )
                         }.onFailure {
-                            // TODO Log/report
+                            Timber.e(it)
+
                             context.postNotification(
                                 items = emptyList(),
                                 notice = notice
                             )
                         }
                     }
+
                     else -> {
-                        // TODO Log/report
+                        if (location is Complete.Failure) {
+                            Timber.e(location.throwable)
+                        }
                     }
                 }
             }
@@ -92,6 +113,7 @@ class AlarmReceiver : BroadcastReceiver(), MultiplePermissionsChecker {
     }
 
     private fun Context.postNotification(items: List<Item>, notice: Notice) {
+        val notificationId = notice.notificationId.int
         val notificationManager = NotificationManagerCompat.from(this)
 
         val channelId = packageName
@@ -102,8 +124,6 @@ class AlarmReceiver : BroadcastReceiver(), MultiplePermissionsChecker {
         }
 
         notificationManager.createNotificationChannel(notificationChannel)
-
-        val notificationId = notice.notificationId
 
         val contentTitle = getString(R.string.take_an_umbrella)
         val contentText = items.toContentText()
@@ -118,7 +138,7 @@ class AlarmReceiver : BroadcastReceiver(), MultiplePermissionsChecker {
         )
 
         val notification = NotificationCompat.Builder(this, channelId)
-            .setShowWhen(false)
+            .setShowWhen(true)
             .setSmallIcon(R.drawable.ic_launcher_background)
             .setContentTitle(contentTitle)
             .setContentText(contentText)

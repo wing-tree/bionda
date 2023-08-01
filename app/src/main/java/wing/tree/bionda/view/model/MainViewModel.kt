@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import wing.tree.bionda.LocationProvider
+import wing.tree.bionda.provider.LocationProvider
 import wing.tree.bionda.data.extension.FIVE_SECONDS_IN_MILLISECONDS
 import wing.tree.bionda.data.extension.baseDate
 import wing.tree.bionda.data.extension.baseTime
@@ -108,9 +108,9 @@ class MainViewModel @Inject constructor(
     fun add(hour: Int, minute: Int) {
         viewModelScope.launch {
             val notice = Notice(hour = hour, minute = minute)
+            val notificationId = noticeRepository.add(notice)
 
-            noticeRepository.add(notice)
-            alarmScheduler.schedule(notice)
+            alarmScheduler.schedule(notice.copy(notificationId = notificationId))
         }
     }
 
@@ -132,6 +132,12 @@ class MainViewModel @Inject constructor(
     fun update(notice: Notice) {
         viewModelScope.launch {
             noticeRepository.update(notice)
+
+            if (notice.checked) {
+                alarmScheduler.schedule(notice)
+            } else {
+                alarmScheduler.cancel(notice)
+            }
         }
     }
 }

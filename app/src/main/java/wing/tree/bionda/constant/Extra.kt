@@ -1,3 +1,3 @@
 package wing.tree.bionda.constant
 
-const val EXTRA_NOTICE = "extra.NOTICE"
+const val EXTRA_NOTIFICATION_ID = "extra.NOTIFICATION_ID"

@@ -1,4 +1,4 @@
-package wing.tree.bionda
+package wing.tree.bionda.provider
 
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
@@ -16,7 +16,6 @@ import com.google.android.gms.location.Priority
 import kotlinx.coroutines.suspendCancellableCoroutine
 import timber.log.Timber
 import wing.tree.bionda.data.extension.ZERO
-import wing.tree.bionda.data.extension.isNull
 import wing.tree.bionda.data.model.Result.Complete
 import wing.tree.bionda.data.model.ifFailure
 import wing.tree.bionda.data.model.ifNull
@@ -51,19 +50,32 @@ class LocationProvider(private val context: Context)  {
             }
             .ifFailure {
                 Timber.e(it)
+
                 getCurrentLocation(currentLocationRequest)
             }
 
         return when (currentLocation) {
-            is Complete.Success -> currentLocation
-            is Complete.Failure -> {
-                Timber.e(currentLocation.throwable)
+            is Complete.Success -> currentLocation.ifNull {
                 getLastLocation()
                     .ifNull {
                         getLastLocation(lastLocationRequest)
                     }
                     .ifFailure {
                         Timber.e(it)
+
+                        getLastLocation(lastLocationRequest)
+                    }
+            }
+            is Complete.Failure -> {
+                Timber.e(currentLocation.throwable)
+
+                getLastLocation()
+                    .ifNull {
+                        getLastLocation(lastLocationRequest)
+                    }
+                    .ifFailure {
+                        Timber.e(it)
+
                         getLastLocation(lastLocationRequest)
                     }
             }
@@ -170,6 +182,4 @@ class LocationProvider(private val context: Context)  {
                 }
         }
     }
-
-    private fun Complete.Success<Any?>.isNull() = data.isNull()
 }

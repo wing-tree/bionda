@@ -10,6 +10,12 @@ val Calendar.baseDate: String get() = SimpleDateFormat("yyyyMMdd", Locale.KOREA)
 val Calendar.baseTime: String get() = SimpleDateFormat("HHmm", Locale.KOREA)
     .format(time)
 
+var Calendar.date: Int
+    get() = get(Calendar.DATE)
+    set(value) {
+        set(Calendar.DATE, value)
+    }
+
 var Calendar.hourOfDay: Int
     get() = get(Calendar.HOUR_OF_DAY)
     set(value) {

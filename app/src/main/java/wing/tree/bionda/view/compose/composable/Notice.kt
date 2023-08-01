@@ -4,6 +4,8 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -29,6 +31,8 @@ import wing.tree.bionda.view.state.NoticeState
 @Composable
 fun Notice(
     state: NoticeState,
+    onClick: (Notice) -> Unit,
+    onLongClick: (Notice) -> Unit,
     onCheckedChange: (Notice, Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -49,6 +53,8 @@ fun Notice(
                 items(it.notices) { item ->
                     Item(
                         item = item,
+                        onClick = onClick,
+                        onLongClick = onLongClick,
                         onCheckedChange = onCheckedChange,
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -60,13 +66,25 @@ fun Notice(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun Item(
     item: Notice,
+    onClick: (Notice) -> Unit,
+    onLongClick: (Notice) -> Unit,
     onCheckedChange: (Notice, Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    ElevatedCard(modifier = modifier) {
+    ElevatedCard(
+        modifier = modifier.combinedClickable(
+            onClick = {
+                onClick(item)
+            },
+            onLongClick = {
+                onLongClick(item)
+            },
+        ),
+    ) {
         val text = "${item.hour}${String.COLON}${item.minute}"
 
         Row(
