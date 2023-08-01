@@ -1,5 +1,6 @@
 package wing.tree.bionda.view
 
+import android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.Manifest.permission.POST_NOTIFICATIONS
@@ -15,7 +16,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -25,10 +25,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.material.timepicker.MaterialTimePicker
 import dagger.hilt.android.AndroidEntryPoint
 import wing.tree.bionda.data.extension.ONE
+import wing.tree.bionda.data.extension.containsAny
 import wing.tree.bionda.data.extension.hourOfDay
-import wing.tree.bionda.data.extension.ifTrue
 import wing.tree.bionda.data.extension.minute
 import wing.tree.bionda.permissions.RequestMultiplePermissions
+import wing.tree.bionda.permissions.Result
 import wing.tree.bionda.theme.BiondaTheme
 import wing.tree.bionda.view.compose.composable.Forecast
 import wing.tree.bionda.view.compose.composable.Notice
@@ -39,6 +40,10 @@ import java.util.Locale
 class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
     override val launcher = registerForActivityResult()
     override val permissions: Array<String> = buildList {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            add(ACCESS_BACKGROUND_LOCATION)
+        }
+
         add(ACCESS_COARSE_LOCATION)
         add(ACCESS_FINE_LOCATION)
 
@@ -48,30 +53,30 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
     }
         .toTypedArray()
 
-    override fun onCheckSelfMultiplePermissions(result: Map<String, Boolean>) {
+    override fun onCheckSelfMultiplePermissions(result: Result) {
         result
             .granted()
-            .containsAll(listOf(ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION))
-            .ifTrue {
+            .containsAny(listOf(ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION)) {
                 viewModel.load()
             }
     }
 
-    override fun onRequestMultiplePermissionsResult(result: Map<String, Boolean>) {
+    override fun onRequestMultiplePermissionsResult(result: Result) {
         result
             .granted()
-            .containsAll(listOf(ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION))
-            .ifTrue {
+            .containsAny(listOf(ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION)) {
                 viewModel.load()
             }
     }
 
-    override fun onShouldShowRequestMultiplePermissionsRationale(result: Map<String, Boolean>) {
+    override fun onShouldShowRequestMultiplePermissionsRationale(result: Result) {
+        result.filter { (_, value) ->
+            value.shouldShowRequestPermissionRationale
+        }
     }
 
     private val viewModel by viewModels<MainViewModel>()
 
-    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

@@ -4,22 +4,39 @@ import android.content.pm.PackageManager
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import wing.tree.bionda.data.extension.`is`
 
-typealias Result = Map<String, Boolean>
+typealias Result = Map<String, RequestMultiplePermissions.State>
 
 interface RequestMultiplePermissions : MultiplePermissionsChecker {
+    sealed interface State {
+        val shouldShowRequestPermissionRationale: Boolean
+
+        object Granted : State {
+            override val shouldShowRequestPermissionRationale: Boolean = false
+        }
+
+        data class Denied(
+            override val shouldShowRequestPermissionRationale: Boolean
+        ) : State
+    }
+
     val launcher: ActivityResultLauncher<Array<String>>
     val permissions: Array<String>
 
-    fun onCheckSelfMultiplePermissions(result: Map<String, Boolean>)
-    fun onRequestMultiplePermissionsResult(result: Map<String, Boolean>)
-    fun onShouldShowRequestMultiplePermissionsRationale(result: Map<String, Boolean>)
+    fun onCheckSelfMultiplePermissions(result: Result)
+    fun onRequestMultiplePermissionsResult(result: Result)
+    fun onShouldShowRequestMultiplePermissionsRationale(result: Result)
 
     private fun ComponentActivity.checkSelfMultiplePermissions(
         permissions: Array<String>
     ): Result {
         return permissions.associateWith {
-            checkSelfPermission(it) == PackageManager.PERMISSION_GRANTED
+            if (checkSelfPermission(it) `is` PackageManager.PERMISSION_GRANTED) {
+                State.Granted
+            } else {
+                State.Denied(shouldShowRequestPermissionRationale(it))
+            }
         }
     }
 
@@ -27,14 +44,22 @@ interface RequestMultiplePermissions : MultiplePermissionsChecker {
         permissions: Array<String>
     ): Result {
         return permissions.associateWith {
-            shouldShowRequestPermissionRationale(it)
+            State.Denied(shouldShowRequestPermissionRationale(it))
         }
     }
 
     fun ComponentActivity.registerForActivityResult() = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) {
-        onRequestMultiplePermissionsResult(it)
+        onRequestMultiplePermissionsResult(
+            it.mapValues { (key, value) ->
+                if (value) {
+                    State.Granted
+                } else {
+                    State.Denied(shouldShowRequestPermissionRationale(key))
+                }
+            }
+        )
     }
 
     fun ComponentActivity.requestMultiplePermissions() {
@@ -58,12 +83,12 @@ interface RequestMultiplePermissions : MultiplePermissionsChecker {
     }
 
     fun Result.denied() = filterValues {
-        it.not()
+        it is State.Denied
     }
         .keys
 
     fun Result.granted() = filterValues {
-        it
+        it is State.Granted
     }
         .keys
 }
