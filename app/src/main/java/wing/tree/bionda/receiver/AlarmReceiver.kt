@@ -17,25 +17,22 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import wing.tree.bionda.provider.LocationProvider
 import wing.tree.bionda.R
 import wing.tree.bionda.constant.EXTRA_NOTIFICATION_ID
 import wing.tree.bionda.data.extension.NEGATIVE_ONE
 import wing.tree.bionda.data.extension.ONE_SECOND
-import wing.tree.bionda.data.extension.baseDate
-import wing.tree.bionda.data.extension.baseTime
 import wing.tree.bionda.data.extension.int
 import wing.tree.bionda.data.model.Notice
 import wing.tree.bionda.data.model.Result.Complete
 import wing.tree.bionda.data.model.forecast.Item
 import wing.tree.bionda.data.model.onFailure
 import wing.tree.bionda.data.model.onSuccess
-import wing.tree.bionda.data.regular.baseCalendar
 import wing.tree.bionda.data.repository.ForecastRepository
 import wing.tree.bionda.data.repository.NoticeRepository
 import wing.tree.bionda.extension.toCoordinate
 import wing.tree.bionda.model.Coordinate
 import wing.tree.bionda.permissions.MultiplePermissionsChecker
+import wing.tree.bionda.provider.LocationProvider
 import wing.tree.bionda.scheduler.AlarmScheduler
 import wing.tree.bionda.view.MainActivity
 import java.time.LocalTime.NOON
@@ -79,12 +76,9 @@ class AlarmReceiver : BroadcastReceiver(), MultiplePermissionsChecker {
             if (context.checkSelfPermission(*permissions)) {
                 when (val location = locationProvider.getLocation()) {
                     is Complete.Success -> {
-                        val baseCalendar = baseCalendar()
                         val (nx, ny) = location.data?.toCoordinate() ?: Coordinate.seoul
 
-                        forecastRepository.getUltraSrtFcst(
-                            baseDate = baseCalendar.baseDate,
-                            baseTime = baseCalendar.baseTime,
+                        forecastRepository.getVilageFcst(
                             nx = nx,
                             ny = ny
                         ).onSuccess { forecast ->

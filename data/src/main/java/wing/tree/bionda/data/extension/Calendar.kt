@@ -4,6 +4,9 @@ import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
 import java.util.Locale
 
+val Calendar.apiDeliveryDate: String get() = baseDate
+val Calendar.apiDeliveryTime: String get() = baseTime
+
 val Calendar.baseDate: String get() = SimpleDateFormat("yyyyMMdd", Locale.KOREA)
     .format(time)
 
@@ -27,6 +30,3 @@ var Calendar.minute: Int
     set(value) {
         set(Calendar.MINUTE, value)
     }
-
-val Calendar.requestDate: String get() = baseDate
-val Calendar.requestTime: String get() = baseTime

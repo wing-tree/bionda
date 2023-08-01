@@ -14,19 +14,16 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import wing.tree.bionda.provider.LocationProvider
 import wing.tree.bionda.data.extension.FIVE_SECONDS_IN_MILLISECONDS
-import wing.tree.bionda.data.extension.baseDate
-import wing.tree.bionda.data.extension.baseTime
 import wing.tree.bionda.data.model.Notice
 import wing.tree.bionda.data.model.Result
-import wing.tree.bionda.data.regular.baseCalendar
 import wing.tree.bionda.data.repository.ForecastRepository
 import wing.tree.bionda.data.repository.NoticeRepository
 import wing.tree.bionda.extension.checkSelfPermission
 import wing.tree.bionda.extension.toCoordinate
 import wing.tree.bionda.model.Coordinate
 import wing.tree.bionda.model.Forecast
+import wing.tree.bionda.provider.LocationProvider
 import wing.tree.bionda.scheduler.AlarmScheduler
 import wing.tree.bionda.view.state.ForecastState
 import wing.tree.bionda.view.state.MainState
@@ -48,11 +45,7 @@ class MainViewModel @Inject constructor(
             Result.Loading -> ForecastState.Loading
             is Result.Complete.Success -> {
                 val (nx, ny) = it.data?.toCoordinate() ?: Coordinate.seoul
-
-                val baseCalendar = baseCalendar()
-                val forecast = forecastRepository.getUltraSrtFcst(
-                    baseDate = baseCalendar.baseDate,
-                    baseTime = baseCalendar.baseTime,
+                val forecast = forecastRepository.getVilageFcst(
                     nx = nx,
                     ny = ny
                 )
