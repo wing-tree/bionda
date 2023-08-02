@@ -1,12 +1,14 @@
 package wing.tree.bionda.view.state
 
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import wing.tree.bionda.data.model.Notice
 import wing.tree.bionda.model.Forecast
 
 data class MainState(
     val forecastState: ForecastState = ForecastState.initialValue,
-    val noticeState: NoticeState = NoticeState.initialValue
+    val noticeState: NoticeState = NoticeState.initialValue,
+    val requestPermissionsState: RequestPermissionsState = RequestPermissionsState.initialValue
 )
 
 sealed interface ForecastState {
@@ -26,5 +28,11 @@ sealed interface NoticeState {
 
     companion object {
         val initialValue = Loading
+    }
+}
+
+data class RequestPermissionsState(val permissions: ImmutableList<String>) {
+    companion object {
+        val initialValue = RequestPermissionsState(persistentListOf())
     }
 }

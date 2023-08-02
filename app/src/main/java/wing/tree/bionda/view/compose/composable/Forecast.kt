@@ -49,7 +49,7 @@ fun Forecast(
 
             is ForecastState.Error -> {
                 Column {
-                    Text(text = it.throwable.message ?: "Unknown")
+                    Text(text = "${it.throwable}")
                 }
             }
         }

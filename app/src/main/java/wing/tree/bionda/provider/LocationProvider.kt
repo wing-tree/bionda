@@ -15,6 +15,7 @@ import com.google.android.gms.location.LocationSettingsResponse
 import com.google.android.gms.location.Priority
 import kotlinx.coroutines.suspendCancellableCoroutine
 import timber.log.Timber
+import wing.tree.bionda.data.extension.EMPTY
 import wing.tree.bionda.data.extension.ZERO
 import wing.tree.bionda.data.model.Result.Complete
 import wing.tree.bionda.data.model.ifFailure
@@ -180,6 +181,13 @@ class LocationProvider(private val context: Context)  {
                 .addOnSuccessListener { location ->
                     it.resume(Complete.Success(location))
                 }
+        }
+    }
+
+    companion object {
+        val DEFAULT_LOCATION = Location(String.EMPTY).apply {
+            latitude = 37.5635694444444
+            longitude = 126.980008333333
         }
     }
 }

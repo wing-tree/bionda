@@ -3,6 +3,7 @@ package wing.tree.bionda.extension
 import android.location.Location
 import wing.tree.bionda.data.extension.double
 import wing.tree.bionda.data.extension.half
+import wing.tree.bionda.data.extension.int
 import wing.tree.bionda.data.extension.quarter
 import wing.tree.bionda.model.Coordinate
 import kotlin.math.PI
@@ -23,7 +24,7 @@ private const val OLAT = 38.0 * DEGRAD
 private const val XO = 43.0
 private const val YO = 136.0
 
-private val sn = ln(cos(SLAT1) / cos(SLAT2)) / ln(tan(PI.quarter + SLAT2.half) / tan(PI.quarter + SLAT1.half))
+private val sn = ln(cos(SLAT1) / cos(SLAT2)) / ln(tan(PI.quarter.plus(SLAT2.half)) / tan(PI.quarter + SLAT1.half))
 private val sf = tan(PI.quarter + SLAT1.half).pow(sn) * cos(SLAT1) / sn
 private val ro = RE / GRID * sf / tan(PI.quarter + OLAT.half).pow(sn)
 
@@ -42,7 +43,7 @@ fun Location.toCoordinate(): Coordinate {
     }
 
     return Coordinate(
-        nx = floor(ra * sin(theta * sn) + XO + 0.5).toInt(),
-        ny = floor(ro - ra * cos(theta * sn) + YO + 0.5).toInt()
+        nx = floor(ra * sin(theta * sn) + XO + 0.5).int,
+        ny = floor(ro - ra * cos(theta * sn) + YO + 0.5).int
     )
 }

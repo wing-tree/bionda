@@ -33,6 +33,7 @@ import wing.tree.bionda.permissions.Result
 import wing.tree.bionda.theme.BiondaTheme
 import wing.tree.bionda.view.compose.composable.Forecast
 import wing.tree.bionda.view.compose.composable.Notice
+import wing.tree.bionda.view.compose.composable.RequestPermissions
 import wing.tree.bionda.view.model.MainViewModel
 import java.util.Locale
 
@@ -54,25 +55,29 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
         .toTypedArray()
 
     override fun onCheckSelfMultiplePermissions(result: Result) {
-        result
-            .granted()
-            .containsAny(listOf(ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION)) {
-                viewModel.load()
-            }
+        val granted = result.granted()
+
+        if (granted.containsAny(listOf(ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION))) {
+            viewModel.load()
+        }
     }
 
     override fun onRequestMultiplePermissionsResult(result: Result) {
-        result
-            .granted()
-            .containsAny(listOf(ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION)) {
-                viewModel.load()
-            }
+        val granted = result.granted()
+
+        if (granted.containsAny(listOf(ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION))) {
+            viewModel.load()
+        } else {
+            viewModel.load()
+            viewModel.notifyMultiplePermissionsDenied(result.denied())
+        }
     }
 
     override fun onShouldShowRequestMultiplePermissionsRationale(result: Result) {
-        result.filter { (_, value) ->
+        val keys = result.filter { (_, value) ->
             value.shouldShowRequestPermissionRationale
         }
+            .keys
     }
 
     private val viewModel by viewModels<MainViewModel>()
@@ -117,6 +122,11 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
                     ) {
                         Forecast(
                             state = state.forecastState,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        RequestPermissions(
+                            state = state.requestPermissionsState,
                             modifier = Modifier.fillMaxWidth()
                         )
 
