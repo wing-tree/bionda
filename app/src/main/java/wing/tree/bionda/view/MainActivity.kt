@@ -14,16 +14,16 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.material.timepicker.MaterialTimePicker
 import dagger.hilt.android.AndroidEntryPoint
+import wing.tree.bionda.R
 import wing.tree.bionda.data.extension.ONE
 import wing.tree.bionda.data.extension.containsAny
 import wing.tree.bionda.data.extension.hourOfDay
@@ -68,7 +68,7 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
         if (granted.containsAny(listOf(ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION))) {
             viewModel.load()
         } else {
-            viewModel.notifyMultiplePermissionsDenied(result.denied())
+            viewModel.notifyPermissionsDenied(result.denied())
         }
     }
 
@@ -110,7 +110,10 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
                                 }
                             }
                         ) {
-                            Icon(imageVector = Icons.Default.Add, contentDescription = null)
+                            Icon(
+                                painter = painterResource(id = R.drawable.baseline_add_alarm_24),
+                                contentDescription = null
+                            )
                         }
                     }
                 ) { innerPadding ->

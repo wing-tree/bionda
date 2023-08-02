@@ -21,6 +21,7 @@ import wing.tree.bionda.data.model.Result
 import wing.tree.bionda.data.model.Result.Complete
 import wing.tree.bionda.data.repository.ForecastRepository
 import wing.tree.bionda.data.repository.NoticeRepository
+import wing.tree.bionda.exception.PermissionsDeniedException
 import wing.tree.bionda.extension.checkSelfPermission
 import wing.tree.bionda.model.Coordinate
 import wing.tree.bionda.model.Forecast
@@ -132,12 +133,13 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun notifyMultiplePermissionsDenied(
+    fun notifyPermissionsDenied(
         permissions: Collection<String>
     ) {
-        requestPermissionsState.value = RequestPermissionsState(
-            permissions.toImmutableList()
-        )
+        with(permissions.toImmutableList()) {
+            location.value = Complete.Failure(PermissionsDeniedException(this))
+            requestPermissionsState.value = RequestPermissionsState(this)
+        }
     }
 
     fun update(notice: Notice) {
