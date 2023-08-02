@@ -30,7 +30,6 @@ import wing.tree.bionda.data.model.onSuccess
 import wing.tree.bionda.data.repository.ForecastRepository
 import wing.tree.bionda.data.repository.NoticeRepository
 import wing.tree.bionda.extension.toCoordinate
-import wing.tree.bionda.model.Coordinate
 import wing.tree.bionda.permissions.MultiplePermissionsChecker
 import wing.tree.bionda.provider.LocationProvider
 import wing.tree.bionda.scheduler.AlarmScheduler
