@@ -129,8 +129,6 @@ class MainViewModel @Inject constructor(
             viewModelScope.launch {
                 location.value = locationProvider.getLocation()
             }
-        } else {
-            location.value = Complete.Success(LocationProvider.DEFAULT_LOCATION)
         }
     }
 

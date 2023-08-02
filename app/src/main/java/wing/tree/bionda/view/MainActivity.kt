@@ -68,7 +68,6 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
         if (granted.containsAny(listOf(ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION))) {
             viewModel.load()
         } else {
-            viewModel.load()
             viewModel.notifyMultiplePermissionsDenied(result.denied())
         }
     }

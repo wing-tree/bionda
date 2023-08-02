@@ -76,7 +76,7 @@ class AlarmReceiver : BroadcastReceiver(), MultiplePermissionsChecker {
             if (context.checkSelfPermission(*permissions)) {
                 when (val location = locationProvider.getLocation()) {
                     is Complete.Success -> {
-                        val (nx, ny) = location.data?.toCoordinate() ?: Coordinate.seoul
+                        val (nx, ny) = location.data?.toCoordinate() ?: return@launch
 
                         forecastRepository.getVilageFcst(
                             nx = nx,
