@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ElevatedCard
@@ -23,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import wing.tree.bionda.data.extension.COLON
 import wing.tree.bionda.data.extension.EMPTY
 import wing.tree.bionda.data.model.Notice
@@ -76,19 +78,22 @@ private fun Item(
     modifier: Modifier = Modifier
 ) {
     ElevatedCard(
-        modifier = modifier.combinedClickable(
-            onClick = {
-                onClick(item)
-            },
-            onLongClick = {
-                onLongClick(item)
-            },
+        modifier = modifier
+            .combinedClickable(
+                onClick = {
+                    onClick(item)
+                },
+                onLongClick = {
+                    onLongClick(item)
+                },
         ),
     ) {
         val text = "${item.hour}${String.COLON}${item.minute}"
 
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {

@@ -40,7 +40,7 @@ fun Forecast(
 
             is ForecastState.Content -> LazyRow(
                 modifier = Modifier,
-                horizontalArrangement = Arrangement.spacedBy(8.0.dp)
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(it.forecast.items) { item ->
                     Item(item = item)
