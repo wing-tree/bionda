@@ -9,7 +9,12 @@ data class MainState(
     val forecastState: ForecastState = ForecastState.initialValue,
     val noticeState: NoticeState = NoticeState.initialValue,
     val requestPermissionsState: RequestPermissionsState = RequestPermissionsState.initialValue
-)
+) {
+    enum class Action {
+        ACCESS_BACKGROUND_LOCATION,
+        POST_NOTIFICATIONS
+    }
+}
 
 sealed interface ForecastState {
     object Loading : ForecastState

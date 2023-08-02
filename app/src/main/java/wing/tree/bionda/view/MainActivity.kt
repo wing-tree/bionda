@@ -1,12 +1,13 @@
 package wing.tree.bionda.view
 
 import android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
-import android.Manifest.permission.ACCESS_COARSE_LOCATION
-import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.Manifest.permission.POST_NOTIFICATIONS
+import android.content.Intent
 import android.icu.util.Calendar
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -30,11 +31,13 @@ import wing.tree.bionda.data.extension.hourOfDay
 import wing.tree.bionda.data.extension.minute
 import wing.tree.bionda.permissions.RequestMultiplePermissions
 import wing.tree.bionda.permissions.Result
+import wing.tree.bionda.permissions.locationPermissions
 import wing.tree.bionda.theme.BiondaTheme
 import wing.tree.bionda.view.compose.composable.Forecast
 import wing.tree.bionda.view.compose.composable.Notice
 import wing.tree.bionda.view.compose.composable.RequestPermissions
 import wing.tree.bionda.view.model.MainViewModel
+import wing.tree.bionda.view.state.MainState.Action
 import java.util.Locale
 
 @AndroidEntryPoint
@@ -45,8 +48,7 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
             add(ACCESS_BACKGROUND_LOCATION)
         }
 
-        add(ACCESS_COARSE_LOCATION)
-        add(ACCESS_FINE_LOCATION)
+        addAll(locationPermissions)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             add(POST_NOTIFICATIONS)
@@ -57,18 +59,18 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
     override fun onCheckSelfMultiplePermissions(result: Result) {
         val granted = result.granted()
 
-        if (granted.containsAny(listOf(ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION))) {
+        if (granted.containsAny(locationPermissions)) {
             viewModel.load()
         }
     }
 
     override fun onRequestMultiplePermissionsResult(result: Result) {
-        val granted = result.granted()
-
-        if (granted.containsAny(listOf(ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION))) {
-            viewModel.load()
-        } else {
-            viewModel.notifyPermissionsDenied(result.denied())
+        with(result) {
+            if (granted().containsAny(locationPermissions)) {
+                viewModel.load()
+            } else if (denied().containsAll(locationPermissions)) {
+                viewModel.notifyPermissionsDenied(result.denied())
+            }
         }
     }
 
@@ -129,6 +131,28 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
 
                         RequestPermissions(
                             state = state.requestPermissionsState,
+                            onClick = {
+                                when (it) {
+                                    Action.ACCESS_BACKGROUND_LOCATION -> {
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                                            if (shouldShowRequestPermissionRationale(ACCESS_BACKGROUND_LOCATION)) {
+                                                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                                                    data = Uri.fromParts("package", packageName, null)
+                                                }
+
+                                                startActivity(intent)
+                                            } else {
+                                                requestPermissions(
+                                                    arrayOf(ACCESS_BACKGROUND_LOCATION),
+                                                    0 // TODO change to another value.
+                                                )
+                                            }
+                                        }
+                                    }
+
+                                    Action.POST_NOTIFICATIONS -> {}
+                                }
+                            },
                             modifier = Modifier.fillMaxWidth()
                         )
 

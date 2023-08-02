@@ -15,7 +15,7 @@ fun apiDeliveryCalendar(
     detailFunction: DetailedFunction
 ): Calendar = koreaCalendar().apply {
     when (detailFunction) {
-        DetailedFunction.UltraSrtFcst -> {
+        DetailedFunction.ULTRA_SRT_FCST -> {
             minute = when (minute) {
                 in 5 until 15 -> 5
                 in 15 until 25 -> 15
@@ -30,7 +30,7 @@ fun apiDeliveryCalendar(
             }
         }
 
-        DetailedFunction.VilageFcst -> {
+        DetailedFunction.VILAGE_FCST -> {
             hourOfDay = when (hourOfDay) {
                 in 2 until 5 -> 2
                 in 5 until 8 -> 5
@@ -54,7 +54,7 @@ fun baseCalendar(
     detailFunction: DetailedFunction
 ): Calendar = koreaCalendar().apply {
     when (detailFunction) {
-        DetailedFunction.UltraSrtFcst -> {
+        DetailedFunction.ULTRA_SRT_FCST -> {
             if (minute < Int.HALF_AN_HOUR) {
                 hourOfDay -= Int.ONE
             }
@@ -62,7 +62,7 @@ fun baseCalendar(
             minute = Int.HALF_AN_HOUR
         }
 
-        DetailedFunction.VilageFcst -> {
+        DetailedFunction.VILAGE_FCST -> {
             hourOfDay = when (hourOfDay) {
                 in 2 until 5 -> 2
                 in 5 until 8 -> 5

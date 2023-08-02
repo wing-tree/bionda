@@ -30,7 +30,7 @@ class ForecastRepository(
         nx: Int,
         ny: Int
     ): Result<Forecast> {
-        val detailedFunction = DetailedFunction.UltraSrtFcst
+        val detailedFunction = DetailedFunction.ULTRA_SRT_FCST
         val apiDeliveryCalendar = apiDeliveryCalendar(detailedFunction)
         val baseCalendar = baseCalendar(detailedFunction)
 
@@ -72,7 +72,7 @@ class ForecastRepository(
         ny: Int
     ): Result<Forecast> {
         return try {
-            val detailedFunction = DetailedFunction.VilageFcst
+            val detailedFunction = DetailedFunction.VILAGE_FCST
             val apiDeliveryCalendar = apiDeliveryCalendar(detailedFunction)
             val baseCalendar = baseCalendar(detailedFunction)
 

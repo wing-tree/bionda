@@ -1,7 +1,5 @@
 package wing.tree.bionda.view.model
 
-import android.Manifest.permission.ACCESS_COARSE_LOCATION
-import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.app.Application
 import android.location.Location
 import androidx.lifecycle.AndroidViewModel
@@ -16,6 +14,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import wing.tree.bionda.data.extension.FIVE_SECONDS_IN_MILLISECONDS
+import wing.tree.bionda.data.extension.ifTrue
 import wing.tree.bionda.data.model.Notice
 import wing.tree.bionda.data.model.Result
 import wing.tree.bionda.data.model.Result.Complete
@@ -28,6 +27,7 @@ import wing.tree.bionda.model.Forecast
 import wing.tree.bionda.provider.LocationProvider
 import wing.tree.bionda.scheduler.AlarmScheduler
 import wing.tree.bionda.extension.toCoordinate
+import wing.tree.bionda.permissions.locationPermissions
 import wing.tree.bionda.view.state.ForecastState
 import wing.tree.bionda.view.state.MainState
 import wing.tree.bionda.view.state.NoticeState
@@ -126,11 +126,14 @@ class MainViewModel @Inject constructor(
     }
 
     fun load() {
-        if (checkSelfPermission(ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION)) {
-            viewModelScope.launch {
-                location.value = locationProvider.getLocation()
-            }
+        locationPermissions.any {
+            checkSelfPermission(it)
         }
+            .ifTrue {
+                viewModelScope.launch {
+                    location.value = locationProvider.getLocation()
+                }
+            }
     }
 
     fun notifyPermissionsDenied(

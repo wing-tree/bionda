@@ -1,7 +1,5 @@
 package wing.tree.bionda.receiver
 
-import android.Manifest.permission.ACCESS_COARSE_LOCATION
-import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.Manifest.permission.POST_NOTIFICATIONS
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -31,6 +29,7 @@ import wing.tree.bionda.data.repository.ForecastRepository
 import wing.tree.bionda.data.repository.NoticeRepository
 import wing.tree.bionda.extension.toCoordinate
 import wing.tree.bionda.permissions.MultiplePermissionsChecker
+import wing.tree.bionda.permissions.locationPermissions
 import wing.tree.bionda.provider.LocationProvider
 import wing.tree.bionda.scheduler.AlarmScheduler
 import wing.tree.bionda.view.MainActivity
@@ -52,7 +51,7 @@ class AlarmReceiver : BroadcastReceiver(), MultiplePermissionsChecker {
     lateinit var noticeRepository: NoticeRepository
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
-    private val permissions = arrayOf(ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION)
+    private val permissions = locationPermissions.toTypedArray()
 
     override fun onReceive(context: Context?, intent: Intent?) {
         context ?: return
