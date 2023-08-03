@@ -29,6 +29,7 @@ import wing.tree.bionda.data.extension.ONE
 import wing.tree.bionda.data.extension.containsAny
 import wing.tree.bionda.data.extension.hourOfDay
 import wing.tree.bionda.data.extension.minute
+import wing.tree.bionda.extension.rememberWindowSizeClass
 import wing.tree.bionda.permissions.RequestMultiplePermissions
 import wing.tree.bionda.permissions.Result
 import wing.tree.bionda.permissions.locationPermissions
@@ -91,6 +92,7 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
         setContent {
             BiondaTheme {
                 val state by viewModel.state.collectAsStateWithLifecycle()
+                val windowSizeClass = rememberWindowSizeClass()
 
                 Scaffold(
                     floatingActionButton = {
@@ -153,7 +155,9 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
                                     Action.POST_NOTIFICATIONS -> {}
                                 }
                             },
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(windowSizeClass.marginValues)
                         )
 
                         Notice(
@@ -167,7 +171,9 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
                             onCheckedChange = { notice, checked ->
                                 viewModel.update(notice.copy(checked = checked))
                             },
-                            modifier = Modifier.weight(Float.ONE)
+                            modifier = Modifier
+                                .weight(Float.ONE)
+                                .padding(windowSizeClass.marginValues)
                         )
                     }
                 }
