@@ -1,7 +1,9 @@
 package wing.tree.bionda.view.model
 
 import android.app.Application
+import android.location.Geocoder
 import android.location.Location
+import android.os.Build
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -13,8 +15,10 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import wing.tree.bionda.data.extension.fiveSecondsInMilliseconds
 import wing.tree.bionda.data.extension.ifTrue
+import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.model.Notice
 import wing.tree.bionda.data.model.Result
 import wing.tree.bionda.data.model.Result.Complete
@@ -23,7 +27,6 @@ import wing.tree.bionda.data.provider.LocationProvider
 import wing.tree.bionda.data.repository.NoticeRepository
 import wing.tree.bionda.exception.PermissionsDeniedException
 import wing.tree.bionda.extension.checkSelfPermission
-import wing.tree.bionda.model.Coordinate
 import wing.tree.bionda.model.Forecast
 import wing.tree.bionda.scheduler.AlarmScheduler
 import wing.tree.bionda.extension.toCoordinate
@@ -32,7 +35,9 @@ import wing.tree.bionda.view.state.ForecastState
 import wing.tree.bionda.view.state.MainState
 import wing.tree.bionda.view.state.NoticeState
 import wing.tree.bionda.view.state.RequestPermissionsState
+import java.util.Locale
 import javax.inject.Inject
+import kotlin.coroutines.resume
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
@@ -47,8 +52,9 @@ class MainViewModel @Inject constructor(
     private val forecastState = location.map {
         when (it) {
             Result.Loading -> ForecastState.Loading
-            is Complete.Success -> {
-                val (nx, ny) = it.data?.toCoordinate() ?: Coordinate.seoul
+            is Complete.Success -> it.data?.let { location ->
+                val (nx, ny) = location.toCoordinate()
+                val address = getAddress(location)
                 val forecast = forecastRepository.getVilageFcst(
                     nx = nx,
                     ny = ny
@@ -58,13 +64,14 @@ class MainViewModel @Inject constructor(
                     Result.Loading -> ForecastState.Loading
                     is Complete -> when (forecast) {
                         is Complete.Success -> ForecastState.Content(
-                            Forecast.toPresentationModel(forecast.data)
+                            address = address,
+                            forecast = Forecast.toPresentationModel(forecast.data)
                         )
 
                         is Complete.Failure -> ForecastState.Error(forecast.throwable)
                     }
                 }
-            }
+            } ?: ForecastState.Error(NullPointerException())
 
             is Complete.Failure -> ForecastState.Error(it.throwable)
         }
@@ -104,6 +111,26 @@ class MainViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(stopTimeoutMillis),
         initialValue = MainState()
     )
+
+    private suspend fun getAddress(location: Location) = suspendCancellableCoroutine { cancellableContinuation ->
+        val geocoder = Geocoder(getApplication(), Locale.KOREA)
+        val maxResults = Int.one
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            geocoder.getFromLocation(location.latitude, location.longitude, maxResults) {
+                it.firstOrNull()?.let { address ->
+                    cancellableContinuation.resume(address)
+                } ?: cancellableContinuation.resume(null)
+            }
+        } else {
+            @Suppress("DEPRECATION")
+            geocoder.getFromLocation(location.latitude, location.longitude, maxResults)?.let {
+                it.firstOrNull()?.let { address ->
+                    cancellableContinuation.resume(address)
+                } ?: cancellableContinuation.resume(null)
+            } ?: cancellableContinuation.resume(null)
+        }
+    }
 
     fun add(hour: Int, minute: Int) {
         viewModelScope.launch {

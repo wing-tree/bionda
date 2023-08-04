@@ -137,6 +137,7 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
                     ) {
                         Forecast(
                             state = state.forecastState,
+                            windowSizeClass = windowSizeClass,
                             modifier = Modifier.fillMaxWidth()
                         )
 

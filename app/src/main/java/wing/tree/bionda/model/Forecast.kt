@@ -20,7 +20,9 @@ data class Forecast(
     }
 
     companion object : DataModelMapper<DataModel, Forecast> {
-        override fun toPresentationModel(dataModel: DataModel): Forecast {
+        override fun toPresentationModel(
+            dataModel: DataModel
+        ): Forecast {
             val items = dataModel.items.groupBy {
                 it.fcstDate to it.fcstTime
             }.map { (key, value) ->

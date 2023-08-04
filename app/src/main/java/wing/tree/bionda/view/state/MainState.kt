@@ -1,5 +1,6 @@
 package wing.tree.bionda.view.state
 
+import android.location.Address
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import wing.tree.bionda.data.model.Notice
@@ -18,7 +19,10 @@ data class MainState(
 
 sealed interface ForecastState {
     object Loading : ForecastState
-    data class Content(val forecast: Forecast) : ForecastState
+    data class Content(
+        val address: Address?,
+        val forecast: Forecast
+    ) : ForecastState
     data class Error(val throwable: Throwable) : ForecastState
 
     companion object {
