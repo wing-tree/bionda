@@ -25,10 +25,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.material.timepicker.MaterialTimePicker
 import dagger.hilt.android.AndroidEntryPoint
 import wing.tree.bionda.R
-import wing.tree.bionda.data.extension.one
+import wing.tree.bionda.data.constant.SCHEME_PACKAGE
 import wing.tree.bionda.data.extension.containsAny
 import wing.tree.bionda.data.extension.hourOfDay
 import wing.tree.bionda.data.extension.minute
+import wing.tree.bionda.data.extension.one
+import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.extension.rememberWindowSizeClass
 import wing.tree.bionda.permissions.RequestMultiplePermissions
 import wing.tree.bionda.permissions.Result
@@ -45,8 +47,8 @@ import java.util.Locale
 class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
     override val launcher = registerForActivityResult()
     override val permissions: Array<String> = buildList {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            // TODO 따로 처리. add(ACCESS_BACKGROUND_LOCATION)
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
+            add(ACCESS_BACKGROUND_LOCATION)
         }
 
         addAll(locationPermissions)
@@ -67,10 +69,12 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
 
     override fun onRequestMultiplePermissionsResult(result: Result) {
         with(result) {
-            if (granted().containsAny(locationPermissions)) {
-                viewModel.load()
-            } else if (denied().containsAll(locationPermissions)) {
-                viewModel.notifyPermissionsDenied(result.denied())
+            val granted = granted()
+            val denied = denied()
+
+            when {
+                granted.containsAny(locationPermissions) -> viewModel.load()
+                denied.containsAll(locationPermissions) -> viewModel.notifyPermissionsDenied(denied)
             }
         }
     }
@@ -87,6 +91,12 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
         super.onCreate(savedInstanceState)
 
         requestMultiplePermissions()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (shouldShowRequestPermissionRationale(ACCESS_BACKGROUND_LOCATION)) {
+                viewModel.notifyPermissionsDenied(listOf(ACCESS_BACKGROUND_LOCATION))
+            }
+        }
 
         setContent {
             BiondaTheme {
@@ -136,17 +146,23 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
                                 when (it) {
                                     Action.ACCESS_BACKGROUND_LOCATION -> {
                                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                                            if (shouldShowRequestPermissionRationale(ACCESS_BACKGROUND_LOCATION)) {
-                                                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                                                    data = Uri.fromParts("package", packageName, null)
-                                                }
+                                            if (checkSelfPermission(*arrayOf(ACCESS_BACKGROUND_LOCATION)).not()) {
+                                                if (shouldShowRequestPermissionRationale(ACCESS_BACKGROUND_LOCATION)) {
+                                                    requestPermissions(
+                                                        arrayOf(ACCESS_BACKGROUND_LOCATION),
+                                                        Int.zero
+                                                    )
+                                                } else {
+                                                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                                                        data = Uri.fromParts(
+                                                            SCHEME_PACKAGE,
+                                                            packageName,
+                                                            null
+                                                        )
+                                                    }
 
-                                                startActivity(intent)
-                                            } else {
-                                                requestPermissions(
-                                                    arrayOf(ACCESS_BACKGROUND_LOCATION),
-                                                    0 // TODO change to another value.
-                                                )
+                                                    startActivity(intent)
+                                                }
                                             }
                                         }
                                     }

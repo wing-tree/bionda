@@ -134,9 +134,19 @@ class MainViewModel @Inject constructor(
     fun notifyPermissionsDenied(
         permissions: Collection<String>
     ) {
-        with(permissions.toImmutableList()) {
-            location.value = Complete.Failure(PermissionsDeniedException(this))
-            requestPermissionsState.value = RequestPermissionsState(this)
+        with(permissions) {
+            if (containsAll(locationPermissions)) {
+                location.value = Complete.Failure(
+                    PermissionsDeniedException(locationPermissions)
+                )
+            }
+
+            requestPermissionsState.value = RequestPermissionsState(
+                filterNot {
+                    locationPermissions.contains(it)
+                }
+                    .toImmutableList()
+            )
         }
     }
 
