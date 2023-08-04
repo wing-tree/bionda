@@ -21,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.ImmutableList
@@ -30,8 +31,6 @@ import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.data.extension.`is`
 import wing.tree.bionda.data.extension.isNotNull
 import wing.tree.bionda.data.extension.one
-import wing.tree.bionda.data.model.Category
-import wing.tree.bionda.data.model.CodeValue
 import wing.tree.bionda.data.regular.fcstCalendar
 import wing.tree.bionda.extension.zero
 import wing.tree.bionda.model.Forecast
@@ -59,19 +58,12 @@ fun Forecast(
         when (it) {
             ForecastState.Loading -> Loading(modifier = Modifier)
 
-            is ForecastState.Content -> {
-                val contentPadding = windowSizeClass.marginValues.copy(
-                    top = Dp.zero,
-                    bottom = Dp.zero
-                )
-
-                Content(
-                    address = it.address,
-                    forecast = it.forecast,
-                    contentPadding = contentPadding,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
+            is ForecastState.Content -> Content(
+                address = it.address,
+                forecast = it.forecast,
+                windowSizeClass = windowSizeClass,
+                modifier = Modifier.fillMaxWidth()
+            )
 
             is ForecastState.Error -> {
                 Column {
@@ -86,7 +78,7 @@ fun Forecast(
 private fun Content(
     address: Address?,
     forecast: Forecast,
-    contentPadding: PaddingValues,
+    windowSizeClass: WindowSizeClass,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -98,9 +90,19 @@ private fun Content(
             modifier = Modifier.fillMaxWidth()
         )
 
+        VerticalSpacer(
+            height = when (windowSizeClass) {
+                is WindowSizeClass.Compact -> 16.dp
+                else -> 24.dp
+            }
+        )
+
         Items(
             items = forecast.items,
-            contentPadding = contentPadding,
+            contentPadding = windowSizeClass.marginValues.copy(
+                top = Dp.zero,
+                bottom = Dp.zero
+            ),
             modifier = Modifier.fillMaxWidth()
         )
     }
@@ -112,11 +114,6 @@ private fun Address(
     item: Forecast.Item,
     modifier: Modifier = Modifier
 ) {
-    val pty = item.items[Category.VilageFcst.PTY]
-    val sky = item.items[Category.VilageFcst.SKY]
-    val tmp = item.items[Category.VilageFcst.TMP]
-    val reh = item.items[Category.VilageFcst.REH]
-
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
@@ -125,19 +122,19 @@ private fun Address(
             modifier = Modifier.weight(Float.one),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            tmp?.let {
+            item.tmp?.let {
                 Text(
                     text = "$it${String.celsius}",
                     style = typography.displayLarge
                 )
             }
 
-            if (pty `is` String.zero) {
-                CodeValue.sky[sky]?.let {
+            if (item.pty.code `is` String.zero) {
+                item.sky.value?.let {
                     Text(text = it)
                 }
             } else {
-                CodeValue.pty[pty]?.let {
+                item.pty.value?.let {
                     Text(text = it)
                 }
             }
@@ -191,28 +188,40 @@ private fun Item(
         val fcstCalendar = fcstCalendar(item.fcstHour)
         val simpleDateFormat = SimpleDateFormat("a h시", Locale.KOREA)
 
-        Text(text = simpleDateFormat.format(fcstCalendar))
+        Text(
+            text = simpleDateFormat.format(fcstCalendar),
+            style = typography.labelSmall
+        )
 
-        val pty = item.items[Category.VilageFcst.PTY]
-        val sky = item.items[Category.VilageFcst.SKY]
-        val tmp = item.items[Category.VilageFcst.TMP]
-        val reh = item.items[Category.VilageFcst.REH]
-
-        if (pty `is` String.zero) {
-            CodeValue.sky[sky]?.let {
+        if (item.pty.code `is` String.zero) {
+            item.sky.value?.let {
                 Text(text = it)
             }
+
+            item.weatherIcon.sky[item.sky.code]?.let { drawableRes ->
+                Icon(
+                    painter = painterResource(id = drawableRes),
+                    contentDescription = null
+                )
+            }
         } else {
-            CodeValue.pty[pty]?.let {
+            item.pty.value?.let {
                 Text(text = it)
+            }
+
+            item.weatherIcon.pty[item.pty.code]?.let { drawableRes ->
+                Icon(
+                    painter = painterResource(id = drawableRes),
+                    contentDescription = null
+                )
             }
         }
 
-        tmp?.let {
+        item.tmp?.let {
             Text(text = "$it${String.celsius}")
         }
 
-        reh?.let {
+        item.reh?.let {
             Text(text = it)
         }
     }

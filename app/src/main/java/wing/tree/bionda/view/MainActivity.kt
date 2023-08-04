@@ -21,6 +21,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.material.timepicker.MaterialTimePicker
 import dagger.hilt.android.AndroidEntryPoint
@@ -32,6 +33,7 @@ import wing.tree.bionda.data.extension.minute
 import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.extension.rememberWindowSizeClass
+import wing.tree.bionda.model.WindowSizeClass
 import wing.tree.bionda.permissions.RequestMultiplePermissions
 import wing.tree.bionda.permissions.Result
 import wing.tree.bionda.permissions.locationPermissions
@@ -39,6 +41,7 @@ import wing.tree.bionda.theme.BiondaTheme
 import wing.tree.bionda.view.compose.composable.Forecast
 import wing.tree.bionda.view.compose.composable.Notice
 import wing.tree.bionda.view.compose.composable.RequestPermissions
+import wing.tree.bionda.view.compose.composable.VerticalSpacer
 import wing.tree.bionda.view.model.MainViewModel
 import wing.tree.bionda.view.state.MainState.Action
 import java.util.Locale
@@ -140,6 +143,13 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
                             state = state.forecastState,
                             windowSizeClass = windowSizeClass,
                             modifier = Modifier.fillMaxWidth()
+                        )
+
+                        VerticalSpacer(
+                            height = when (windowSizeClass) {
+                                is WindowSizeClass.Compact -> 16.dp
+                                else -> 24.dp
+                            }
                         )
 
                         RequestPermissions(
