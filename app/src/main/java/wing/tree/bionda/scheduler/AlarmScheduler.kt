@@ -6,7 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.icu.util.Calendar
 import android.os.Build
-import wing.tree.bionda.constant.EXTRA_NOTIFICATION_ID
+import androidx.core.app.NotificationCompat.EXTRA_NOTIFICATION_ID
 import wing.tree.bionda.data.extension.date
 import wing.tree.bionda.data.extension.hourOfDay
 import wing.tree.bionda.data.extension.minute
