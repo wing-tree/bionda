@@ -44,6 +44,11 @@
                 <action android:name="com.htc.intent.action.QUICKBOOT_POWERON"/>
             </intent-filter>
         </receiver>
+
+        <service
+            android:name=".service.NoticeService"
+            android:foregroundServiceType="location">
+        </service>
     </application>
 
 </manifest>
