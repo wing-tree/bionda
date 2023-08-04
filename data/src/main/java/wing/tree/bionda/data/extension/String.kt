@@ -1,6 +1,7 @@
 package wing.tree.bionda.data.extension
 
-val String.Companion.CELSIUS: String get() = "℃"
-val String.Companion.COLON: String get() = ":"
-val String.Companion.DOT: String get() = "."
-val String.Companion.EMPTY: String get() = ""
+val String.Companion.celsius: String get() = "℃"
+val String.Companion.colon: String get() = ":"
+val String.Companion.dot: String get() = "."
+val String.Companion.empty: String get() = ""
+val String.Companion.zero: String get() = "0"

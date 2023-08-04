@@ -1,3 +1,3 @@
-package wing.tree.bionda.exception
+package wing.tree.bionda.data.exception
 
 object OnCanceledException : Exception()

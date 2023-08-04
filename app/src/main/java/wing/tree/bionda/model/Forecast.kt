@@ -4,6 +4,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableMap
+import wing.tree.bionda.data.extension.oneHundred
 import wing.tree.bionda.mapper.DataModelMapper
 import wing.tree.bionda.data.model.forecast.Forecast as DataModel
 
@@ -14,7 +15,9 @@ data class Forecast(
         val fcstDate: Int,
         val fcstTime: Int,
         val items: ImmutableMap<String, String>
-    )
+    ) {
+        val fcstHour: Int get() = fcstTime.div(Int.oneHundred)
+    }
 
     companion object : DataModelMapper<DataModel, Forecast> {
         override fun toPresentationModel(dataModel: DataModel): Forecast {

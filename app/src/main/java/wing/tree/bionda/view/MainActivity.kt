@@ -25,7 +25,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.material.timepicker.MaterialTimePicker
 import dagger.hilt.android.AndroidEntryPoint
 import wing.tree.bionda.R
-import wing.tree.bionda.data.extension.ONE
+import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.containsAny
 import wing.tree.bionda.data.extension.hourOfDay
 import wing.tree.bionda.data.extension.minute
@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
     override val launcher = registerForActivityResult()
     override val permissions: Array<String> = buildList {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            add(ACCESS_BACKGROUND_LOCATION)
+            // TODO 따로 처리. add(ACCESS_BACKGROUND_LOCATION)
         }
 
         addAll(locationPermissions)
@@ -78,8 +78,7 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
     override fun onShouldShowRequestMultiplePermissionsRationale(result: Result) {
         val keys = result.filter { (_, value) ->
             value.shouldShowRequestPermissionRationale
-        }
-            .keys
+        }.keys
     }
 
     private val viewModel by viewModels<MainViewModel>()
@@ -172,7 +171,7 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
                                 viewModel.update(notice.copy(checked = checked))
                             },
                             modifier = Modifier
-                                .weight(Float.ONE)
+                                .weight(Float.one)
                                 .padding(windowSizeClass.marginValues)
                         )
                     }

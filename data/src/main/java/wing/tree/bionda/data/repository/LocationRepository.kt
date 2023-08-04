@@ -1,7 +1,6 @@
-package wing.tree.bionda.provider
+package wing.tree.bionda.data.repository
 
-import android.Manifest.permission.ACCESS_COARSE_LOCATION
-import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.Manifest
 import android.content.Context
 import android.location.Location
 import androidx.annotation.RequiresPermission
@@ -15,15 +14,14 @@ import com.google.android.gms.location.LocationSettingsResponse
 import com.google.android.gms.location.Priority
 import kotlinx.coroutines.suspendCancellableCoroutine
 import timber.log.Timber
-import wing.tree.bionda.data.extension.EMPTY
-import wing.tree.bionda.data.extension.ZERO
-import wing.tree.bionda.data.model.Result.Complete
+import wing.tree.bionda.data.exception.OnCanceledException
+import wing.tree.bionda.data.extension.zero
+import wing.tree.bionda.data.model.Result
 import wing.tree.bionda.data.model.ifFailure
 import wing.tree.bionda.data.model.ifNull
-import wing.tree.bionda.exception.OnCanceledException
 import kotlin.coroutines.resume
 
-class LocationProvider(private val context: Context)  {
+class LocationRepository(private val context: Context)  {
     private val currentLocationRequest by lazy {
         CurrentLocationRequest
             .Builder()
@@ -43,38 +41,36 @@ class LocationProvider(private val context: Context)  {
             .build()
     }
 
-    @RequiresPermission(anyOf = [ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION])
-    suspend fun getLocation(): Complete<Location?> {
+    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION])
+    suspend fun getLocation(): Result.Complete<Location?> {
         val currentLocation = getCurrentLocation()
             .ifNull {
                 getCurrentLocation(currentLocationRequest)
-            }
-            .ifFailure {
+            }.ifFailure {
                 Timber.e(it)
 
                 getCurrentLocation(currentLocationRequest)
             }
 
         return when (currentLocation) {
-            is Complete.Success -> currentLocation.ifNull {
-                getLastLocation()
-                    .ifNull {
-                        getLastLocation(lastLocationRequest)
-                    }
-                    .ifFailure {
-                        Timber.e(it)
+            is Result.Complete.Success -> currentLocation
+                .ifNull {
+                    getLastLocation()
+                        .ifNull {
+                            getLastLocation(lastLocationRequest)
+                        }.ifFailure {
+                            Timber.e(it)
 
-                        getLastLocation(lastLocationRequest)
-                    }
-            }
-            is Complete.Failure -> {
+                            getLastLocation(lastLocationRequest)
+                        }
+                }
+            is Result.Complete.Failure -> {
                 Timber.e(currentLocation.throwable)
 
                 getLastLocation()
                     .ifNull {
                         getLastLocation(lastLocationRequest)
-                    }
-                    .ifFailure {
+                    }.ifFailure {
                         Timber.e(it)
 
                         getLastLocation(lastLocationRequest)
@@ -84,10 +80,10 @@ class LocationProvider(private val context: Context)  {
     }
 
     @Suppress("unused")
-    private suspend fun getLocationSettingsResponse(): Complete<LocationSettingsResponse> {
+    private suspend fun getLocationSettingsResponse(): Result.Complete<LocationSettingsResponse> {
         val locationRequest = LocationRequest.Builder(
             Priority.PRIORITY_BALANCED_POWER_ACCURACY,
-            Long.ZERO
+            Long.zero
         )
             .setGranularity(Granularity.GRANULARITY_PERMISSION_LEVEL)
             .build()
@@ -102,38 +98,38 @@ class LocationProvider(private val context: Context)  {
         return suspendCancellableCoroutine {
             settingsClient.checkLocationSettings(locationSettingsRequest)
                 .addOnCanceledListener {
-                    it.resume(Complete.Failure(OnCanceledException))
+                    it.resume(Result.Complete.Failure(OnCanceledException))
                 }
                 .addOnFailureListener { exception ->
-                    it.resume(Complete.Failure(exception))
+                    it.resume(Result.Complete.Failure(exception))
                 }
                 .addOnSuccessListener { locationSettingsResponse ->
-                    it.resume(Complete.Success(locationSettingsResponse))
+                    it.resume(Result.Complete.Success(locationSettingsResponse))
                 }
         }
     }
 
-    @RequiresPermission(anyOf = [ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION])
-    suspend fun getCurrentLocation(): Complete<Location?> {
+    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION])
+    suspend fun getCurrentLocation(): Result.Complete<Location?> {
         return suspendCancellableCoroutine {
             fusedLocationProviderClient.getCurrentLocation(
                 Priority.PRIORITY_BALANCED_POWER_ACCURACY,
                 null
             )
                 .addOnCanceledListener {
-                    it.resume(Complete.Failure(OnCanceledException))
+                    it.resume(Result.Complete.Failure(OnCanceledException))
                 }
                 .addOnFailureListener { exception ->
-                    it.resume(Complete.Failure(exception))
+                    it.resume(Result.Complete.Failure(exception))
                 }
                 .addOnSuccessListener { location ->
-                    it.resume(Complete.Success(location))
+                    it.resume(Result.Complete.Success(location))
                 }
         }
     }
 
-    @RequiresPermission(anyOf = [ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION])
-    suspend fun getCurrentLocation(currentLocationRequest: CurrentLocationRequest): Complete<Location?> {
+    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION])
+    suspend fun getCurrentLocation(currentLocationRequest: CurrentLocationRequest): Result.Complete<Location?> {
         return suspendCancellableCoroutine {
             fusedLocationProviderClient
                 .getCurrentLocation(
@@ -141,53 +137,46 @@ class LocationProvider(private val context: Context)  {
                     null
                 )
                 .addOnCanceledListener {
-                    it.resume(Complete.Failure(OnCanceledException))
+                    it.resume(Result.Complete.Failure(OnCanceledException))
                 }
                 .addOnFailureListener { exception ->
-                    it.resume(Complete.Failure(exception))
+                    it.resume(Result.Complete.Failure(exception))
                 }
                 .addOnSuccessListener { location ->
-                    it.resume(Complete.Success(location))
+                    it.resume(Result.Complete.Success(location))
                 }
         }
     }
 
-    @RequiresPermission(anyOf = [ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION])
-    suspend fun getLastLocation(): Complete<Location?> {
+    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION])
+    suspend fun getLastLocation(): Result.Complete<Location?> {
         return suspendCancellableCoroutine {
             fusedLocationProviderClient.lastLocation
                 .addOnCanceledListener {
-                    it.resume(Complete.Failure(OnCanceledException))
+                    it.resume(Result.Complete.Failure(OnCanceledException))
                 }
                 .addOnFailureListener { exception ->
-                    it.resume(Complete.Failure(exception))
+                    it.resume(Result.Complete.Failure(exception))
                 }
                 .addOnSuccessListener { location ->
-                    it.resume(Complete.Success(location))
+                    it.resume(Result.Complete.Success(location))
                 }
         }
     }
 
-    @RequiresPermission(anyOf = [ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION])
-    suspend fun getLastLocation(lastLocationRequest: LastLocationRequest): Complete<Location?> {
+    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION])
+    suspend fun getLastLocation(lastLocationRequest: LastLocationRequest): Result.Complete<Location?> {
         return suspendCancellableCoroutine {
             fusedLocationProviderClient.getLastLocation(lastLocationRequest)
                 .addOnCanceledListener {
-                    it.resume(Complete.Failure(OnCanceledException))
+                    it.resume(Result.Complete.Failure(OnCanceledException))
                 }
                 .addOnFailureListener { exception ->
-                    it.resume(Complete.Failure(exception))
+                    it.resume(Result.Complete.Failure(exception))
                 }
                 .addOnSuccessListener { location ->
-                    it.resume(Complete.Success(location))
+                    it.resume(Result.Complete.Success(location))
                 }
-        }
-    }
-
-    companion object {
-        val DEFAULT_LOCATION = Location(String.EMPTY).apply {
-            latitude = 37.5635694444444
-            longitude = 126.980008333333
         }
     }
 }

@@ -1,5 +1,6 @@
 package wing.tree.bionda.view.compose.composable
 
+import android.icu.text.SimpleDateFormat
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -13,11 +14,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import wing.tree.bionda.data.extension.EMPTY
+import wing.tree.bionda.data.extension.celsius
+import wing.tree.bionda.data.extension.empty
+import wing.tree.bionda.data.extension.zero
+import wing.tree.bionda.data.extension.`is`
 import wing.tree.bionda.data.model.Category
 import wing.tree.bionda.data.model.CodeValue
+import wing.tree.bionda.data.regular.fcstCalendar
 import wing.tree.bionda.model.Forecast
 import wing.tree.bionda.view.state.ForecastState
+import java.util.Locale
 
 @Composable
 fun Forecast(
@@ -30,7 +36,7 @@ fun Forecast(
         transitionSpec = {
             fadeIn() togetherWith fadeOut()
         },
-        label = String.EMPTY,
+        label = String.empty,
         contentKey = {
             it::class.qualifiedName
         }
@@ -65,25 +71,31 @@ private fun Item(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = "${item.fcstTime}")
+        val fcstCalendar = fcstCalendar(item.fcstHour)
+        val simpleDateFormat = SimpleDateFormat("a h시", Locale.KOREA)
 
-        item.items[Category.UltraSrtFcst.SKY]?.let {
-            val text = CodeValue.sky[it] ?: return@let
+        Text(text = simpleDateFormat.format(fcstCalendar))
 
-            Text(text = text)
+        val pty = item.items[Category.VilageFcst.PTY]
+        val sky = item.items[Category.VilageFcst.SKY]
+        val tmp = item.items[Category.VilageFcst.TMP]
+        val reh = item.items[Category.VilageFcst.REH]
+
+        if (pty `is` String.zero) {
+            CodeValue.sky[sky]?.let {
+                Text(text = it)
+            }
+        } else {
+            CodeValue.pty[pty]?.let {
+                Text(text = it)
+            }
         }
 
-        item.items[Category.UltraSrtFcst.PTY]?.let {
-            val text = CodeValue.pty[it] ?: return@let
-
-            Text(text = text)
+        tmp?.let {
+            Text(text = "$it${String.celsius}")
         }
 
-        item.items[Category.UltraSrtFcst.T1H]?.let {
-            Text(text = it)
-        }
-
-        item.items[Category.UltraSrtFcst.REH]?.let {
+        reh?.let {
             Text(text = it)
         }
     }

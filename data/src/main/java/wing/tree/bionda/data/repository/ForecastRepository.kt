@@ -4,12 +4,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import wing.tree.bionda.data.BuildConfig
-import wing.tree.bionda.data.extension.ONE
-import wing.tree.bionda.data.extension.SIXTY
 import wing.tree.bionda.data.extension.apiDeliveryDate
 import wing.tree.bionda.data.extension.apiDeliveryTime
 import wing.tree.bionda.data.extension.baseDate
 import wing.tree.bionda.data.extension.baseTime
+import wing.tree.bionda.data.extension.one
+import wing.tree.bionda.data.extension.sixty
 import wing.tree.bionda.data.model.DetailedFunction
 import wing.tree.bionda.data.model.Result
 import wing.tree.bionda.data.model.Result.Complete
@@ -37,11 +37,13 @@ class ForecastRepository(
         return try {
             val forecast = localDataSource.load(
                 apiDeliveryCalendar.apiDeliveryDate,
-                apiDeliveryCalendar.apiDeliveryTime
+                apiDeliveryCalendar.apiDeliveryTime,
+                nx,
+                ny
             ) ?: remoteDataSource.getUltraSrtFcst(
                 serviceKey = BuildConfig.serviceKey,
-                numOfRows = Int.SIXTY,
-                pageNo = Int.ONE,
+                numOfRows = Int.sixty,
+                pageNo = Int.one,
                 dataType = DATA_TYPE,
                 baseDate = baseCalendar.baseDate,
                 baseTime = baseCalendar.baseTime,
@@ -53,8 +55,10 @@ class ForecastRepository(
                         clear()
                         insert(
                             it.toLocalDataModel(
-                                apiDeliveryCalendar.apiDeliveryDate,
-                                apiDeliveryCalendar.apiDeliveryTime
+                                apiDeliveryDate = apiDeliveryCalendar.apiDeliveryDate,
+                                apiDeliveryTime = apiDeliveryCalendar.apiDeliveryTime,
+                                nx = nx,
+                                ny = ny
                             )
                         )
                     }
@@ -78,11 +82,13 @@ class ForecastRepository(
 
             val vilageFcst = localDataSource.load(
                 apiDeliveryCalendar.apiDeliveryDate,
-                apiDeliveryCalendar.apiDeliveryTime
+                apiDeliveryCalendar.apiDeliveryTime,
+                nx,
+                ny
             ) ?: remoteDataSource.getVilageFcst(
                 serviceKey = BuildConfig.serviceKey,
                 numOfRows = 144,
-                pageNo = Int.ONE,
+                pageNo = Int.one,
                 dataType = DATA_TYPE,
                 baseDate = baseCalendar.baseDate,
                 baseTime = baseCalendar.baseTime,
@@ -94,8 +100,10 @@ class ForecastRepository(
                         clear()
                         insert(
                             it.toLocalDataModel(
-                                apiDeliveryCalendar.apiDeliveryDate,
-                                apiDeliveryCalendar.apiDeliveryTime
+                                apiDeliveryDate = apiDeliveryCalendar.apiDeliveryDate,
+                                apiDeliveryTime = apiDeliveryCalendar.apiDeliveryTime,
+                                nx = nx,
+                                ny = ny
                             )
                         )
                     }
@@ -109,13 +117,17 @@ class ForecastRepository(
     }
 
     private fun Forecast.toLocalDataModel(
-        requestDate: String,
-        requestTime: String
+        apiDeliveryDate: String,
+        apiDeliveryTime: String,
+        nx: Int,
+        ny: Int
     ): LocalDataModel {
         return LocalDataModel(
             items = items,
-            requestDate = requestDate,
-            requestTime = requestTime
+            apiDeliveryDate = apiDeliveryDate,
+            apiDeliveryTime = apiDeliveryTime,
+            nx = nx,
+            ny = ny
         )
     }
 

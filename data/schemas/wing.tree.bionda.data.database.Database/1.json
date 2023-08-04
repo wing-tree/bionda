@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "469c8e8beb73701583684e0786d80779",
+    "identityHash": "bab63377ceb104afcb2e5b03e2437261",
     "entities": [
       {
         "tableName": "forecast",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`items` TEXT NOT NULL, `requestDate` TEXT NOT NULL, `requestTime` TEXT NOT NULL, PRIMARY KEY(`requestDate`, `requestTime`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`items` TEXT NOT NULL, `nx` INTEGER NOT NULL, `ny` INTEGER NOT NULL, `apiDeliveryDate` TEXT NOT NULL, `apiDeliveryTime` TEXT NOT NULL, PRIMARY KEY(`apiDeliveryDate`, `apiDeliveryTime`))",
         "fields": [
           {
             "fieldPath": "items",
@@ -15,14 +15,26 @@
             "notNull": true
           },
           {
-            "fieldPath": "requestDate",
-            "columnName": "requestDate",
+            "fieldPath": "nx",
+            "columnName": "nx",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ny",
+            "columnName": "ny",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "apiDeliveryDate",
+            "columnName": "apiDeliveryDate",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "requestTime",
-            "columnName": "requestTime",
+            "fieldPath": "apiDeliveryTime",
+            "columnName": "apiDeliveryTime",
             "affinity": "TEXT",
             "notNull": true
           }
@@ -30,8 +42,8 @@
         "primaryKey": {
           "autoGenerate": false,
           "columnNames": [
-            "requestDate",
-            "requestTime"
+            "apiDeliveryDate",
+            "apiDeliveryTime"
           ]
         },
         "indices": [],
@@ -79,7 +91,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '469c8e8beb73701583684e0786d80779')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'bab63377ceb104afcb2e5b03e2437261')"
     ]
   }
 }

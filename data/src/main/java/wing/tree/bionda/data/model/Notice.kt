@@ -6,14 +6,14 @@ import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
-import wing.tree.bionda.data.extension.ZERO
 import wing.tree.bionda.data.extension.int
+import wing.tree.bionda.data.extension.zero
 
 @Entity(tableName = "notice")
 @Parcelize
 data class Notice(
     @PrimaryKey(autoGenerate = true)
-    val notificationId: Long = Long.ZERO,
+    val notificationId: Long = Long.zero,
     val checked: Boolean = true,
     val hour: Int,
     val minute: Int

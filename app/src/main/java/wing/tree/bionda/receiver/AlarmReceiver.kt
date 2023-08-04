@@ -7,18 +7,18 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.icu.text.DateFormatSymbols
+import android.icu.util.Calendar
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import wing.tree.bionda.R
 import wing.tree.bionda.constant.EXTRA_NOTIFICATION_ID
-import wing.tree.bionda.data.extension.NEGATIVE_ONE
-import wing.tree.bionda.data.extension.ONE_SECOND
+import wing.tree.bionda.data.extension.negativeOne
 import wing.tree.bionda.data.extension.int
 import wing.tree.bionda.data.model.Notice
 import wing.tree.bionda.data.model.Result.Complete
@@ -26,14 +26,15 @@ import wing.tree.bionda.data.model.forecast.Item
 import wing.tree.bionda.data.model.onFailure
 import wing.tree.bionda.data.model.onSuccess
 import wing.tree.bionda.data.repository.ForecastRepository
+import wing.tree.bionda.data.repository.LocationRepository
 import wing.tree.bionda.data.repository.NoticeRepository
 import wing.tree.bionda.extension.toCoordinate
 import wing.tree.bionda.permissions.MultiplePermissionsChecker
 import wing.tree.bionda.permissions.locationPermissions
-import wing.tree.bionda.provider.LocationProvider
 import wing.tree.bionda.scheduler.AlarmScheduler
 import wing.tree.bionda.view.MainActivity
 import java.time.LocalTime.NOON
+import java.util.Locale
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -45,7 +46,7 @@ class AlarmReceiver : BroadcastReceiver(), MultiplePermissionsChecker {
     lateinit var forecastRepository: ForecastRepository
 
     @Inject
-    lateinit var locationProvider: LocationProvider
+    lateinit var locationRepository: LocationRepository
 
     @Inject
     lateinit var noticeRepository: NoticeRepository
@@ -58,21 +59,19 @@ class AlarmReceiver : BroadcastReceiver(), MultiplePermissionsChecker {
         intent ?: return
 
         coroutineScope.launch {
-            val notificationId = intent.getLongExtra(EXTRA_NOTIFICATION_ID, Long.NEGATIVE_ONE)
+            val notificationId = intent.getLongExtra(EXTRA_NOTIFICATION_ID, Long.negativeOne)
             val notice = noticeRepository.get(notificationId) ?: return@launch
 
             if (notice.checked.not()) {
+                alarmScheduler.cancel(notice)
                 return@launch
-            }
-
-            launch {
-                delay(Long.ONE_SECOND)
-
+            } else {
                 alarmScheduler.schedule(notice)
             }
-
+            println("zzzzzzz111")
             if (context.checkSelfPermission(*permissions)) {
-                when (val location = locationProvider.getLocation()) {
+                println("zzzzzzz222")
+                when (val location = locationRepository.getLocation()) {
                     is Complete.Success -> {
                         val (nx, ny) = location.data?.toCoordinate() ?: return@launch
 
@@ -119,6 +118,7 @@ class AlarmReceiver : BroadcastReceiver(), MultiplePermissionsChecker {
 
         val contentTitle = getString(R.string.take_an_umbrella)
         val contentText = items.toContentText()
+        val style = NotificationCompat.BigTextStyle().bigText(contentText)
 
         val pendingIntent = PendingIntent.getActivity(
             this,
@@ -137,6 +137,7 @@ class AlarmReceiver : BroadcastReceiver(), MultiplePermissionsChecker {
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setStyle(style)
             .build()
 
         if (checkSelfPermission(*arrayOf(POST_NOTIFICATIONS))) {
@@ -145,6 +146,10 @@ class AlarmReceiver : BroadcastReceiver(), MultiplePermissionsChecker {
     }
 
     private fun List<Item>.toContentText(): String {
+        val amPmStrings = DateFormatSymbols(Locale.KOREA).amPmStrings
+        val amString = amPmStrings[Calendar.AM]
+        val pmString = amPmStrings[Calendar.PM]
+
         val list =  groupBy {
             it.fcstValue
         }
@@ -164,12 +169,12 @@ class AlarmReceiver : BroadcastReceiver(), MultiplePermissionsChecker {
 
             buildString {
                 if (am.isNotEmpty()) {
-                    append("오전 ")
+                    append("$amString ")
                     append(am.joinToString(separator = ",", postfix = "시"))
                 }
 
                 if (pm.isNotEmpty()) {
-                    append("오후 ")
+                    append("$pmString ")
                     append(pm.joinToString(separator = ",", postfix = "시"))
                 }
 

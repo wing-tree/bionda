@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Switch
@@ -24,9 +25,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import wing.tree.bionda.data.extension.COLON
-import wing.tree.bionda.data.extension.EMPTY
+import wing.tree.bionda.data.extension.colon
+import wing.tree.bionda.data.extension.empty
 import wing.tree.bionda.data.model.Notice
 import wing.tree.bionda.view.state.NoticeState
 
@@ -44,14 +46,17 @@ fun Notice(
         transitionSpec = {
             fadeIn() togetherWith fadeOut()
         },
-        label = String.EMPTY,
+        label = String.empty,
         contentKey = {
             it::class.qualifiedName
         }
     ) {
         when (it) {
             NoticeState.Loading -> Loading(modifier = Modifier.fillMaxSize())
-            is NoticeState.Content -> LazyColumn(modifier = Modifier.fillMaxSize()) {
+            is NoticeState.Content -> LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
                 items(it.notices) { item ->
                     Item(
                         item = item,
@@ -79,6 +84,7 @@ private fun Item(
 ) {
     ElevatedCard(
         modifier = modifier
+            .clip(CardDefaults.elevatedShape)
             .combinedClickable(
                 onClick = {
                     onClick(item)
@@ -88,12 +94,12 @@ private fun Item(
                 },
         ),
     ) {
-        val text = "${item.hour}${String.COLON}${item.minute}"
+        val text = "${item.hour}${String.colon}${item.minute}"
 
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+                .padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {

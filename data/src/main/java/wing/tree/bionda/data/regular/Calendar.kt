@@ -1,13 +1,13 @@
 package wing.tree.bionda.data.regular
 
 import android.icu.util.Calendar
-import wing.tree.bionda.data.extension.HALF_AN_HOUR
-import wing.tree.bionda.data.extension.ONE
-import wing.tree.bionda.data.extension.TEN
-import wing.tree.bionda.data.extension.ZERO
 import wing.tree.bionda.data.extension.date
+import wing.tree.bionda.data.extension.halfAnHour
 import wing.tree.bionda.data.extension.hourOfDay
 import wing.tree.bionda.data.extension.minute
+import wing.tree.bionda.data.extension.one
+import wing.tree.bionda.data.extension.ten
+import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.data.model.DetailedFunction
 import java.util.Locale
 
@@ -24,7 +24,7 @@ fun apiDeliveryCalendar(
                 in 45 until 55 -> 45
                 in 55 until 60 -> 55
                 else -> {
-                    hourOfDay -= Int.ONE
+                    hourOfDay -= Int.one
                     55
                 }
             }
@@ -40,12 +40,12 @@ fun apiDeliveryCalendar(
                 in 17 until 20 -> 17
                 in 20 until 23 -> 20
                 else -> {
-                    date -= Int.ONE
+                    date -= Int.one
                     23
                 }
             }
 
-            minute = Int.TEN
+            minute = Int.ten
         }
     }
 }
@@ -55,11 +55,11 @@ fun baseCalendar(
 ): Calendar = koreaCalendar().apply {
     when (detailFunction) {
         DetailedFunction.ULTRA_SRT_FCST -> {
-            if (minute < Int.HALF_AN_HOUR) {
-                hourOfDay -= Int.ONE
+            if (minute < Int.halfAnHour) {
+                hourOfDay -= Int.one
             }
 
-            minute = Int.HALF_AN_HOUR
+            minute = Int.halfAnHour
         }
 
         DetailedFunction.VILAGE_FCST -> {
@@ -72,14 +72,18 @@ fun baseCalendar(
                 in 17 until 20 -> 17
                 in 20 until 23 -> 20
                 else -> {
-                    date -= Int.ONE
+                    date -= Int.one
                     23
                 }
             }
 
-            minute = Int.ZERO
+            minute = Int.zero
         }
     }
+}
+
+fun fcstCalendar(hour: Int): Calendar = koreaCalendar().apply {
+    hourOfDay = hour
 }
 
 fun koreaCalendar(): Calendar = Calendar.getInstance(Locale.KOREA)

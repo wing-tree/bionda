@@ -8,8 +8,18 @@ class ForecastDataSource(private val forecastDao: ForecastDao) {
         forecastDao.insert(forecast)
     }
 
-    suspend fun load(requestDate: String, requestTime: String): Forecast? {
-        return forecastDao.load(requestDate, requestTime)
+    suspend fun load(
+        apiDeliveryDate: String,
+        apiDeliveryTime: String,
+        nx: Int,
+        ny: Int
+    ): Forecast? {
+        return forecastDao.load(
+            apiDeliveryDate,
+            apiDeliveryTime,
+            nx,
+            ny
+        )
     }
 
     suspend fun clear() {

@@ -13,18 +13,18 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import wing.tree.bionda.data.extension.FIVE_SECONDS_IN_MILLISECONDS
+import wing.tree.bionda.data.extension.fiveSecondsInMilliseconds
 import wing.tree.bionda.data.extension.ifTrue
 import wing.tree.bionda.data.model.Notice
 import wing.tree.bionda.data.model.Result
 import wing.tree.bionda.data.model.Result.Complete
 import wing.tree.bionda.data.repository.ForecastRepository
+import wing.tree.bionda.data.repository.LocationRepository
 import wing.tree.bionda.data.repository.NoticeRepository
 import wing.tree.bionda.exception.PermissionsDeniedException
 import wing.tree.bionda.extension.checkSelfPermission
 import wing.tree.bionda.model.Coordinate
 import wing.tree.bionda.model.Forecast
-import wing.tree.bionda.provider.LocationProvider
 import wing.tree.bionda.scheduler.AlarmScheduler
 import wing.tree.bionda.extension.toCoordinate
 import wing.tree.bionda.permissions.locationPermissions
@@ -39,11 +39,11 @@ class MainViewModel @Inject constructor(
     application: Application,
     private val alarmScheduler: AlarmScheduler,
     private val forecastRepository: ForecastRepository,
-    private val locationProvider: LocationProvider,
+    private val locationRepository: LocationRepository,
     private val noticeRepository: NoticeRepository
 ) : AndroidViewModel(application) {
     private val location = MutableStateFlow<Result<Location?>>(Result.Loading)
-    private val stopTimeoutMillis = Long.FIVE_SECONDS_IN_MILLISECONDS
+    private val stopTimeoutMillis = Long.fiveSecondsInMilliseconds
     private val forecastState = location.map {
         when (it) {
             Result.Loading -> ForecastState.Loading
@@ -78,14 +78,10 @@ class MainViewModel @Inject constructor(
         .load()
         .map {
             when (it) {
-                Result.Loading -> NoticeState.Loading
-                is Complete -> when (it) {
-                    is Complete.Success -> NoticeState.Content(it.data)
-                    is Complete.Failure -> NoticeState.Error(it.throwable)
-                }
+                is Complete.Success -> NoticeState.Content(it.data)
+                is Complete.Failure -> NoticeState.Error(it.throwable)
             }
-        }
-        .stateIn(
+        }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(stopTimeoutMillis),
             initialValue = NoticeState.initialValue
@@ -128,12 +124,11 @@ class MainViewModel @Inject constructor(
     fun load() {
         locationPermissions.any {
             checkSelfPermission(it)
-        }
-            .ifTrue {
-                viewModelScope.launch {
-                    location.value = locationProvider.getLocation()
-                }
+        }.ifTrue {
+            viewModelScope.launch {
+                location.value = locationRepository.getLocation()
             }
+        }
     }
 
     fun notifyPermissionsDenied(

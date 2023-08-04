@@ -12,7 +12,7 @@ import wing.tree.bionda.data.model.forecast.local.Forecast
 @androidx.room.Database(
     entities = [Forecast::class, Notice::class],
     exportSchema = true,
-    version = 1
+    version = 1,
 )
 @androidx.room.TypeConverters(TypeConverters::class)
 abstract class Database: RoomDatabase() {
