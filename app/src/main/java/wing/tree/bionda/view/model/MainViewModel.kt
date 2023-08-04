@@ -19,7 +19,7 @@ import wing.tree.bionda.data.model.Notice
 import wing.tree.bionda.data.model.Result
 import wing.tree.bionda.data.model.Result.Complete
 import wing.tree.bionda.data.repository.ForecastRepository
-import wing.tree.bionda.data.repository.LocationRepository
+import wing.tree.bionda.data.provider.LocationProvider
 import wing.tree.bionda.data.repository.NoticeRepository
 import wing.tree.bionda.exception.PermissionsDeniedException
 import wing.tree.bionda.extension.checkSelfPermission
@@ -39,7 +39,7 @@ class MainViewModel @Inject constructor(
     application: Application,
     private val alarmScheduler: AlarmScheduler,
     private val forecastRepository: ForecastRepository,
-    private val locationRepository: LocationRepository,
+    private val locationProvider: LocationProvider,
     private val noticeRepository: NoticeRepository
 ) : AndroidViewModel(application) {
     private val location = MutableStateFlow<Result<Location?>>(Result.Loading)
@@ -126,7 +126,7 @@ class MainViewModel @Inject constructor(
             checkSelfPermission(it)
         }.ifTrue {
             viewModelScope.launch {
-                location.value = locationRepository.getLocation()
+                location.value = locationProvider.getLocation()
             }
         }
     }

@@ -26,7 +26,7 @@ import wing.tree.bionda.data.model.forecast.Item
 import wing.tree.bionda.data.model.onFailure
 import wing.tree.bionda.data.model.onSuccess
 import wing.tree.bionda.data.repository.ForecastRepository
-import wing.tree.bionda.data.repository.LocationRepository
+import wing.tree.bionda.data.provider.LocationProvider
 import wing.tree.bionda.data.repository.NoticeRepository
 import wing.tree.bionda.extension.toCoordinate
 import wing.tree.bionda.permissions.MultiplePermissionsChecker
@@ -46,7 +46,7 @@ class AlarmReceiver : BroadcastReceiver(), MultiplePermissionsChecker {
     lateinit var forecastRepository: ForecastRepository
 
     @Inject
-    lateinit var locationRepository: LocationRepository
+    lateinit var locationProvider: LocationProvider
 
     @Inject
     lateinit var noticeRepository: NoticeRepository
@@ -71,7 +71,7 @@ class AlarmReceiver : BroadcastReceiver(), MultiplePermissionsChecker {
             println("zzzzzzz111")
             if (context.checkSelfPermission(*permissions)) {
                 println("zzzzzzz222")
-                when (val location = locationRepository.getLocation()) {
+                when (val location = locationProvider.getLocation()) {
                     is Complete.Success -> {
                         val (nx, ny) = location.data?.toCoordinate() ?: return@launch
 

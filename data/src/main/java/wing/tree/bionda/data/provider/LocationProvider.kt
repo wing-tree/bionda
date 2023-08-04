@@ -1,4 +1,4 @@
-package wing.tree.bionda.data.repository
+package wing.tree.bionda.data.provider
 
 import android.Manifest
 import android.content.Context
@@ -21,7 +21,7 @@ import wing.tree.bionda.data.model.ifFailure
 import wing.tree.bionda.data.model.ifNull
 import kotlin.coroutines.resume
 
-class LocationRepository(private val context: Context)  {
+class LocationProvider(private val context: Context)  {
     private val currentLocationRequest by lazy {
         CurrentLocationRequest
             .Builder()
