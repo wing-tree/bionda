@@ -82,7 +82,8 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
     override fun onShouldShowRequestMultiplePermissionsRationale(result: Result) {
         val keys = result.filter { (_, value) ->
             value.shouldShowRequestPermissionRationale
-        }.keys
+        }
+            .keys
     }
 
     private val viewModel by viewModels<MainViewModel>()
