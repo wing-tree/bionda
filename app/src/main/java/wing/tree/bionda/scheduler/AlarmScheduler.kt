@@ -6,7 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.icu.util.Calendar
 import android.os.Build
-import androidx.core.app.NotificationCompat.EXTRA_NOTIFICATION_ID
+import wing.tree.bionda.data.constant.EXTRA_NOTICE_ID
 import wing.tree.bionda.data.extension.date
 import wing.tree.bionda.data.extension.hourOfDay
 import wing.tree.bionda.data.extension.minute
@@ -22,7 +22,7 @@ class AlarmScheduler(private val context: Context) {
 
     fun schedule(notice: Notice) {
         val pendingIntent = Intent(context, AlarmReceiver::class.java).apply {
-            putExtra(EXTRA_NOTIFICATION_ID, notice.notificationId)
+            putExtra(EXTRA_NOTICE_ID, notice.id)
         }
             .let {
                 PendingIntent.getBroadcast(

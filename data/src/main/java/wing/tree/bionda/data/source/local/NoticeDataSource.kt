@@ -18,7 +18,7 @@ class NoticeDataSource(private val noticeDao: NoticeDao) {
         noticeDao.update(notice)
     }
 
-    suspend fun get(notificationId: Long): Notice? {
-        return noticeDao.get(notificationId)
+    suspend fun get(id: Long): Notice? {
+        return noticeDao.get(id)
     }
 }

@@ -33,7 +33,7 @@ class NoticeRepository(private val noticeDataSource: NoticeDataSource) {
         noticeDataSource.delete(notice)
     }
 
-    suspend fun get(notificationId: Long): Notice? {
-        return noticeDataSource.get(notificationId)
+    suspend fun get(id: Long): Notice? {
+        return noticeDataSource.get(id)
     }
 }

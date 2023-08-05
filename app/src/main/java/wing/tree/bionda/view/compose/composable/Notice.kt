@@ -61,7 +61,7 @@ fun Notice(
                 items(
                     items = it.notices,
                     key = { notice ->
-                        notice.notificationId
+                        notice.id
                     }
                 ) { item ->
                     Item(

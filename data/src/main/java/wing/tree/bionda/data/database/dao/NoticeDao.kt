@@ -20,8 +20,8 @@ interface NoticeDao {
     @Delete
     suspend fun delete(notice: Notice)
 
-    @Query("SELECT * FROM notice WHERE notificationId = :notificationId")
-    suspend fun get(notificationId: Long): Notice?
+    @Query("SELECT * FROM notice WHERE id = :id")
+    suspend fun get(id: Long): Notice?
 
     @Query("SELECT * FROM notice ORDER BY hour AND minute ASC")
     fun load(): Flow<List<Notice>>
