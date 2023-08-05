@@ -98,7 +98,7 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
         requestMultiplePermissions()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            if (shouldShowRequestPermissionRationale(ACCESS_BACKGROUND_LOCATION)) {
+            if (checkSelfPermission(*arrayOf(ACCESS_BACKGROUND_LOCATION)).not()) {
                 viewModel.notifyPermissionsDenied(listOf(ACCESS_BACKGROUND_LOCATION))
             }
         }

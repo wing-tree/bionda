@@ -1,9 +1,10 @@
 package wing.tree.bionda.service
 
-import android.Manifest
+import android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
+import android.Manifest.permission.POST_NOTIFICATIONS
+import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
 import android.content.pm.ServiceInfo
@@ -11,8 +12,6 @@ import android.icu.text.DateFormatSymbols
 import android.icu.util.Calendar
 import android.os.Build
 import android.os.IBinder
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationCompat.EXTRA_NOTIFICATION_ID
 import androidx.core.app.NotificationManagerCompat
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -20,8 +19,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import wing.tree.bionda.R
+import wing.tree.bionda.data.constant.EXTRA_NOTICE_ID
 import wing.tree.bionda.data.extension.comma
-import wing.tree.bionda.data.extension.int
 import wing.tree.bionda.data.extension.negativeOne
 import wing.tree.bionda.data.model.Notice
 import wing.tree.bionda.data.model.Result.Complete
@@ -35,7 +34,7 @@ import wing.tree.bionda.extension.toCoordinate
 import wing.tree.bionda.permissions.MultiplePermissionsChecker
 import wing.tree.bionda.permissions.locationPermissions
 import wing.tree.bionda.scheduler.AlarmScheduler
-import wing.tree.bionda.view.MainActivity
+import wing.tree.bionda.service.NotificationFactory.Type
 import java.time.LocalTime
 import java.util.Locale
 import javax.inject.Inject
@@ -68,9 +67,11 @@ class NoticeService : Service(), MultiplePermissionsChecker {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         intent ?: return START_NOT_STICKY
 
+        val context = this
+
         coroutineScope.launch {
-            val notificationId = intent.getLongExtra(EXTRA_NOTIFICATION_ID, Long.negativeOne)
-            val notice = noticeRepository.get(notificationId) ?: return@launch
+            val noticeId = intent.getLongExtra(EXTRA_NOTICE_ID, Long.negativeOne)
+            val notice = noticeRepository.get(noticeId) ?: return@launch
 
             if (notice.checked.not()) {
                 alarmScheduler.cancel(notice)
@@ -81,7 +82,21 @@ class NoticeService : Service(), MultiplePermissionsChecker {
             alarmScheduler.schedule(notice)
 
             if (checkSelfPermission(*permissions)) {
-                startForeground(notice)
+                startForeground(notice.notificationId)
+
+                if (checkSelfPermission(*arrayOf(ACCESS_BACKGROUND_LOCATION)).not()) {
+                    val notification = NotificationFactory.create(
+                        context,
+                        Type.AccessBackgroundLocation(packageName) // todo content channel id. - forecast channel.
+                    )
+
+                    stopForeground(STOP_FOREGROUND_REMOVE)
+                    postNotification(notice.notificationId, notification)
+
+                    stopSelf()
+
+                    return@launch
+                }
 
                 when (val location = locationProvider.getLocation()) {
                     is Complete.Success -> {
@@ -100,7 +115,9 @@ class NoticeService : Service(), MultiplePermissionsChecker {
                             }.onFailure {
                                 stopSelf()
                             }
-                        } ?: stopSelf()
+                        } ?: run {
+                            stopSelf()
+                        }
                     }
 
                     else -> {
@@ -130,15 +147,12 @@ class NoticeService : Service(), MultiplePermissionsChecker {
         return channelId
     }
 
-    private fun startForeground(notice: Notice) {
+    private fun startForeground(notificationId: Int) {
         val channelId = createLocationChannel()
-        val notificationId = notice.notificationId.int.inc()
-        val notification = NotificationCompat.Builder(this, channelId)
-            .setShowWhen(true)
-            .setSmallIcon(R.drawable.ic_launcher_background)
-            .setContentTitle("위치 정보 가져오는 중.")
-            .setContentText("정확한 위치를 가져옵니다.")
-            .build()
+        val notification = NotificationFactory.create(
+            this,
+            Type.Location(channelId)
+        )
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             startForeground(
@@ -151,8 +165,14 @@ class NoticeService : Service(), MultiplePermissionsChecker {
         }
     }
 
+    private fun postNotification(notificationId: Int, notification: Notification) {
+        if (checkSelfPermission(*arrayOf(POST_NOTIFICATIONS))) {
+            notificationManager.notify(notificationId, notification)
+        }
+    }
+
     private fun postNotification(items: List<Item>, notice: Notice) {
-        val notificationId = notice.notificationId.int.inc()
+        val notificationId = notice.notificationId
 
         val channelId = packageName
         val channelName = getString(R.string.app_name)
@@ -163,32 +183,10 @@ class NoticeService : Service(), MultiplePermissionsChecker {
 
         notificationManager.createNotificationChannel(notificationChannel)
 
-        val contentTitle = getString(R.string.take_an_umbrella)
-        val contentText = items.toContentText()
-        val style = NotificationCompat.BigTextStyle().bigText(contentText)
+        val type = Type.Notice(channelId, items.toContentText(), notice.requestCode)
+        val notification = NotificationFactory.create(this, type)
 
-        val pendingIntent = PendingIntent.getActivity(
-            this,
-            notice.requestCode,
-            Intent(this, MainActivity::class.java).apply {
-                flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-            },
-            PendingIntent.FLAG_IMMUTABLE
-        )
-
-        val notification = NotificationCompat.Builder(this, channelId)
-            .setShowWhen(true)
-            .setSmallIcon(R.drawable.ic_launcher_background)
-            .setContentTitle(contentTitle)
-            .setContentText(contentText)
-            .setContentIntent(pendingIntent)
-            .setAutoCancel(true)
-            .setStyle(style)
-            .build()
-
-        if (checkSelfPermission(*arrayOf(Manifest.permission.POST_NOTIFICATIONS))) {
-            notificationManager.notify(notificationId, notification)
-        }
+        postNotification(notificationId, notification)
     }
 
     private fun List<Item>.toContentText(): String {
