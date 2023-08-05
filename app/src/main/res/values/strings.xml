@@ -1,4 +1,5 @@
 <resources>
+    <string name="access_background_location_permission_rationale">알림을 받으시려면 위치 액세스 권한을 \'항상 허용\'으로 유지해 주세요.</string>
     <string name="app_name">비온다</string>
     <string name="take_an_umbrella">우산 챙기세요!</string>
 </resources>

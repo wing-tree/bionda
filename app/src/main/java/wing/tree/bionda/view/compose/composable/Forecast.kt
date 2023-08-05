@@ -1,7 +1,6 @@
 package wing.tree.bionda.view.compose.composable
 
 import android.icu.text.SimpleDateFormat
-import android.location.Address
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -33,6 +32,7 @@ import wing.tree.bionda.data.extension.isNotNull
 import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.regular.fcstCalendar
 import wing.tree.bionda.extension.zero
+import wing.tree.bionda.model.Address
 import wing.tree.bionda.model.Forecast
 import wing.tree.bionda.model.WindowSizeClass
 import wing.tree.bionda.view.state.ForecastState

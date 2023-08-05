@@ -1,9 +1,9 @@
 package wing.tree.bionda.view.state
 
-import android.location.Address
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import wing.tree.bionda.data.model.Notice
+import wing.tree.bionda.model.Address
 import wing.tree.bionda.model.Forecast
 
 data class MainState(

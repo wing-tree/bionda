@@ -32,6 +32,7 @@ import wing.tree.bionda.data.extension.empty
 import wing.tree.bionda.data.model.Notice
 import wing.tree.bionda.view.state.NoticeState
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Notice(
     state: NoticeState,
@@ -57,13 +58,20 @@ fun Notice(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(it.notices) { item ->
+                items(
+                    items = it.notices,
+                    key = { notice ->
+                        notice.notificationId
+                    }
+                ) { item ->
                     Item(
                         item = item,
                         onClick = onClick,
                         onLongClick = onLongClick,
                         onCheckedChange = onCheckedChange,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .animateItemPlacement()
                     )
                 }
             }

@@ -11,6 +11,7 @@ import android.provider.Settings
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -175,6 +176,8 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
 
                                                     startActivity(intent)
                                                 }
+                                            } else {
+                                                viewModel.notifyPermissionsGranted(listOf(ACCESS_BACKGROUND_LOCATION))
                                             }
                                         }
                                     }
@@ -185,6 +188,7 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(windowSizeClass.marginValues)
+                                .animateContentSize()
                         )
 
                         Notice(
