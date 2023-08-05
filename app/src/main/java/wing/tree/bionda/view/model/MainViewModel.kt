@@ -150,9 +150,9 @@ class MainViewModel @Inject constructor(
     fun add(hour: Int, minute: Int) {
         viewModelScope.launch {
             val notice = Notice(hour = hour, minute = minute)
-            val notificationId = noticeRepository.add(notice)
+            val id = noticeRepository.add(notice)
 
-            alarmScheduler.schedule(notice.copy(notificationId = notificationId))
+            alarmScheduler.schedule(notice.copy(id = id))
         }
     }
 
