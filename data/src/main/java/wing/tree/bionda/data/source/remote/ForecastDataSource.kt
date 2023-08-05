@@ -1,8 +1,33 @@
 package wing.tree.bionda.data.source.remote
 
+import kotlinx.coroutines.delay
+import timber.log.Timber
+import wing.tree.bionda.data.extension.hundreds
+import wing.tree.bionda.data.extension.long
+import wing.tree.bionda.data.extension.three
+import wing.tree.bionda.data.extension.two
 import wing.tree.bionda.data.service.ForecastService
+import kotlin.math.pow
 
 class ForecastDataSource(private val forecastService: ForecastService) {
+    private suspend fun <T> retry(
+        retries: Int = Int.three,
+        initialDelay: Long = Long.two.hundreds,
+        block: suspend () -> T
+    ): T {
+        repeat(retries.dec()) { attempt ->
+            try {
+                return block()
+            } catch (cause: Throwable) {
+                Timber.e(cause)
+            }
+
+            delay(initialDelay.times(Double.two.pow(attempt)).long)
+        }
+
+        return block()
+    }
+
     suspend fun getUltraSrtFcst(
         serviceKey: String,
         numOfRows: Int,
@@ -12,16 +37,18 @@ class ForecastDataSource(private val forecastService: ForecastService) {
         baseTime: String,
         nx: Int,
         ny: Int
-    ) = forecastService.getUltraSrtFcst(
-        serviceKey,
-        numOfRows,
-        pageNo,
-        dataType,
-        baseDate,
-        baseTime,
-        nx,
-        ny
-    )
+    ) = retry {
+        forecastService.getUltraSrtFcst(
+            serviceKey,
+            numOfRows,
+            pageNo,
+            dataType,
+            baseDate,
+            baseTime,
+            nx,
+            ny
+        )
+    }
 
     suspend fun getVilageFcst(
         serviceKey: String,
@@ -32,14 +59,16 @@ class ForecastDataSource(private val forecastService: ForecastService) {
         baseTime: String,
         nx: Int,
         ny: Int
-    ) = forecastService.getVilageFcst(
-        serviceKey,
-        numOfRows,
-        pageNo,
-        dataType,
-        baseDate,
-        baseTime,
-        nx,
-        ny
-    )
+    ) = retry {
+        forecastService.getVilageFcst(
+            serviceKey,
+            numOfRows,
+            pageNo,
+            dataType,
+            baseDate,
+            baseTime,
+            nx,
+            ny
+        )
+    }
 }
