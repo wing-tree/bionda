@@ -19,6 +19,12 @@ var Calendar.date: Int
         set(Calendar.DATE, value)
     }
 
+var Calendar.hour: Int
+    get() = get(Calendar.HOUR)
+    set(value) {
+        set(Calendar.HOUR, value)
+    }
+
 var Calendar.hourOfDay: Int
     get() = get(Calendar.HOUR_OF_DAY)
     set(value) {

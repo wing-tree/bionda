@@ -1,6 +1,7 @@
 package wing.tree.bionda.data.model.forecast
 
 import kotlinx.serialization.Serializable
+import wing.tree.bionda.data.extension.oneHundred
 
 @Serializable
 data class Item(
@@ -12,4 +13,6 @@ data class Item(
     val fcstValue : String,
     val nx : Int,
     val ny : Int
-)
+) {
+    val fcstHour: Int get() = fcstTime.div(Int.oneHundred)
+}

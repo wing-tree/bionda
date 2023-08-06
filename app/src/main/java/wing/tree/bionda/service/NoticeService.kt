@@ -21,6 +21,8 @@ import timber.log.Timber
 import wing.tree.bionda.R
 import wing.tree.bionda.data.constant.EXTRA_NOTICE_ID
 import wing.tree.bionda.data.extension.comma
+import wing.tree.bionda.data.extension.hour
+import wing.tree.bionda.data.extension.hourOfDay
 import wing.tree.bionda.data.extension.negativeOne
 import wing.tree.bionda.data.model.Notice
 import wing.tree.bionda.data.model.Result.Complete
@@ -28,6 +30,7 @@ import wing.tree.bionda.data.model.forecast.Item
 import wing.tree.bionda.data.model.onFailure
 import wing.tree.bionda.data.model.onSuccess
 import wing.tree.bionda.data.provider.LocationProvider
+import wing.tree.bionda.data.regular.koreaCalendar
 import wing.tree.bionda.data.repository.ForecastRepository
 import wing.tree.bionda.data.repository.NoticeRepository
 import wing.tree.bionda.extension.toCoordinate
@@ -193,6 +196,7 @@ class NoticeService : Service(), PermissionChecker {
         val amPmStrings = DateFormatSymbols(Locale.KOREA).amPmStrings
         val amString = amPmStrings[Calendar.AM]
         val pmString = amPmStrings[Calendar.PM]
+        val koreaCalendar = koreaCalendar()
 
         val list =  groupBy {
             it.fcstValue
@@ -204,10 +208,15 @@ class NoticeService : Service(), PermissionChecker {
             val pm = mutableListOf<Int>()
 
             value.forEach { item ->
+                val hour = koreaCalendar.apply {
+                    hourOfDay = item.fcstHour
+                }
+                    .hour
+
                 if (LocalTime.NOON.hour > item.fcstTime) {
-                    am.add(item.fcstTime)
+                    am.add(hour)
                 } else {
-                    pm.add(item.fcstTime)
+                    pm.add(hour)
                 }
             }
 
@@ -222,7 +231,7 @@ class NoticeService : Service(), PermissionChecker {
                     append(pm.joinToString(separator = String.comma, postfix = "시"))
                 }
 
-                append("에는 $key")
+                append("${getString(R.string.at)} $key")
 
                 if (index == list.lastIndex) {
                     append("가/이 올 예정입니다.")

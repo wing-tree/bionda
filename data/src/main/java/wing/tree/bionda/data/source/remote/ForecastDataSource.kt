@@ -2,6 +2,7 @@ package wing.tree.bionda.data.source.remote
 
 import kotlinx.coroutines.delay
 import timber.log.Timber
+import wing.tree.bionda.data.extension.five
 import wing.tree.bionda.data.extension.hundreds
 import wing.tree.bionda.data.extension.long
 import wing.tree.bionda.data.extension.three
@@ -12,7 +13,7 @@ import kotlin.math.pow
 class ForecastDataSource(private val forecastService: ForecastService) {
     private suspend fun <T> retry(
         retries: Int = Int.three,
-        initialDelay: Long = Long.two.hundreds,
+        initialDelay: Long = Long.five.hundreds,
         block: suspend () -> T
     ): T {
         repeat(retries.dec()) { attempt ->
