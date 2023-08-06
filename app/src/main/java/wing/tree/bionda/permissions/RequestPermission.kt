@@ -6,9 +6,9 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import wing.tree.bionda.data.extension.`is`
 
-typealias Result = Map<String, RequestMultiplePermissions.State>
+typealias Result = Map<String, RequestPermission.State>
 
-interface RequestMultiplePermissions : MultiplePermissionsChecker {
+interface RequestPermission : PermissionChecker {
     sealed interface State {
         val shouldShowRequestPermissionRationale: Boolean
 

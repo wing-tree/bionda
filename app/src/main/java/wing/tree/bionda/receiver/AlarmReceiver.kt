@@ -8,11 +8,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import wing.tree.bionda.data.constant.EXTRA_NOTICE_ID
 import wing.tree.bionda.data.extension.negativeOne
-import wing.tree.bionda.permissions.MultiplePermissionsChecker
+import wing.tree.bionda.permissions.PermissionChecker
 import wing.tree.bionda.permissions.locationPermissions
 import wing.tree.bionda.service.NoticeService
 
-class AlarmReceiver : BroadcastReceiver(), MultiplePermissionsChecker {
+class AlarmReceiver : BroadcastReceiver(), PermissionChecker {
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
     private val permissions = locationPermissions.toTypedArray()
 
@@ -23,7 +23,7 @@ class AlarmReceiver : BroadcastReceiver(), MultiplePermissionsChecker {
         coroutineScope.launch {
             val noticeId = intent.getLongExtra(EXTRA_NOTICE_ID, Long.negativeOne)
 
-            if (context.checkSelfPermission(*permissions)) {
+            if (context.checkSelfMultiplePermissions(permissions)) {
                 context.startForegroundService(
                     Intent(context, NoticeService::class.java).apply {
                         putExtra(EXTRA_NOTICE_ID, noticeId)

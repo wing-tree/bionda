@@ -35,7 +35,7 @@ import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.extension.rememberWindowSizeClass
 import wing.tree.bionda.model.WindowSizeClass
-import wing.tree.bionda.permissions.RequestMultiplePermissions
+import wing.tree.bionda.permissions.RequestPermission
 import wing.tree.bionda.permissions.Result
 import wing.tree.bionda.permissions.locationPermissions
 import wing.tree.bionda.theme.BiondaTheme
@@ -48,7 +48,7 @@ import wing.tree.bionda.view.state.MainState.Action
 import java.util.Locale
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
+class MainActivity : AppCompatActivity(), RequestPermission {
     override val launcher = registerForActivityResult()
     override val permissions: Array<String> = buildList {
         if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
@@ -96,12 +96,6 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
         super.onCreate(savedInstanceState)
 
         requestMultiplePermissions()
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            if (checkSelfPermission(*arrayOf(ACCESS_BACKGROUND_LOCATION)).not()) {
-                viewModel.notifyPermissionsDenied(listOf(ACCESS_BACKGROUND_LOCATION))
-            }
-        }
 
         setContent {
             BiondaTheme {
@@ -159,7 +153,7 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
                                 when (it) {
                                     Action.ACCESS_BACKGROUND_LOCATION -> {
                                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                                            if (checkSelfPermission(*arrayOf(ACCESS_BACKGROUND_LOCATION)).not()) {
+                                            if (checkSelfSinglePermission(ACCESS_BACKGROUND_LOCATION).not()) {
                                                 if (shouldShowRequestPermissionRationale(ACCESS_BACKGROUND_LOCATION)) {
                                                     requestPermissions(
                                                         arrayOf(ACCESS_BACKGROUND_LOCATION),
@@ -208,6 +202,20 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
                         )
                     }
                 }
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            val permissions = listOf(ACCESS_BACKGROUND_LOCATION)
+
+            if (checkSelfSinglePermission(ACCESS_BACKGROUND_LOCATION).not()) {
+                viewModel.notifyPermissionsDenied(permissions)
+            } else {
+                viewModel.notifyPermissionsGranted(permissions)
             }
         }
     }

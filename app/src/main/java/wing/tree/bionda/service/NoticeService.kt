@@ -31,7 +31,7 @@ import wing.tree.bionda.data.provider.LocationProvider
 import wing.tree.bionda.data.repository.ForecastRepository
 import wing.tree.bionda.data.repository.NoticeRepository
 import wing.tree.bionda.extension.toCoordinate
-import wing.tree.bionda.permissions.MultiplePermissionsChecker
+import wing.tree.bionda.permissions.PermissionChecker
 import wing.tree.bionda.permissions.locationPermissions
 import wing.tree.bionda.scheduler.AlarmScheduler
 import wing.tree.bionda.service.NotificationFactory.Type
@@ -40,7 +40,7 @@ import java.util.Locale
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class NoticeService : Service(), MultiplePermissionsChecker {
+class NoticeService : Service(), PermissionChecker {
     @Inject
     lateinit var alarmScheduler: AlarmScheduler
 
@@ -81,10 +81,10 @@ class NoticeService : Service(), MultiplePermissionsChecker {
 
             alarmScheduler.schedule(notice)
 
-            if (checkSelfPermission(*permissions)) {
+            if (checkSelfMultiplePermissions(permissions)) {
                 startForeground(notice.notificationId)
 
-                if (checkSelfPermission(*arrayOf(ACCESS_BACKGROUND_LOCATION)).not()) {
+                if (checkSelfSinglePermission(ACCESS_BACKGROUND_LOCATION).not()) {
                     val notification = NotificationFactory.create(
                         context,
                         Type.AccessBackgroundLocation(packageName) // todo content channel id. - forecast channel.
@@ -166,7 +166,7 @@ class NoticeService : Service(), MultiplePermissionsChecker {
     }
 
     private fun postNotification(notificationId: Int, notification: Notification) {
-        if (checkSelfPermission(*arrayOf(POST_NOTIFICATIONS))) {
+        if (checkSelfSinglePermission(POST_NOTIFICATIONS)) {
             notificationManager.notify(notificationId, notification)
         }
     }
