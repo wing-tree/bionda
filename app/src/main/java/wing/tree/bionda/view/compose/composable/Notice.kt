@@ -27,7 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import wing.tree.bionda.data.extension.colon
+import wing.tree.bionda.data.constant.COLON
 import wing.tree.bionda.data.extension.empty
 import wing.tree.bionda.data.model.Notice
 import wing.tree.bionda.view.state.NoticeState
@@ -102,7 +102,7 @@ private fun Item(
                 },
         ),
     ) {
-        val text = "${item.hour}${String.colon}${item.minute}"
+        val text = "${item.hour}${COLON}${item.minute}"
 
         Row(
             modifier = Modifier

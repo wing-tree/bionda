@@ -24,7 +24,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.ImmutableList
-import wing.tree.bionda.data.extension.celsius
+import wing.tree.bionda.data.constant.CELSIUS
 import wing.tree.bionda.data.extension.empty
 import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.data.extension.`is`
@@ -124,7 +124,7 @@ private fun Address(
         ) {
             item.tmp?.let {
                 Text(
-                    text = "$it${String.celsius}",
+                    text = "$it${CELSIUS}",
                     style = typography.displayLarge
                 )
             }
@@ -218,7 +218,7 @@ private fun Item(
         }
 
         item.tmp?.let {
-            Text(text = "$it${String.celsius}")
+            Text(text = "$it${CELSIUS}")
         }
 
         item.reh?.let {
