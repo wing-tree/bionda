@@ -8,8 +8,6 @@ import android.app.NotificationManager
 import android.app.Service
 import android.content.Intent
 import android.content.pm.ServiceInfo
-import android.icu.text.DateFormatSymbols
-import android.icu.util.Calendar
 import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationManagerCompat
@@ -20,26 +18,22 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import wing.tree.bionda.R
 import wing.tree.bionda.data.constant.EXTRA_NOTICE_ID
-import wing.tree.bionda.data.extension.comma
-import wing.tree.bionda.data.extension.hour
-import wing.tree.bionda.data.extension.hourOfDay
 import wing.tree.bionda.data.extension.negativeOne
 import wing.tree.bionda.data.model.Notice
 import wing.tree.bionda.data.model.Result.Complete
-import wing.tree.bionda.data.model.forecast.Item
+import wing.tree.bionda.data.model.map
 import wing.tree.bionda.data.model.onFailure
 import wing.tree.bionda.data.model.onSuccess
 import wing.tree.bionda.data.provider.LocationProvider
-import wing.tree.bionda.data.regular.koreaCalendar
 import wing.tree.bionda.data.repository.ForecastRepository
 import wing.tree.bionda.data.repository.NoticeRepository
 import wing.tree.bionda.extension.toCoordinate
+import wing.tree.bionda.model.Forecast
 import wing.tree.bionda.permissions.PermissionChecker
 import wing.tree.bionda.permissions.locationPermissions
 import wing.tree.bionda.scheduler.AlarmScheduler
 import wing.tree.bionda.service.NotificationFactory.Type
-import java.time.LocalTime
-import java.util.Locale
+import wing.tree.bionda.template.ContentTextTemplate
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -107,10 +101,12 @@ class NoticeService : Service(), PermissionChecker {
                             forecastRepository.getVilageFcst(
                                 nx = nx,
                                 ny = ny
-                            ).onSuccess { forecast ->
+                            ).map {
+                                Forecast.toPresentationModel(it)
+                            }.onSuccess { forecast ->
                                 stopForeground(STOP_FOREGROUND_REMOVE)
                                 postNotification(
-                                    items = forecast.pty,
+                                    forecast = forecast,
                                     notice = notice
                                 )
 
@@ -174,7 +170,7 @@ class NoticeService : Service(), PermissionChecker {
         }
     }
 
-    private fun postNotification(items: List<Item>, notice: Notice) {
+    private fun postNotification(forecast: Forecast, notice: Notice) {
         val notificationId = notice.notificationId
 
         val channelId = packageName
@@ -184,62 +180,13 @@ class NoticeService : Service(), PermissionChecker {
             setShowBadge(true)
         }
 
+        val ct = ContentTextTemplate(this, forecast).makePtyOrSky()
+
         notificationManager.createNotificationChannel(notificationChannel)
 
-        val type = Type.Notice(channelId, items.toContentText(), notice.requestCode)
+        val type = Type.Notice(channelId, ct, notice.requestCode)
         val notification = NotificationFactory.create(this, type)
 
         postNotification(notificationId, notification)
-    }
-
-    private fun List<Item>.toContentText(): String {
-        val amPmStrings = DateFormatSymbols(Locale.KOREA).amPmStrings
-        val amString = amPmStrings[Calendar.AM]
-        val pmString = amPmStrings[Calendar.PM]
-        val koreaCalendar = koreaCalendar()
-
-        val list =  groupBy {
-            it.fcstValue
-        }
-            .toList()
-
-        return list.mapIndexed { index, (key, value) ->
-            val am = mutableListOf<Int>()
-            val pm = mutableListOf<Int>()
-
-            value.forEach { item ->
-                val hour = koreaCalendar.apply {
-                    hourOfDay = item.fcstHour
-                }
-                    .hour
-
-                if (LocalTime.NOON.hour > item.fcstTime) {
-                    am.add(hour)
-                } else {
-                    pm.add(hour)
-                }
-            }
-
-            buildString {
-                if (am.isNotEmpty()) {
-                    append("$amString ")
-                    append(am.joinToString(separator = String.comma, postfix = "시"))
-                }
-
-                if (pm.isNotEmpty()) {
-                    append("$pmString ")
-                    append(pm.joinToString(separator = String.comma, postfix = "시"))
-                }
-
-                append("${getString(R.string.at)} $key")
-
-                if (index == list.lastIndex) {
-                    append("가/이 올 예정입니다.")
-                } else {
-                    append(String.comma)
-                }
-            }
-        }
-            .joinToString(separator = "\n")
     }
 }
