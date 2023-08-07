@@ -16,19 +16,19 @@ data class Forecast(
     data class Item(
         val fcstDate: Int,
         val fcstTime: Int,
-        val items: ImmutableMap<String, String>
+        val codeValues: ImmutableMap<String, String>
     ) {
         val fcstHour: Int get() = fcstTime.div(Int.oneHundred)
         val pty = CodeValue.Pty(
-            code = items[Category.VilageFcst.PTY]
+            code = codeValues[Category.VilageFcst.PTY]
         )
 
-        val reh = items[Category.VilageFcst.REH]
+        val reh = codeValues[Category.VilageFcst.REH]
         val sky = CodeValue.Sky(
-            code = items[Category.VilageFcst.SKY]
+            code = codeValues[Category.VilageFcst.SKY]
         )
 
-        val tmp = items[Category.VilageFcst.TMP]
+        val tmp = codeValues[Category.VilageFcst.TMP]
         val weatherIcon = WeatherIcons.Daytime
     }
 
@@ -44,7 +44,7 @@ data class Forecast(
                 Item(
                     fcstDate = fcstDate,
                     fcstTime = fcstTime,
-                    items = value.associate {
+                    codeValues = value.associate {
                         it.category to it.fcstValue
                     }
                         .toImmutableMap()
