@@ -180,11 +180,10 @@ class NoticeService : Service(), PermissionChecker {
             setShowBadge(true)
         }
 
-        val ct = ContentTextTemplate(this, forecast).makePtyOrSky()
-
         notificationManager.createNotificationChannel(notificationChannel)
 
-        val type = Type.Notice(channelId, ct, notice.requestCode)
+        val ptyOrSky = ContentTextTemplate.PtyOrSky(this)
+        val type = Type.Notice(channelId, ptyOrSky(forecast), notice.requestCode)
         val notification = NotificationFactory.create(this, type)
 
         postNotification(notificationId, notification)
