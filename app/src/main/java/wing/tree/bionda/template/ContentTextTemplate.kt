@@ -3,6 +3,7 @@ package wing.tree.bionda.template
 import android.content.Context
 import android.icu.text.DateFormatSymbols
 import android.icu.util.Calendar
+import androidx.annotation.StringRes
 import wing.tree.bionda.R
 import wing.tree.bionda.data.constant.COMMA
 import wing.tree.bionda.data.constant.NEWLINE
@@ -30,6 +31,8 @@ class ContentTextTemplate(
     operator fun invoke(category: String) {
 
     }
+
+    private fun getString(@StringRes resId: Int) = context.getString(resId)
 
     fun makePtyOrSky(): String {
         val koreaCalendar = koreaCalendar()
@@ -61,7 +64,7 @@ class ContentTextTemplate(
                 buildString {
                     if (amHours.isNotEmpty()) {
                         append("$amString ")
-                        append(amHours.joinToString(separator = "$COMMA ", postfix = "시"))
+                        append(amHours.joinToString(separator = "$COMMA ", postfix = getString(R.string.hour)))
 
                         if (pmHours.isNotEmpty()) {
                             append("$COMMA ")
@@ -70,10 +73,10 @@ class ContentTextTemplate(
 
                     if (pmHours.isNotEmpty()) {
                         append("$pmString ")
-                        append(pmHours.joinToString(separator = "$COMMA ", postfix = "시"))
+                        append(pmHours.joinToString(separator = "$COMMA ", postfix = getString(R.string.hour)))
                     }
 
-                    append("${context.getString(R.string.at)} $value$COMMA")
+                    append("${getString(R.string.at)} $value$COMMA")
                 }
             }
                 .replace(Regex("$COMMA$"), "가/이 올 예정입니다.")
