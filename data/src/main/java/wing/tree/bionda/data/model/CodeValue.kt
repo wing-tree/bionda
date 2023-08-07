@@ -16,7 +16,7 @@ sealed interface CodeValue {
 
     companion object {
         private val pty = mapOf(
-            "0" to "없음",
+            "0" to null,
             "1" to "비",
             "2" to "비/눈",
             "3" to "눈",
