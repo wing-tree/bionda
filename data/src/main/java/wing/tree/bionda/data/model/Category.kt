@@ -1,6 +1,7 @@
 package wing.tree.bionda.data.model
 
 object Category {
+    @Suppress("unused")
     object UltraSrtFcst {
         const val T1H = "T1H"
         const val RN1 = "RN1"

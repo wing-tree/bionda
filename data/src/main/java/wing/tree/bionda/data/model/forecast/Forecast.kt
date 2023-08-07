@@ -8,6 +8,6 @@ interface Forecast {
     val ny: Int
 
     val pty: List<Item> get() = items.filter {
-        it.category == Category.UltraSrtFcst.PTY
+        it.category == Category.VilageFcst.PTY
     }
 }
