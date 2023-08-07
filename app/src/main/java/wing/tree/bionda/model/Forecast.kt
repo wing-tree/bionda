@@ -4,15 +4,24 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableMap
+import wing.tree.bionda.data.extension.hourOfDay
 import wing.tree.bionda.data.extension.oneHundred
 import wing.tree.bionda.data.model.Category
 import wing.tree.bionda.data.model.CodeValue
+import wing.tree.bionda.data.regular.koreaCalendar
 import wing.tree.bionda.mapper.DataModelMapper
 import wing.tree.bionda.data.model.forecast.Forecast as DataModel
 
 data class Forecast(
     val items: ImmutableList<Item>
 ) {
+    val currentItem: Item? get() = with(items) {
+        firstOrNull {
+            it.fcstHour == koreaCalendar().hourOfDay
+        }
+            ?: firstOrNull()
+    }
+
     data class Item(
         val fcstDate: Int,
         val fcstTime: Int,

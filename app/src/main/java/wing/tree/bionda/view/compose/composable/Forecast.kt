@@ -84,9 +84,9 @@ private fun Content(
     Column(
         modifier = modifier
     ) {
-        Address(
+        Header(
             address = address,
-            item = forecast.items.first(),
+            currentItem = forecast.currentItem,
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -109,9 +109,9 @@ private fun Content(
 }
 
 @Composable
-private fun Address(
+private fun Header(
     address: Address?,
-    item: Forecast.Item,
+    currentItem: Forecast.Item?,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -122,40 +122,54 @@ private fun Address(
             modifier = Modifier.weight(Float.one),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            item.tmp?.let {
-                Text(
-                    text = "$it${CELSIUS}",
-                    style = typography.displayLarge
-                )
-            }
+            TextClock()
+            Address(address = address)
+        }
 
-            if (item.pty.code `is` String.zero) {
-                item.sky.value?.let {
-                    Text(text = it)
-                }
-            } else {
-                item.pty.value?.let {
-                    Text(text = it)
-                }
-            }
-
-            val thoroughfare = address?.thoroughfare
-
-            if (thoroughfare.isNotNull()) {
-                Row(
-                    modifier = Modifier,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(text = thoroughfare)
-                    Icon(
-                        imageVector = Icons.Default.LocationOn,
-                        contentDescription = null
+        Column(
+            modifier = Modifier.weight(Float.one),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            currentItem?.let { item ->
+                item.tmp?.let {
+                    Text(
+                        text = "$it${CELSIUS}",
+                        style = typography.displayLarge
                     )
+                }
+
+                if (item.pty.code `is` String.zero) {
+                    item.sky.value?.let {
+                        Text(text = it)
+                    }
+                } else {
+                    item.pty.value?.let {
+                        Text(text = it)
+                    }
                 }
             }
         }
+    }
+}
 
-        Text("TODO: REMOVE", modifier = Modifier.weight(Float.one))
+@Composable
+private fun Address(
+    address: Address?,
+    modifier: Modifier = Modifier
+) {
+    val thoroughfare = address?.thoroughfare
+
+    if (thoroughfare.isNotNull()) {
+        Row(
+            modifier = modifier,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(text = thoroughfare)
+            Icon(
+                imageVector = Icons.Default.LocationOn,
+                contentDescription = null
+            )
+        }
     }
 }
 
