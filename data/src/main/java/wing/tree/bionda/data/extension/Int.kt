@@ -14,3 +14,5 @@ fun Int.ifZero(defaultValue: () -> Int) = if (this `is` Int.zero) {
 } else {
     this
 }
+
+fun Int.isZero(): Boolean = `is`(Int.zero)
