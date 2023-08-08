@@ -6,7 +6,7 @@ private typealias DrawableRes = Int
 
 sealed interface WeatherIcons {
     val sky: Map<String, DrawableRes>
-    val pty: Map<String, DrawableRes>
+    val pty: Map<String, DrawableRes?>
 
     object Daytime : WeatherIcons {
         override val sky: Map<String, DrawableRes>
@@ -16,9 +16,9 @@ sealed interface WeatherIcons {
                 "4" to R.drawable.wi_cloudy
             )
 
-        override val pty: Map<String, DrawableRes>
+        override val pty: Map<String, DrawableRes?>
             get() = mapOf(
-                "0" to R.drawable.wi_day_sunny,
+                "0" to null,
                 "1" to R.drawable.wi_day_rain,
                 "2" to R.drawable.wi_day_rain_mix,
                 "3" to R.drawable.wi_day_snow,
@@ -37,9 +37,9 @@ sealed interface WeatherIcons {
                 "4" to R.drawable.wi_cloudy
             )
 
-        override val pty: Map<String, DrawableRes>
+        override val pty: Map<String, DrawableRes?>
             get() = mapOf(
-                "0" to R.drawable.wi_night_clear,
+                "0" to null,
                 "1" to R.drawable.wi_night_alt_rain,
                 "2" to R.drawable.wi_night_alt_rain_mix,
                 "3" to R.drawable.wi_night_alt_snow,

@@ -26,10 +26,10 @@ import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.ImmutableList
 import wing.tree.bionda.data.constant.CELSIUS
 import wing.tree.bionda.data.extension.empty
-import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.data.extension.`is`
 import wing.tree.bionda.data.extension.isNotNull
 import wing.tree.bionda.data.extension.one
+import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.data.regular.fcstCalendar
 import wing.tree.bionda.extension.zero
 import wing.tree.bionda.model.Address
@@ -207,28 +207,20 @@ private fun Item(
             style = typography.labelSmall
         )
 
-        if (item.pty.code `is` String.zero) {
-            item.sky.value?.let {
-                Text(text = it)
-            }
+        val value = item.pty.value ?: item.sky.value
+        val drawableRes = with(item.weatherIcon) {
+            pty[item.pty.code] ?: sky[item.sky.code]
+        }
 
-            item.weatherIcon.sky[item.sky.code]?.let { drawableRes ->
-                Icon(
-                    painter = painterResource(id = drawableRes),
-                    contentDescription = null
-                )
-            }
-        } else {
-            item.pty.value?.let {
-                Text(text = it)
-            }
+        if (value.isNotNull()) {
+            Text(text = value)
+        }
 
-            item.weatherIcon.pty[item.pty.code]?.let { drawableRes ->
-                Icon(
-                    painter = painterResource(id = drawableRes),
-                    contentDescription = null
-                )
-            }
+        if (drawableRes.isNotNull()) {
+            Icon(
+                painter = painterResource(id = drawableRes),
+                contentDescription = null
+            )
         }
 
         item.tmp?.let {
