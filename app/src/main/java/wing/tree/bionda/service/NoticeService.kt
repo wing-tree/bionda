@@ -81,20 +81,6 @@ class NoticeService : Service(), PermissionChecker {
             if (checkSelfMultiplePermissions(permissions)) {
                 startForeground(notice.notificationId)
 
-                if (checkSelfSinglePermission(ACCESS_BACKGROUND_LOCATION).not()) {
-                    val notification = NotificationFactory.create(
-                        context,
-                        Type.AccessBackgroundLocation(packageName) // todo content channel id. - forecast channel.
-                    )
-
-                    stopForeground(STOP_FOREGROUND_REMOVE)
-                    postNotification(notice.notificationId, notification)
-
-                    stopSelf()
-
-                    return@launch
-                }
-
                 when (val location = locationProvider.getLocation()) {
                     is Complete.Success -> {
                         location.data?.toCoordinate()?.let { (nx, ny) ->
@@ -115,6 +101,16 @@ class NoticeService : Service(), PermissionChecker {
                                 stopSelf()
                             }
                         } ?: run {
+                            if (checkSelfSinglePermission(ACCESS_BACKGROUND_LOCATION).not()) {
+                                val notification = NotificationFactory.create(
+                                    context,
+                                    Type.AccessBackgroundLocation(packageName) // todo content channel id. - forecast channel.
+                                )
+
+                                stopForeground(STOP_FOREGROUND_REMOVE)
+                                postNotification(notice.notificationId, notification)
+                            }
+
                             stopSelf()
                         }
                     }
