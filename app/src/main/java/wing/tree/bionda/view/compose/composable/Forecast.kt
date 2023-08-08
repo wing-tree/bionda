@@ -207,21 +207,15 @@ private fun Item(
             style = typography.labelSmall
         )
 
-        val value = item.pty.value ?: item.sky.value
-        val drawableRes = with(item.weatherIcon) {
+        with(item.weatherIcon) {
             pty[item.pty.code] ?: sky[item.sky.code]
         }
-
-        if (value.isNotNull()) {
-            Text(text = value)
-        }
-
-        if (drawableRes.isNotNull()) {
-            Icon(
-                painter = painterResource(id = drawableRes),
-                contentDescription = null
-            )
-        }
+            ?.let {
+                Icon(
+                    painter = painterResource(id = it),
+                    contentDescription = null
+                )
+            }
 
         item.tmp?.let {
             Text(text = "$it${CELSIUS}")
