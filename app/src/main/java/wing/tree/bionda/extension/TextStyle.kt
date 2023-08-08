@@ -3,11 +3,13 @@ package wing.tree.bionda.extension
 import android.graphics.Typeface
 import android.text.TextPaint
 import androidx.annotation.ColorInt
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFontFamilyResolver
@@ -49,6 +51,12 @@ fun TextStyle.toTextPaint(@ColorInt color: Int) = TextPaint().also {
 }
 
 @Composable
-fun TextStyle.toTextPaint(color: Color) = TextPaint().also {
-    toTextPaint(color = color.toArgb())
+fun TextStyle.toTextPaint(color: Color = Color.Unspecified): TextPaint {
+    val textColor = color.takeOrElse {
+        this.color.takeOrElse {
+            LocalContentColor.current
+        }
+    }
+
+    return toTextPaint(color = textColor.toArgb())
 }
