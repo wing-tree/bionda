@@ -55,6 +55,7 @@ object NotificationFactory {
             .setContentTitle("위치 권한 요청")
             .setContentText(context.getString(R.string.access_background_location_permission_rationale))
             .setContentIntent(pendingIntent)
+            .setAutoCancel(true)
             .build()
     }
 
