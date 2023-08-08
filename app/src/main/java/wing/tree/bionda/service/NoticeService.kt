@@ -98,13 +98,16 @@ class NoticeService : Service(), PermissionChecker {
 
                                 stopSelf()
                             }.onFailure {
+                                Timber.e(it)
+
                                 stopSelf()
                             }
                         } ?: run {
                             if (checkSelfSinglePermission(ACCESS_BACKGROUND_LOCATION).not()) {
+                                val channelId = createForecastChannel()
                                 val notification = NotificationFactory.create(
                                     context,
-                                    Type.AccessBackgroundLocation(packageName) // todo content channel id. - forecast channel.
+                                    Type.AccessBackgroundLocation(channelId)
                                 )
 
                                 stopForeground(STOP_FOREGROUND_REMOVE)
@@ -127,6 +130,19 @@ class NoticeService : Service(), PermissionChecker {
         }
 
         return START_NOT_STICKY
+    }
+
+    private fun createForecastChannel(): String {
+        val channelId = packageName
+        val channelName = getString(R.string.app_name)
+        val importance = NotificationManager.IMPORTANCE_DEFAULT
+        val notificationChannel = NotificationChannel(channelId, channelName, importance).apply {
+            setShowBadge(true)
+        }
+
+        notificationManager.createNotificationChannel(notificationChannel)
+
+        return channelId
     }
 
     private fun createLocationChannel(): String {
@@ -167,16 +183,8 @@ class NoticeService : Service(), PermissionChecker {
     }
 
     private fun postNotification(forecast: Forecast, notice: Notice) {
+        val channelId = createForecastChannel()
         val notificationId = notice.notificationId
-
-        val channelId = packageName
-        val channelName = getString(R.string.app_name)
-        val importance = NotificationManager.IMPORTANCE_DEFAULT
-        val notificationChannel = NotificationChannel(channelId, channelName, importance).apply {
-            setShowBadge(true)
-        }
-
-        notificationManager.createNotificationChannel(notificationChannel)
 
         val ptyOrSky = ContentTextTemplate.PtyOrSky(this)
         val type = Type.Notice(channelId, ptyOrSky(forecast), notice.requestCode)
