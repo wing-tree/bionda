@@ -10,30 +10,27 @@ import android.text.TextPaint
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.LinearGradientShader
 import androidx.compose.ui.graphics.Paint
-import androidx.compose.ui.graphics.PaintingStyle
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PointMode
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.asAndroidPath
+import androidx.compose.ui.graphics.asComposePath
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
-import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.core.graphics.toColor
 import kotlinx.collections.immutable.ImmutableList
 import wing.tree.bionda.data.constant.CELSIUS
 import wing.tree.bionda.data.extension.empty
@@ -72,7 +69,7 @@ fun Canv(
             .horizontalScroll(rememberScrollState())
     ) {
         println("iiiiiiiiibbbbb")
-        Canvas(modifier = Modifier.width(900.dp).padding()) {
+        Canvas(modifier = Modifier.width(totalItemWidth)) {
             val tmpsToPlot = buildList {
                 val tmps = items.map { it.tmp?.toFloat() ?: 0f }
 
@@ -153,39 +150,37 @@ fun Canv(
                                 false,
                                 path
                             )
-                        }
-                    }
 
-
-
-                    if (index == items.lastIndex) {
-                        val gradient = Brush.verticalGradient(
-                            colors = listOf(Color.Red, Color.Yellow),
-                        )
-
-                        val aPaint = Paint().apply {
-                            isAntiAlias = true
-                            style = PaintingStyle.Stroke
-                            color = Color.Yellow
-                            strokeWidth = 1.5.dp.toPx()
-                        }
-
-                        clipPath(path) {
-                            drawRect(gradient)
-                        }
-
-                        drawIntoCanvas {
-                            it.drawPath(
+                            drawPath(
                                 path = path,
-                                aPaint
+                                color = Color.Yellow,
+                                style = Stroke(width = 1.0.dp.toPx())
                             )
+
+                            val fillPath = android.graphics.Path(path.asAndroidPath())
+                                .asComposePath()
+                                .apply {
+                                    lineTo(totalItemWidth.toPx(), pointF.y + 48.dp.toPx())
+                                    lineTo(0f, pointF.y + 48.dp.toPx())
+                                    close()
+                                }
+
+                            val kk = Paint().apply {
+                                shader = LinearGradientShader(
+                                    colors = listOf(
+                                        Color.Yellow,
+                                        Color.Transparent,
+                                    ),
+                                    from = Offset(0f, pointF.y),
+                                    to = Offset(0f, pointF.y + 36.dp.toPx())
+                                )
+                            }
+
+                            drawIntoCanvas {
+                                it.drawPath(fillPath, kk)
+                            }
                         }
                     }
-//                    drawPath(
-//                        path = path,
-//                        color = Color.Yellow,
-//                        style = Stroke(width = 1.5.dp.toPx())
-//                    )
                 }
                 pointF.y += 64.dp.toPx()
                 /** end of temp.. */
