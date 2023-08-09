@@ -2,11 +2,17 @@ package wing.tree.bionda.view.compose.composable
 
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.graphics.Paint
 import android.graphics.PointF
 import android.graphics.drawable.VectorDrawable
 import android.icu.text.SimpleDateFormat
 import android.text.TextPaint
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -15,18 +21,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PointMode
 import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
 import kotlinx.collections.immutable.ImmutableList
+import wing.tree.bionda.data.constant.CELSIUS
 import wing.tree.bionda.data.extension.half
 import wing.tree.bionda.data.extension.isZero
 import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.data.regular.fcstCalendar
+import wing.tree.bionda.extension.drawFcstHour
+import wing.tree.bionda.extension.drawWeatherIcon
 import wing.tree.bionda.extension.toTextPaint
 import wing.tree.bionda.model.Forecast
 import java.util.Locale
@@ -37,108 +45,124 @@ fun Canv(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    val width = 64.dp
-    val textPaint = typography.labelSmall.toTextPaint()
+    val itemWidth = 64.dp
+    val textPaint = typography.labelSmall.toTextPaint().apply {
+        textAlign = Paint.Align.CENTER
+    }
+    val tmpTextPaint = typography.labelLarge.toTextPaint().apply {
+        textAlign = Paint.Align.CENTER
+    }
     val simpleDateFormat = SimpleDateFormat("a h시", Locale.KOREA)
     val maxTmp = items.maxOf { it.tmp?.toFloat() ?: 0F }
 
-    val tmpsToPlot = buildList {
-        val tmps = items.map { it.tmp?.toFloat() ?: 0f }
-
-        add(tmps.first())
-
-        tmps.forEachIndexed { index, tmp ->
-            if (index < tmps.lastIndex) {
-                add((tmp + tmps[index.inc()]) / 2f)
-            }
-        }
-
-        add(tmps.last())
-    }
-        .map {
-            it.div(maxTmp)
-        }
-
-    println("zzzzzz:${tmpsToPlot},,${items.count()}")
-
     val path = Path()
 
-    Canvas(modifier = modifier) {
-        items.forEachIndexed { index, item ->
-            val pointF = PointF(
-                width.toPx() * index,
-                Float.zero
-            )
+    Row(
+        modifier = modifier
+            .horizontalScroll(rememberScrollState())
+    ) {
+        Canvas(modifier = Modifier.width(900.dp).padding()) {
+            val tmpsToPlot = buildList {
+                val tmps = items.map { it.tmp?.toFloat() ?: 0f }
 
-            val fcstCalendar = fcstCalendar(item.fcstHour)
+                add(tmps.first())
 
-            with(simpleDateFormat.format(fcstCalendar)) {
+                tmps.forEachIndexed { index, tmp ->
+                    if (index < tmps.lastIndex) {
+                        add((tmp + tmps[index.inc()]) / 2f)
+                    }
+                }
+
+                add(tmps.last())
+            }
+                .mapIndexed { index, tmp ->
+                    val tmpRatio = tmp.div(maxTmp)
+                    val scalePx = 64.dp.toPx() //64가 곧 가용 범위인 것., 텍스트도 표기해야함. 그 높이까지 포함해서 실 가용범위 및 패딩지정필요.
+                    val vToAdd = 1f - tmpRatio
+                    Offset(itemWidth.toPx() * index, vToAdd.times(scalePx))
+                }
+
+            items.forEachIndexed { index, item ->
+                val fcstCalendar = fcstCalendar(item.fcstHour)
+                val pointF = PointF(
+                    itemWidth.toPx() * index + itemWidth.toPx().half,
+                    Float.zero
+                )
+
+                drawFcstHour(
+                    fcstHour = simpleDateFormat.format(fcstCalendar),
+                    pointF = pointF,
+                    textPaint = textPaint
+                )
+
+                drawWeatherIcon(
+                    item = item,
+                    context = context,
+                    pointF = pointF,
+                    tint = Color(textPaint.color)
+                )
+
+                /** Temp grapch section **/
+
+                pointF.y += 16.dp.toPx()
+
+                val tmpStr = (item.tmp ?: "") + CELSIUS
+
                 drawContext.canvas.nativeCanvas.drawText(
-                    this,
-                    pointF.x + textPaint.shiftCenter(width.toPx(), this),
+                    tmpStr,
+                    pointF.x,
+                    pointF.y + tmpsToPlot[index].y,
+                    tmpTextPaint
+                )
+
+                val tmpsAdj = tmpsToPlot.map {
+                    it.copy(y = it.y.plus(pointF.y) + 8.dp.toPx()) // 8.dp는 텍스트랑 그래프 패딩.
+                }
+
+                if (index.isZero()) {
+                    val f = tmpsAdj.first()
+                    path.moveTo(0f, f.y)
+                } else {
+                    path.apply {
+                        drawQuad(
+                            tmpsAdj,
+                            index,
+                            tmpsAdj[index],
+                            false,
+                            path
+                        )
+
+                        if (index == items.lastIndex) {
+                            drawQuad(
+                                tmpsAdj,
+                                index.inc(),
+                                tmpsAdj[index.inc()],
+                                false,
+                                path
+                            )
+                        }
+                    }
+
+                    drawPath(
+                        path = path,
+                        color = Color.Yellow,
+                        style = Stroke(width = 1.5.dp.toPx())
+                    )
+                }
+                pointF.y += 64.dp.toPx()
+                /** end of temp.. */
+
+                pointF.y += textPaint.height
+
+                drawContext.canvas.nativeCanvas.drawText(
+                    item.reh ?: "",
+                    pointF.x,
                     pointF.y,
                     textPaint
                 )
-
-                pointF.y += textPaint.height
             }
-
-            with(item.weatherIcon) {
-                pty[item.pty.code] ?: sky[item.sky.code]
-            }
-                ?.let {
-                    val vectorDrawable = ContextCompat.getDrawable(context, it) as VectorDrawable
-                    val image = vectorToBitmap(vectorDrawable)
-
-                    drawImage(
-                        image = image.asImageBitmap(),
-                        topLeft = Offset(pointF.x - (image.width/ 2), pointF.y)
-                    )
-
-                    pointF.y += image.height
-                }
-
-            /** Temp grapch section **/
-
-            pointF.x += 24.dp.toPx()
-
-            val tmpFloat = item.tmp?.toFloat() ?: 0f
-            val tmpRatio = tmpFloat.div(maxTmp)
-            val sTmp = tmpRatio * 4.dp.toPx()
-            val vToAdd = 1f.times(4.dp.toPx()) - sTmp // 이걸 offset에 더해준다.
-
-            if (index.isZero()) {
-
-            } else {
-
-                if (index == items.lastIndex) {
-                    // 추가 작업.
-                }
-            }
-
-            drawContext.canvas.nativeCanvas.drawText(
-                item.tmp ?: "",
-                pointF.x + textPaint.shiftCenter(width.toPx(), item.tmp ?: ""),
-                pointF.y,
-                textPaint
-            )
-
-            /** end of temp.. */
-
-            pointF.y += textPaint.height
-
-            drawContext.canvas.nativeCanvas.drawText(
-                item.reh ?: "",
-                pointF.x + textPaint.shiftCenter(width.toPx(), item.reh ?: ""),
-                pointF.y,
-                textPaint
-            )
         }
     }
-}
-
-fun TextPaint.shiftCenter(width: Float, text: String): Float {
-    return width.minus(measureText(text)).half
 }
 
 val TextPaint.height: Float get() = with(fontMetrics) {
@@ -174,7 +198,7 @@ private fun DrawScope.drawQuad(
     }
 
     if (showAnchorPoints) {
-        drawPoints(listOf(Offset(plotX, plotY)), Color.Blue, 4.dp)
+        drawPoints(listOf(Offset(plotX, plotY)), Color.Red, 6.dp)
     }
     path.quadraticBezierTo(
         prevX, prevY,
