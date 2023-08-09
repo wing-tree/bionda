@@ -2,7 +2,7 @@ package wing.tree.bionda.view.compose.composable
 
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.graphics.Paint
+import android.graphics.Paint.Align
 import android.graphics.PointF
 import android.graphics.drawable.VectorDrawable
 import android.icu.text.SimpleDateFormat
@@ -23,10 +23,12 @@ import androidx.compose.ui.graphics.PointMode
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.core.graphics.toColor
 import kotlinx.collections.immutable.ImmutableList
 import wing.tree.bionda.data.constant.CELSIUS
 import wing.tree.bionda.data.extension.empty
@@ -48,11 +50,12 @@ fun Canv(
 ) {
     val context = LocalContext.current
     val itemWidth = 64.dp
+    val totalItemWidth = (64 * items.count()).dp
     val textPaint = typography.labelSmall.toTextPaint().apply {
-        textAlign = Paint.Align.CENTER
+        textAlign = Align.CENTER
     }
     val tmpTextPaint = typography.labelLarge.toTextPaint().apply {
-        textAlign = Paint.Align.CENTER
+        textAlign = Align.CENTER
     }
     val simpleDateFormat = SimpleDateFormat("a h시", Locale.KOREA)
     val maxTmp = items.maxOf { it.tmp?.toFloat() ?: 0F }
@@ -79,8 +82,9 @@ fun Canv(
             }
                 .mapIndexed { index, tmp ->
                     val tmpRatio = tmp.div(maxTmp)
-                    val scalePx = 64.dp.toPx() //64가 곧 가용 범위인 것., 텍스트도 표기해야함. 그 높이까지 포함해서 실 가용범위 및 패딩지정필요.
+                    val scalePx = 72.dp.toPx() //64가 곧 가용 범위인 것., 텍스트도 표기해야함. 그 높이까지 포함해서 실 가용범위 및 패딩지정필요.
                     val vToAdd = 1f - tmpRatio
+
                     Offset(itemWidth.toPx() * index, vToAdd.times(scalePx))
                 }
 
@@ -117,6 +121,7 @@ fun Canv(
                     tmpTextPaint
                 )
 
+                // Lines
                 val tmpsAdj = tmpsToPlot.map {
                     it.copy(y = it.y.plus(pointF.y) + 8.dp.toPx()) // 8.dp는 텍스트랑 그래프 패딩.
                 }
@@ -199,6 +204,7 @@ private fun DrawScope.drawQuad(
     if (showAnchorPoints) {
         drawPoints(listOf(Offset(plotX, plotY)), Color.Red, 6.dp)
     }
+
     path.quadraticBezierTo(
         prevX, prevY,
         plotX, plotY
