@@ -1,5 +1,6 @@
 package wing.tree.bionda.model
 
+import androidx.compose.runtime.Stable
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.toImmutableList
@@ -22,6 +23,7 @@ data class Forecast(
             ?: firstOrNull()
     }
 
+    @Stable
     data class Item(
         val fcstDate: Int,
         val fcstTime: Int,

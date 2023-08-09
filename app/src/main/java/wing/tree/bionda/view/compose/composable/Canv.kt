@@ -17,12 +17,17 @@ import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.PaintingStyle
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PointMode
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.clipPath
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.platform.LocalContext
@@ -66,6 +71,7 @@ fun Canv(
         modifier = modifier
             .horizontalScroll(rememberScrollState())
     ) {
+        println("iiiiiiiiibbbbb")
         Canvas(modifier = Modifier.width(900.dp).padding()) {
             val tmpsToPlot = buildList {
                 val tmps = items.map { it.tmp?.toFloat() ?: 0f }
@@ -150,11 +156,36 @@ fun Canv(
                         }
                     }
 
-                    drawPath(
-                        path = path,
-                        color = Color.Yellow,
-                        style = Stroke(width = 1.5.dp.toPx())
-                    )
+
+
+                    if (index == items.lastIndex) {
+                        val gradient = Brush.verticalGradient(
+                            colors = listOf(Color.Red, Color.Yellow),
+                        )
+
+                        val aPaint = Paint().apply {
+                            isAntiAlias = true
+                            style = PaintingStyle.Stroke
+                            color = Color.Yellow
+                            strokeWidth = 1.5.dp.toPx()
+                        }
+
+                        clipPath(path) {
+                            drawRect(gradient)
+                        }
+
+                        drawIntoCanvas {
+                            it.drawPath(
+                                path = path,
+                                aPaint
+                            )
+                        }
+                    }
+//                    drawPath(
+//                        path = path,
+//                        color = Color.Yellow,
+//                        style = Stroke(width = 1.5.dp.toPx())
+//                    )
                 }
                 pointF.y += 64.dp.toPx()
                 /** end of temp.. */
