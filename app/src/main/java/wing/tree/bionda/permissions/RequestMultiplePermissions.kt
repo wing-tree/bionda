@@ -10,14 +10,14 @@ import wing.tree.bionda.permissions.PermissionChecker.State
 
 interface RequestMultiplePermissions : PermissionChecker {
     val launcher: ActivityResultLauncher<Array<String>>
-    val permissions: Array<String>
+    val permissions: Set<String>
 
     fun onCheckSelfMultiplePermissions(result: Result)
     fun onRequestMultiplePermissionsResult(result: Result)
     fun onShouldShowRequestMultiplePermissionsRationale(result: Result)
 
     private fun ComponentActivity.checkSelfMultiplePermissions(
-        permissions: Array<String>
+        permissions: Set<String>
     ): Result {
         return permissions.associateWith {
             if (checkSelfPermission(it) `is` PackageManager.PERMISSION_GRANTED) {
@@ -31,7 +31,7 @@ interface RequestMultiplePermissions : PermissionChecker {
     }
 
     private fun ComponentActivity.shouldShowRequestMultiplePermissionsRationale(
-        permissions: Array<String>
+        permissions: Set<String>
     ): Result {
         return permissions.associateWith {
             State.Denied(shouldShowRequestPermissionRationale(it))
@@ -61,17 +61,15 @@ interface RequestMultiplePermissions : PermissionChecker {
             onCheckSelfMultiplePermissions(it)
         }
             .denied()
-            .toTypedArray()
 
         if (permissions.isNotEmpty()) {
             permissions = shouldShowRequestMultiplePermissionsRationale(permissions).also {
                 onShouldShowRequestMultiplePermissionsRationale(it)
             }
                 .denied()
-                .toTypedArray()
 
             if (permissions.isNotEmpty()) {
-                launcher.launch(permissions)
+                launcher.launch(permissions.toTypedArray())
             }
         }
     }

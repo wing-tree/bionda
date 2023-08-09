@@ -50,7 +50,7 @@ import java.util.Locale
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
     override val launcher = registerForActivityResult()
-    override val permissions: Array<String> = buildList {
+    override val permissions: Set<String> = buildSet {
         if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
             add(ACCESS_BACKGROUND_LOCATION)
         }
@@ -61,7 +61,6 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
             add(POST_NOTIFICATIONS)
         }
     }
-        .toTypedArray()
 
     override fun onCheckSelfMultiplePermissions(result: PermissionChecker.Result) {
         if (result.granted().containsAny(locationPermissions)) {
