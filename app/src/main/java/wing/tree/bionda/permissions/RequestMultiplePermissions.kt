@@ -5,22 +5,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import wing.tree.bionda.data.extension.`is`
+import wing.tree.bionda.permissions.PermissionChecker.Result
+import wing.tree.bionda.permissions.PermissionChecker.State
 
-typealias Result = Map<String, RequestPermission.State>
-
-interface RequestPermission : PermissionChecker {
-    sealed interface State {
-        val shouldShowRequestPermissionRationale: Boolean
-
-        object Granted : State {
-            override val shouldShowRequestPermissionRationale: Boolean = false
-        }
-
-        data class Denied(
-            override val shouldShowRequestPermissionRationale: Boolean
-        ) : State
-    }
-
+interface RequestMultiplePermissions : PermissionChecker {
     val launcher: ActivityResultLauncher<Array<String>>
     val permissions: Array<String>
 
@@ -37,6 +25,8 @@ interface RequestPermission : PermissionChecker {
             } else {
                 State.Denied(shouldShowRequestPermissionRationale(it))
             }
+        }.let {
+            Result(it)
         }
     }
 
@@ -45,6 +35,8 @@ interface RequestPermission : PermissionChecker {
     ): Result {
         return permissions.associateWith {
             State.Denied(shouldShowRequestPermissionRationale(it))
+        }.let {
+            Result(it)
         }
     }
 
@@ -58,6 +50,8 @@ interface RequestPermission : PermissionChecker {
                 } else {
                     State.Denied(shouldShowRequestPermissionRationale(key))
                 }
+            }.let { m ->
+                Result(m)
             }
         )
     }
@@ -81,14 +75,4 @@ interface RequestPermission : PermissionChecker {
             }
         }
     }
-
-    fun Result.denied() = filterValues {
-        it is State.Denied
-    }
-        .keys
-
-    fun Result.granted() = filterValues {
-        it is State.Granted
-    }
-        .keys
 }

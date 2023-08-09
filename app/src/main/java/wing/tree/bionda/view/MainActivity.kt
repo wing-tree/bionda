@@ -35,8 +35,8 @@ import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.extension.rememberWindowSizeClass
 import wing.tree.bionda.model.WindowSizeClass
-import wing.tree.bionda.permissions.RequestPermission
-import wing.tree.bionda.permissions.Result
+import wing.tree.bionda.permissions.PermissionChecker
+import wing.tree.bionda.permissions.RequestMultiplePermissions
 import wing.tree.bionda.permissions.locationPermissions
 import wing.tree.bionda.theme.BiondaTheme
 import wing.tree.bionda.view.compose.composable.Forecast
@@ -48,7 +48,7 @@ import wing.tree.bionda.view.state.MainState.Action
 import java.util.Locale
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity(), RequestPermission {
+class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
     override val launcher = registerForActivityResult()
     override val permissions: Array<String> = buildList {
         if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
@@ -63,27 +63,22 @@ class MainActivity : AppCompatActivity(), RequestPermission {
     }
         .toTypedArray()
 
-    override fun onCheckSelfMultiplePermissions(result: Result) {
-        val granted = result.granted()
-
-        if (granted.containsAny(locationPermissions)) {
+    override fun onCheckSelfMultiplePermissions(result: PermissionChecker.Result) {
+        if (result.granted().containsAny(locationPermissions)) {
             viewModel.load()
         }
     }
 
-    override fun onRequestMultiplePermissionsResult(result: Result) {
-        with(result) {
-            val granted = granted()
-            val denied = denied()
+    override fun onRequestMultiplePermissionsResult(result: PermissionChecker.Result) {
+        val (granted, denied) = result
 
-            when {
-                granted.containsAny(locationPermissions) -> viewModel.load()
-                denied.containsAll(locationPermissions) -> viewModel.notifyPermissionsDenied(denied)
-            }
+        when {
+            granted.containsAny(locationPermissions) -> viewModel.load()
+            denied.containsAll(locationPermissions) -> viewModel.notifyPermissionsDenied(denied)
         }
     }
 
-    override fun onShouldShowRequestMultiplePermissionsRationale(result: Result) {
+    override fun onShouldShowRequestMultiplePermissionsRationale(result: PermissionChecker.Result) {
         val keys = result.filter { (_, value) ->
             value.shouldShowRequestPermissionRationale
         }
@@ -160,13 +155,14 @@ class MainActivity : AppCompatActivity(), RequestPermission {
                                                         Int.zero
                                                     )
                                                 } else {
-                                                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                                                        data = Uri.fromParts(
-                                                            SCHEME_PACKAGE,
-                                                            packageName,
-                                                            null
-                                                        )
-                                                    }
+                                                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                                                        .apply {
+                                                            data = Uri.fromParts(
+                                                                SCHEME_PACKAGE,
+                                                                packageName,
+                                                                null
+                                                            )
+                                                        }
 
                                                     startActivity(intent)
                                                 }
