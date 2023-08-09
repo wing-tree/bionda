@@ -31,6 +31,19 @@ fun DrawScope.drawFcstHour(
     pointF.y += textPaint.height
 }
 
+fun DrawScope.drawReh(
+    reh: String,
+    pointF: PointF,
+    textPaint: TextPaint
+) {
+    drawContext.canvas.nativeCanvas.drawText(
+        reh,
+        pointF.x,
+        pointF.y,
+        textPaint
+    )
+}
+
 fun DrawScope.drawWeatherIcon(
     item: Forecast.Item,
     context: Context,

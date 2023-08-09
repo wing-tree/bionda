@@ -29,11 +29,13 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.ImmutableList
 import wing.tree.bionda.data.constant.CELSIUS
+import wing.tree.bionda.data.extension.empty
 import wing.tree.bionda.data.extension.half
 import wing.tree.bionda.data.extension.isZero
 import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.data.regular.fcstCalendar
 import wing.tree.bionda.extension.drawFcstHour
+import wing.tree.bionda.extension.drawReh
 import wing.tree.bionda.extension.drawWeatherIcon
 import wing.tree.bionda.extension.toTextPaint
 import wing.tree.bionda.model.Forecast
@@ -152,12 +154,9 @@ fun Canv(
                 pointF.y += 64.dp.toPx()
                 /** end of temp.. */
 
-                pointF.y += textPaint.height
-
-                drawContext.canvas.nativeCanvas.drawText(
-                    item.reh ?: "",
-                    pointF.x,
-                    pointF.y,
+                drawReh(
+                    item.reh ?: String.empty,
+                    pointF,
                     textPaint
                 )
             }
