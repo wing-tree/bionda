@@ -12,7 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.ImmutableList
 import wing.tree.bionda.R
 import wing.tree.bionda.data.extension.empty
@@ -78,8 +77,6 @@ fun Chart(
                     pointF = pointF,
                     tint = Color(fcstHourTextPaint.color)
                 )
-
-                pointF.y += 32.dp.toPx()
 
                 drawTmp(
                     tmp = item.tmp ?: String.empty,

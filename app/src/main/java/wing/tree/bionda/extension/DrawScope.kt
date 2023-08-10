@@ -25,6 +25,7 @@ import wing.tree.bionda.data.constant.CELSIUS
 import wing.tree.bionda.data.extension.half
 import wing.tree.bionda.data.extension.`is`
 import wing.tree.bionda.data.extension.isZero
+import wing.tree.bionda.data.extension.threeQuarters
 import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.model.Chart
 import wing.tree.bionda.model.Forecast
@@ -42,8 +43,6 @@ fun DrawScope.drawFcstHour(
         pointF.y,
         textPaint
     )
-
-    pointF.y += textPaint.height
 }
 
 fun DrawScope.drawReh(
@@ -78,8 +77,6 @@ fun DrawScope.drawTmp(
         pointF.y.plus(offset.y),
         textPaint
     )
-
-    pointF.y += textPaint.height.half
 }
 
 fun DrawScope.drawTmpChart(
@@ -127,7 +124,7 @@ fun DrawScope.drawTmpChart(
                 val paint = Paint().apply {
                     shader = LinearGradientShader(
                         colors = listOf(
-                            chart.color.copy(alpha = 0.75f),
+                            chart.color.copy(alpha = Float.threeQuarters),
                             Color.Transparent,
                         ),
                         from = Offset(Float.zero, pointF.y),
@@ -166,7 +163,9 @@ fun DrawScope.drawWeatherIcon(
                 colorFilter = ColorFilter.tint(tint, BlendMode.SrcAtop)
             )
 
-            pointF.y += image.height
+            pointF.y += with(image.height) {
+                plus(half)
+            }
         }
 }
 
