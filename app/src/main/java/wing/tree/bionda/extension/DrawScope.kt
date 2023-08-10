@@ -1,27 +1,42 @@
 package wing.tree.bionda.extension
 
 import android.content.Context
+import android.graphics.Canvas
 import android.graphics.PointF
-import android.graphics.drawable.VectorDrawable
 import android.text.TextPaint
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.LinearGradientShader
+import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.asAndroidPath
+import androidx.compose.ui.graphics.asComposePath
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toBitmap
+import wing.tree.bionda.data.constant.CELSIUS
+import wing.tree.bionda.data.extension.half
+import wing.tree.bionda.data.extension.`is`
+import wing.tree.bionda.data.extension.isZero
+import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.model.Forecast
-import wing.tree.bionda.view.compose.composable.height
-import wing.tree.bionda.view.compose.composable.vectorToBitmap
+
+val DrawScope.nativeCanvas: Canvas get() = drawContext.canvas.nativeCanvas
 
 fun DrawScope.drawFcstHour(
     fcstHour: String,
     pointF: PointF,
     textPaint: TextPaint
 ) {
-    drawContext.canvas.nativeCanvas.drawText(
+    nativeCanvas.drawText(
         fcstHour,
         pointF.x,
         pointF.y,
@@ -36,12 +51,98 @@ fun DrawScope.drawReh(
     pointF: PointF,
     textPaint: TextPaint
 ) {
-    drawContext.canvas.nativeCanvas.drawText(
+    nativeCanvas.drawText(
         reh,
         pointF.x,
         pointF.y,
         textPaint
     )
+}
+
+fun DrawScope.drawTmp(
+    tmp: String,
+    pointF: PointF,
+    offset: Offset,
+    textPaint: TextPaint
+) {
+    pointF.y += 32.dp.toPx()
+
+    val text = buildString {
+        if (tmp.isNotBlank()) {
+            append(tmp)
+            append(CELSIUS)
+        }
+    }
+
+    nativeCanvas.drawText(
+        text,
+        pointF.x,
+        pointF.y.plus(offset.y),
+        textPaint
+    )
+
+    pointF.y += 8.dp.toPx()
+}
+
+fun DrawScope.drawTmpChart(
+    index: Int,
+    tmpOffsets: List<Offset>,
+    pointF: PointF,
+    path: Path
+) {
+    val offsets = tmpOffsets.map {
+        it.copy(y = it.y.plus(pointF.y))
+    }
+
+    if (index.isZero()) {
+        val f = offsets.first()
+        path.moveTo(Float.zero, f.y)
+    } else {
+        path.apply {
+            quadraticBezierTo(
+                index,
+                offsets
+            )
+
+            if (index `is` offsets.lastIndex.dec()) {
+                quadraticBezierTo(
+                    index.inc(),
+                    offsets
+                )
+
+                drawPath(
+                    path = path,
+                    color = Color.Yellow,
+                    style = Stroke(width = Dp.one.toPx())
+                )
+
+                val fillPath = android.graphics.Path(path.asAndroidPath())
+                    .asComposePath()
+                    .apply {
+                        lineTo(size.width, pointF.y + 48.dp.toPx())
+                        lineTo(0f, pointF.y + 48.dp.toPx())
+                        close()
+                    }
+
+                val paint = Paint().apply {
+                    shader = LinearGradientShader(
+                        colors = listOf(
+                            Color.Yellow.copy(alpha = 0.75f),
+                            Color.Transparent,
+                        ),
+                        from = Offset(0f, pointF.y),
+                        to = Offset(0f, pointF.y + 36.dp.toPx())
+                    )
+                }
+
+                drawIntoCanvas {
+                    it.drawPath(fillPath, paint)
+                }
+            }
+        }
+    }
+
+    pointF.y += 64.dp.toPx()
 }
 
 fun DrawScope.drawWeatherIcon(
@@ -54,15 +155,43 @@ fun DrawScope.drawWeatherIcon(
         pty[item.pty.code] ?: sky[item.sky.code]
     }
         ?.let {
-            val vectorDrawable = ContextCompat.getDrawable(context, it) as VectorDrawable
-            val image = vectorToBitmap(vectorDrawable)
+            val image = ContextCompat.getDrawable(context, it)
+                ?.toBitmap()
+                ?.asImageBitmap()
+                ?: return
 
             drawImage(
-                image = image.asImageBitmap(),
-                topLeft = Offset(pointF.x - image.width/2, pointF.y),
+                image = image,
+                topLeft = Offset(pointF.x.minus(image.width.half), pointF.y),
                 colorFilter = ColorFilter.tint(tint, BlendMode.SrcAtop)
             )
 
             pointF.y += image.height
         }
+}
+
+fun Path.quadraticBezierTo(
+    index: Int,
+    offsets: List<Offset>
+) {
+    val item = offsets[index]
+    val x1 = offsets[index.dec()].x
+    val y1 = offsets[index.dec()].y
+    val x2: Float
+    val y2: Float
+
+    if (index `is` offsets.lastIndex) {
+        x2 = item.x
+        y2 = item.y
+    } else {
+        x2 = x1.plus(item.x).half
+        y2 = y1.plus(item.y).half
+    }
+
+    quadraticBezierTo(
+        x1 = x1,
+        y1 = y1,
+        x2 = x2,
+        y2 = y2
+    )
 }
