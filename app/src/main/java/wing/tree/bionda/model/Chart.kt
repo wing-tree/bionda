@@ -62,7 +62,7 @@ data class Chart(
             tmp = Tmp(
                 Tmp.Chart(
                     color = Color.Cyan,
-                    height = 64.dp
+                    height = 32.dp
                 )
             )
         )

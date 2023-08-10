@@ -25,7 +25,6 @@ import wing.tree.bionda.data.constant.CELSIUS
 import wing.tree.bionda.data.extension.half
 import wing.tree.bionda.data.extension.`is`
 import wing.tree.bionda.data.extension.isZero
-import wing.tree.bionda.data.extension.threeQuarters
 import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.model.Chart
 import wing.tree.bionda.model.Forecast
@@ -124,7 +123,7 @@ fun DrawScope.drawTmpChart(
                 val paint = Paint().apply {
                     shader = LinearGradientShader(
                         colors = listOf(
-                            chart.color.copy(alpha = Float.threeQuarters),
+                            chart.color.copy(alpha = Float.half),
                             Color.Transparent,
                         ),
                         from = Offset(Float.zero, pointF.y),
