@@ -3,5 +3,6 @@
     <string name="app_name">비온다</string>
     <string name="at">에는</string>
     <string name="hour">시</string>
+    <string name="pattern_fcst_hour">a h시</string>
     <string name="take_an_umbrella">우산 챙기세요!</string>
 </resources>
