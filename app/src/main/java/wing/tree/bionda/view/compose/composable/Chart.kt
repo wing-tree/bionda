@@ -98,7 +98,7 @@ fun Chart(
                     tmpOffsets = tmpOffsets,
                     path = path,
                     pointF = pointF,
-                    style = style.tmp.chart,
+                    style = style.tmpChart,
                 )
 
                 drawReh(

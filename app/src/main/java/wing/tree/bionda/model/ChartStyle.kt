@@ -14,6 +14,7 @@ data class ChartStyle(
     val fcstHour: FcstHour,
     val weatherIcon: WeatherIcon,
     val tmp: Tmp,
+    val tmpChart: TmpChart,
     val reh: Reh
 ) {
     @JvmInline
@@ -42,19 +43,21 @@ data class ChartStyle(
             get() = null
     }
 
-    data class Tmp(
-        val chart: Chart
-    ) : Element {
-        data class Chart(
-            val color: Color,
-            val height: Dp
-        )
-
+    object Tmp : Element {
         override val textPaint: TextPaint
             @Composable
             get() = typography.labelLarge
                 .copy(textAlign = TextAlign.Center)
                 .toTextPaint()
+    }
+
+    data class TmpChart(
+        val color: Color,
+        val height: Dp
+    ) : Element {
+        override val textPaint: TextPaint?
+            @Composable
+            get() = null
     }
 
     object Reh : Element {
@@ -74,11 +77,10 @@ data class ChartStyle(
                 height = 30.dp,
                 color = Color.Unspecified
             ),
-            tmp = Tmp(
-                Tmp.Chart(
-                    color = Color.Cyan,
-                    height = 64.dp
-                )
+            tmp = Tmp,
+            tmpChart = TmpChart(
+                color = Color.Cyan,
+                height = 64.dp
             ),
             reh = Reh
         )
