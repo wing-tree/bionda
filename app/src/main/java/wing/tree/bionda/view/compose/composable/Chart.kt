@@ -7,10 +7,11 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.platform.LocalContext
 import kotlinx.collections.immutable.ImmutableList
 import wing.tree.bionda.R
@@ -24,7 +25,7 @@ import wing.tree.bionda.extension.drawTmp
 import wing.tree.bionda.extension.drawTmpChart
 import wing.tree.bionda.extension.drawWeatherIcon
 import wing.tree.bionda.extension.toTmpOffsets
-import wing.tree.bionda.model.Chart
+import wing.tree.bionda.model.ChartStyle
 import wing.tree.bionda.model.Forecast
 import java.util.Locale
 
@@ -32,15 +33,16 @@ import java.util.Locale
 fun Chart(
     items: ImmutableList<Forecast.Item>,
     modifier: Modifier = Modifier,
-    chart: Chart = Chart.default,
+    style: ChartStyle = ChartStyle.default,
 ) {
+    val contentColor = LocalContentColor.current
     val context = LocalContext.current
     val count = items.count()
 
-    val segment = chart.segment
-    val fcstHourTextPaint = chart.fcstHour.textPaint
-    val tmpTextPaint = chart.tmp.textPaint
-    val rehTextPaint = chart.reh.textPaint
+    val segment = style.segment
+    val fcstHourTextPaint = style.fcstHour.textPaint
+    val tmpTextPaint = style.tmp.textPaint
+    val rehTextPaint = style.reh.textPaint
 
     val path = Path()
     val scrollState = rememberScrollState()
@@ -52,7 +54,7 @@ fun Chart(
     Row(modifier = modifier.horizontalScroll(scrollState)) {
         Canvas(modifier = Modifier.width(segment.width.times(count))) {
             val tmpOffsets = items.toTmpOffsets(
-                chart = chart,
+                chartStyle = style,
                 density = density
             )
 
@@ -75,22 +77,28 @@ fun Chart(
                     item = item,
                     context = context,
                     pointF = pointF,
-                    tint = Color(fcstHourTextPaint.color)
+                    style = with(style.weatherIcon) {
+                        copy(
+                            color = color.takeOrElse {
+                                contentColor
+                            }
+                        )
+                    }
                 )
 
                 drawTmp(
                     tmp = item.tmp ?: String.empty,
-                    pointF = pointF,
                     offset = tmpOffsets[index],
+                    pointF = pointF,
                     textPaint = tmpTextPaint
                 )
 
                 drawTmpChart(
-                    chart = chart.tmp.chart,
                     index = index,
                     tmpOffsets = tmpOffsets,
+                    path = path,
                     pointF = pointF,
-                    path = path
+                    style = style.tmp.chart,
                 )
 
                 drawReh(

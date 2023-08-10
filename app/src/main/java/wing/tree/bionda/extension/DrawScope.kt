@@ -23,10 +23,11 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import wing.tree.bionda.data.constant.CELSIUS
 import wing.tree.bionda.data.extension.half
+import wing.tree.bionda.data.extension.int
 import wing.tree.bionda.data.extension.`is`
 import wing.tree.bionda.data.extension.isZero
 import wing.tree.bionda.data.extension.zero
-import wing.tree.bionda.model.Chart
+import wing.tree.bionda.model.ChartStyle
 import wing.tree.bionda.model.Forecast
 
 val DrawScope.nativeCanvas: Canvas get() = drawContext.canvas.nativeCanvas
@@ -59,8 +60,8 @@ fun DrawScope.drawReh(
 
 fun DrawScope.drawTmp(
     tmp: String,
-    pointF: PointF,
     offset: Offset,
+    pointF: PointF,
     textPaint: TextPaint
 ) {
     val text = buildString {
@@ -79,20 +80,19 @@ fun DrawScope.drawTmp(
 }
 
 fun DrawScope.drawTmpChart(
-    chart: Chart.Tmp.Chart,
     index: Int,
     tmpOffsets: List<Offset>,
+    path: Path,
     pointF: PointF,
-    path: Path
+    style: ChartStyle.Tmp.Chart
 ) {
-    val height = chart.height.toPx()
+    val height = style.height.toPx()
     val offsets = tmpOffsets.map {
         it.copy(y = it.y.plus(pointF.y))
     }
 
     if (index.isZero()) {
-        val f = offsets.first()
-        path.moveTo(Float.zero, f.y)
+        path.moveTo(Float.zero, offsets.first().y)
     } else {
         path.apply {
             quadraticBezierTo(
@@ -108,7 +108,7 @@ fun DrawScope.drawTmpChart(
 
                 drawPath(
                     path = path,
-                    color = chart.color,
+                    color = style.color,
                     style = Stroke(width = Dp.one.toPx())
                 )
 
@@ -123,7 +123,7 @@ fun DrawScope.drawTmpChart(
                 val paint = Paint().apply {
                     shader = LinearGradientShader(
                         colors = listOf(
-                            chart.color.copy(alpha = Float.half),
+                            style.color.copy(alpha = Float.half),
                             Color.Transparent,
                         ),
                         from = Offset(Float.zero, pointF.y),
@@ -145,51 +145,29 @@ fun DrawScope.drawWeatherIcon(
     item: Forecast.Item,
     context: Context,
     pointF: PointF,
-    tint: Color
+    style: ChartStyle.WeatherIcon
 ) {
+    val width = style.width.toPx()
+    val height = style.height.toPx()
+
     with(item.weatherIcon) {
         pty[item.pty.code] ?: sky[item.sky.code]
     }
         ?.let {
             val image = ContextCompat.getDrawable(context, it)
-                ?.toBitmap()
+                ?.toBitmap(width = width.int, height = height.int)
                 ?.asImageBitmap()
-                ?: return
 
-            drawImage(
-                image = image,
-                topLeft = Offset(pointF.x.minus(image.width.half), pointF.y),
-                colorFilter = ColorFilter.tint(tint, BlendMode.SrcAtop)
-            )
-
-            pointF.y += with(image.height) {
-                plus(half)
+            image?.let {
+                drawImage(
+                    image = image,
+                    topLeft = Offset(pointF.x.minus(image.width.half), pointF.y),
+                    colorFilter = ColorFilter.tint(style.color, BlendMode.SrcAtop)
+                )
             }
         }
-}
 
-fun Path.quadraticBezierTo(
-    index: Int,
-    offsets: List<Offset>
-) {
-    val item = offsets[index]
-    val x1 = offsets[index.dec()].x
-    val y1 = offsets[index.dec()].y
-    val x2: Float
-    val y2: Float
-
-    if (index `is` offsets.lastIndex) {
-        x2 = item.x
-        y2 = item.y
-    } else {
-        x2 = x1.plus(item.x).half
-        y2 = y1.plus(item.y).half
+    pointF.y += with(height) {
+        plus(half)
     }
-
-    quadraticBezierTo(
-        x1 = x1,
-        y1 = y1,
-        x2 = x2,
-        y2 = y2
-    )
 }

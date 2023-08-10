@@ -9,11 +9,12 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import wing.tree.bionda.extension.toTextPaint
 
-data class Chart(
-    val fcstHour: FcstHour,
-    val reh: Reh,
+data class ChartStyle(
     val segment: Segment,
-    val tmp: Tmp
+    val fcstHour: FcstHour,
+    val weatherIcon: WeatherIcon,
+    val tmp: Tmp,
+    val reh: Reh
 ) {
     @JvmInline
     value class Segment(val width: Dp)
@@ -29,6 +30,16 @@ data class Chart(
             get() = typography.labelSmall
                 .copy(textAlign = TextAlign.Center)
                 .toTextPaint()
+    }
+
+    data class WeatherIcon(
+        val width: Dp,
+        val height: Dp,
+        val color: Color
+    ) : Element {
+        override val textPaint: TextPaint?
+            @Composable
+            get() = null
     }
 
     data class Tmp(
@@ -55,16 +66,21 @@ data class Chart(
     }
 
     companion object {
-        val default = Chart(
-            fcstHour = FcstHour,
-            reh = Reh,
+        val default = ChartStyle(
             segment = Segment(width = 64.dp),
+            fcstHour = FcstHour,
+            weatherIcon = WeatherIcon(
+                width = 30.dp,
+                height = 30.dp,
+                color = Color.Unspecified
+            ),
             tmp = Tmp(
                 Tmp.Chart(
                     color = Color.Cyan,
-                    height = 32.dp
+                    height = 64.dp
                 )
-            )
+            ),
+            reh = Reh
         )
     }
 }
