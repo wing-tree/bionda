@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFontFamilyResolver
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontSynthesis
@@ -34,13 +35,17 @@ fun TextStyle.toTypeface(): State<Typeface> {
 }
 
 @Composable
-fun TextStyle.toTextPaint(@ColorInt color: Int) = TextPaint().also {
+fun TextStyle.toTextPaint(
+    @ColorInt color: Int
+) = TextPaint().also {
     val density = LocalDensity.current
+    val layoutDirection = LocalLayoutDirection.current
     val typeface by toTypeface()
 
     it.isAntiAlias = true
     it.color = color
     it.typeface = typeface
+    it.textAlign = textAlign?.toAlign(layoutDirection)
     it.textSize = with(density) {
         fontSize.toPx()
     }
@@ -51,7 +56,9 @@ fun TextStyle.toTextPaint(@ColorInt color: Int) = TextPaint().also {
 }
 
 @Composable
-fun TextStyle.toTextPaint(color: Color = Color.Unspecified): TextPaint {
+fun TextStyle.toTextPaint(
+    color: Color = Color.Unspecified
+): TextPaint {
     val textColor = color.takeOrElse {
         this.color.takeOrElse {
             LocalContentColor.current
