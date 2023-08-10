@@ -54,8 +54,8 @@ fun Chart(
     Row(modifier = modifier.horizontalScroll(scrollState)) {
         Canvas(modifier = Modifier.width(segment.width.times(count))) {
             val tmpOffsets = items.toTmpOffsets(
-                chartStyle = style,
-                density = density
+                density = density,
+                style = style
             )
 
             items.forEachIndexed { index, item ->
@@ -88,8 +88,8 @@ fun Chart(
 
                 drawTmp(
                     tmp = item.tmp ?: String.empty,
-                    offset = tmpOffsets[index],
                     pointF = pointF,
+                    offset = tmpOffsets[index],
                     textPaint = tmpTextPaint
                 )
 

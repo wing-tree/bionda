@@ -60,8 +60,8 @@ fun DrawScope.drawReh(
 
 fun DrawScope.drawTmp(
     tmp: String,
-    offset: Offset,
     pointF: PointF,
+    offset: Offset,
     textPaint: TextPaint
 ) {
     val text = buildString {

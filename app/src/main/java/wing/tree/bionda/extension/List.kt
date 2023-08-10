@@ -10,8 +10,8 @@ import wing.tree.bionda.model.ChartStyle
 import wing.tree.bionda.model.Forecast
 
 fun List<Forecast.Item>.toTmpOffsets(
-    chartStyle: ChartStyle,
-    density: Float
+    density: Float,
+    style: ChartStyle
 ): List<Offset> {
     if (isEmpty()) {
         return emptyList()
@@ -21,8 +21,8 @@ fun List<Forecast.Item>.toTmpOffsets(
         it.tmp?.floatOrNull ?: Float.zero
     }
 
-    val segment = chartStyle.segment
-    val height = chartStyle.tmp.chart.height
+    val segment = style.segment
+    val height = style.tmp.chart.height
     val tmps = map {
         it.tmp?.toFloat() ?: Float.zero
     }
