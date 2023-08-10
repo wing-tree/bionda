@@ -1,18 +1,13 @@
 package wing.tree.bionda.view.compose.composable
 
-import android.icu.text.SimpleDateFormat
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Icon
@@ -21,23 +16,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import kotlinx.collections.immutable.ImmutableList
 import wing.tree.bionda.data.constant.CELSIUS
 import wing.tree.bionda.data.extension.empty
 import wing.tree.bionda.data.extension.`is`
 import wing.tree.bionda.data.extension.isNotNull
 import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.zero
-import wing.tree.bionda.data.regular.fcstCalendar
-import wing.tree.bionda.extension.zero
 import wing.tree.bionda.model.Address
 import wing.tree.bionda.model.Forecast
 import wing.tree.bionda.model.WindowSizeClass
 import wing.tree.bionda.view.state.ForecastState
-import java.util.Locale
 
 @Composable
 fun Forecast(
@@ -97,16 +86,15 @@ private fun Content(
                 else -> 24.dp
             }
         )
-        
-        Canv(items = forecast.items, modifier = Modifier.fillMaxWidth().height(160.dp))
 
-        Items(
+        // TODO 아래 내용 체크, 기본 api 제공도 확인,
+//        contentPadding = windowSizeClass.marginValues.copy(
+//            top = Dp.zero,
+//            bottom = Dp.zero
+//        )
+        Chart(
             items = forecast.items,
-            contentPadding = windowSizeClass.marginValues.copy(
-                top = Dp.zero,
-                bottom = Dp.zero
-            ),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth().height(160.dp)
         )
     }
 }
@@ -172,60 +160,6 @@ private fun Address(
                 imageVector = Icons.Default.LocationOn,
                 contentDescription = null
             )
-        }
-    }
-}
-
-@Composable
-private fun Items(
-    items: ImmutableList<Forecast.Item>,
-    contentPadding: PaddingValues,
-    modifier: Modifier = Modifier
-) {
-    LazyRow(
-        modifier = modifier,
-        contentPadding = contentPadding,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        items(items) { item ->
-            Item(item = item)
-        }
-    }
-}
-
-@Composable
-private fun Item(
-    item: Forecast.Item,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        val fcstCalendar = fcstCalendar(item.fcstHour)
-        val simpleDateFormat = SimpleDateFormat("a h시", Locale.KOREA)
-
-        Text(
-            text = simpleDateFormat.format(fcstCalendar),
-            style = typography.labelSmall
-        )
-
-        with(item.weatherIcon) {
-            pty[item.pty.code] ?: sky[item.sky.code]
-        }
-            ?.let {
-                Icon(
-                    painter = painterResource(id = it),
-                    contentDescription = null
-                )
-            }
-
-        item.tmp?.let {
-            Text(text = "$it${CELSIUS}")
-        }
-
-        item.reh?.let {
-            Text(text = it)
         }
     }
 }

@@ -19,7 +19,6 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import wing.tree.bionda.data.constant.CELSIUS
@@ -27,6 +26,7 @@ import wing.tree.bionda.data.extension.half
 import wing.tree.bionda.data.extension.`is`
 import wing.tree.bionda.data.extension.isZero
 import wing.tree.bionda.data.extension.zero
+import wing.tree.bionda.model.Chart
 import wing.tree.bionda.model.Forecast
 
 val DrawScope.nativeCanvas: Canvas get() = drawContext.canvas.nativeCanvas
@@ -65,8 +65,6 @@ fun DrawScope.drawTmp(
     offset: Offset,
     textPaint: TextPaint
 ) {
-    pointF.y += 32.dp.toPx()
-
     val text = buildString {
         if (tmp.isNotBlank()) {
             append(tmp)
@@ -81,15 +79,17 @@ fun DrawScope.drawTmp(
         textPaint
     )
 
-    pointF.y += 8.dp.toPx()
+    pointF.y += textPaint.height.half
 }
 
 fun DrawScope.drawTmpChart(
+    chart: Chart.Tmp.Chart,
     index: Int,
     tmpOffsets: List<Offset>,
     pointF: PointF,
     path: Path
 ) {
+    val height = chart.height.toPx()
     val offsets = tmpOffsets.map {
         it.copy(y = it.y.plus(pointF.y))
     }
@@ -112,26 +112,26 @@ fun DrawScope.drawTmpChart(
 
                 drawPath(
                     path = path,
-                    color = Color.Yellow,
+                    color = chart.color,
                     style = Stroke(width = Dp.one.toPx())
                 )
 
                 val fillPath = android.graphics.Path(path.asAndroidPath())
                     .asComposePath()
                     .apply {
-                        lineTo(size.width, pointF.y + 48.dp.toPx())
-                        lineTo(0f, pointF.y + 48.dp.toPx())
+                        lineTo(size.width, pointF.y.plus(height))
+                        lineTo(Float.zero, pointF.y.plus(height))
                         close()
                     }
 
                 val paint = Paint().apply {
                     shader = LinearGradientShader(
                         colors = listOf(
-                            Color.Yellow.copy(alpha = 0.75f),
+                            chart.color.copy(alpha = 0.75f),
                             Color.Transparent,
                         ),
-                        from = Offset(0f, pointF.y),
-                        to = Offset(0f, pointF.y + 36.dp.toPx())
+                        from = Offset(Float.zero, pointF.y),
+                        to = Offset(Float.zero, pointF.y.plus(height))
                     )
                 }
 
@@ -142,7 +142,7 @@ fun DrawScope.drawTmpChart(
         }
     }
 
-    pointF.y += 64.dp.toPx()
+    pointF.y += height
 }
 
 fun DrawScope.drawWeatherIcon(
