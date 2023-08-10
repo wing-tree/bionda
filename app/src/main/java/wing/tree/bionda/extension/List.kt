@@ -41,7 +41,11 @@ fun List<Forecast.Item>.toTmpOffsets(
         add(tmps.last())
     }
         .mapIndexed { index, tmp ->
-            val x = segment.width.times(index).toPx()
+            val x = segment
+                .width
+                .times(index)
+                .toPx()
+
             val y = tmp
                 .div(maxTmp)
                 .complement
