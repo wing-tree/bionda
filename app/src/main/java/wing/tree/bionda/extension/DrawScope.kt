@@ -87,7 +87,11 @@ fun DrawScope.drawTmpChart(
     style: ChartStyle.TmpChart
 ) {
     val height = style.height.toPx()
-    val offsets = tmpOffsets.map {
+    val offsets = tmpOffsets.ifEmpty {
+        pointF.y += height
+
+        return
+    }.map {
         it.copy(y = it.y.plus(pointF.y))
     }
 

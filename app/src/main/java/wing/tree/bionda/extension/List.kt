@@ -22,7 +22,7 @@ fun List<Forecast.Item>.toTmpOffsets(
     }
 
     val segment = style.segment
-    val height = style.tmp.chart.height
+    val height = style.tmpChart.height
     val tmps = map {
         it.tmp?.toFloat() ?: Float.zero
     }

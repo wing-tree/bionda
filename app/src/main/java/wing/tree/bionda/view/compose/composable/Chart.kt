@@ -27,6 +27,7 @@ import wing.tree.bionda.extension.drawWeatherIcon
 import wing.tree.bionda.extension.toTmpOffsets
 import wing.tree.bionda.model.ChartStyle
 import wing.tree.bionda.model.Forecast
+import java.lang.Float.min
 import java.util.Locale
 
 @Composable
@@ -89,7 +90,9 @@ fun Chart(
                 drawTmp(
                     tmp = item.tmp ?: String.empty,
                     pointF = pointF,
-                    offset = tmpOffsets[index],
+                    offset = with(min(tmpOffsets[index].y, tmpOffsets[index.inc()].y)) {
+                        tmpOffsets[index].copy(y = this)
+                    },
                     textPaint = tmpTextPaint
                 )
 
