@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Icon
@@ -94,7 +95,9 @@ private fun Content(
 //        )
         Chart(
             items = forecast.items,
-            modifier = Modifier.fillMaxWidth().height(160.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(160.dp)
         )
     }
 }
@@ -114,6 +117,7 @@ private fun Header(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             TextClock()
+            VerticalSpacer(height = 8.dp)
             Address(address = address)
         }
 
@@ -125,7 +129,7 @@ private fun Header(
                 item.tmp?.let {
                     Text(
                         text = "$it${String.degree}",
-                        style = typography.displayLarge
+                        style = typography.headlineLarge
                     )
                 }
 
@@ -158,7 +162,8 @@ private fun Address(
             Text(text = thoroughfare)
             Icon(
                 imageVector = Icons.Default.LocationOn,
-                contentDescription = null
+                contentDescription = null,
+                modifier.size(18.dp)
             )
         }
     }

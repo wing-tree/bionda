@@ -1,8 +1,6 @@
 package wing.tree.bionda.template
 
 import android.content.Context
-import android.icu.text.DateFormatSymbols
-import android.icu.util.Calendar
 import androidx.annotation.StringRes
 import wing.tree.bionda.R
 import wing.tree.bionda.data.constant.COMMA
@@ -12,14 +10,11 @@ import wing.tree.bionda.data.extension.hourOfDay
 import wing.tree.bionda.data.extension.ifZero
 import wing.tree.bionda.data.regular.koreaCalendar
 import wing.tree.bionda.model.Forecast
+import wing.tree.bionda.top.level.amString
+import wing.tree.bionda.top.level.pmString
 import java.time.LocalTime
-import java.util.Locale
 
 sealed class ContentTextTemplate {
-    private val amPmStrings = DateFormatSymbols(Locale.KOREA).amPmStrings
-    protected val amString: String = amPmStrings[Calendar.AM]
-    protected val pmString: String = amPmStrings[Calendar.PM]
-
     class PtyOrSky(private val context: Context) : ContentTextTemplate() {
         private fun getString(@StringRes resId: Int) = context.getString(resId)
 

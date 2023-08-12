@@ -90,7 +90,6 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
         super.onCreate(savedInstanceState)
 
         requestMultiplePermissions()
-
         setContent {
             BiondaTheme {
                 val state by viewModel.state.collectAsStateWithLifecycle()
@@ -101,7 +100,6 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
                         FloatingActionButton(
                             onClick = {
                                 val calendar = Calendar.getInstance(Locale.KOREA)
-
                                 val materialTimePicker = MaterialTimePicker.Builder()
                                     .setHour(calendar.hourOfDay)
                                     .setMinute(calendar.minute)

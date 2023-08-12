@@ -1,5 +1,6 @@
 package wing.tree.bionda.view.compose.composable
 
+import android.icu.text.SimpleDateFormat
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -27,10 +28,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import wing.tree.bionda.data.constant.COLON
 import wing.tree.bionda.data.extension.empty
 import wing.tree.bionda.data.model.Notice
+import wing.tree.bionda.data.regular.koreaCalendar
 import wing.tree.bionda.view.state.NoticeState
+import java.util.Locale
+
+private val simpleDateFormat = SimpleDateFormat("a h:mm", Locale.KOREA)
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -102,7 +106,7 @@ private fun Item(
                 },
         ),
     ) {
-        val text = "${item.hour}${COLON}${item.minute}"
+        val text = simpleDateFormat.format(koreaCalendar(item.hour))
 
         Row(
             modifier = Modifier
