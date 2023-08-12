@@ -26,6 +26,7 @@ import wing.tree.bionda.extension.drawReh
 import wing.tree.bionda.extension.drawTmp
 import wing.tree.bionda.extension.drawTmpChart
 import wing.tree.bionda.extension.drawWeatherIcon
+import wing.tree.bionda.extension.height
 import wing.tree.bionda.extension.toTmpOffsets
 import wing.tree.bionda.model.ChartStyle
 import wing.tree.bionda.model.Forecast
@@ -108,6 +109,8 @@ fun Chart(
                     pointF = pointF,
                     style = style.tmpChart,
                 )
+
+                pointF.y += tmpTextPaint.height
 
                 drawPcp(
                     pcp = item.pcp ?: String.empty,

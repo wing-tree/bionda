@@ -96,7 +96,7 @@ data class ChartStyle(
             tmp = Tmp,
             tmpChart = TmpChart(
                 color = Color.Cyan,
-                height = 64.dp
+                height = 32.dp
             ),
             weatherIcon = WeatherIcon(
                 width = 30.dp,
