@@ -12,10 +12,12 @@ import wing.tree.bionda.extension.toTextPaint
 data class ChartStyle(
     val segment: Segment,
     val fcstHour: FcstHour,
-    val weatherIcon: WeatherIcon,
+    val reh: Reh,
+    val pcp: Pcp,
+    val pop: Pop,
     val tmp: Tmp,
     val tmpChart: TmpChart,
-    val reh: Reh
+    val weatherIcon: WeatherIcon
 ) {
     @JvmInline
     value class Segment(val width: Dp)
@@ -33,20 +35,34 @@ data class ChartStyle(
                 .toTextPaint()
     }
 
-    data class WeatherIcon(
-        val width: Dp,
-        val height: Dp,
-        val color: Color
-    ) : Element {
-        override val textPaint: TextPaint?
+    object Pcp : Element {
+        override val textPaint: TextPaint
             @Composable
-            get() = null
+            get() = typography.labelLarge
+                .copy(textAlign = TextAlign.Center)
+                .toTextPaint()
+    }
+
+    object Pop : Element {
+        override val textPaint: TextPaint
+            @Composable
+            get() = typography.labelLarge
+                .copy(textAlign = TextAlign.Center)
+                .toTextPaint()
+    }
+
+    object Reh : Element {
+        override val textPaint: TextPaint
+            @Composable
+            get() = typography.labelLarge
+                .copy(textAlign = TextAlign.Center)
+                .toTextPaint()
     }
 
     object Tmp : Element {
         override val textPaint: TextPaint
             @Composable
-            get() = typography.labelLarge
+            get() = typography.labelMedium
                 .copy(textAlign = TextAlign.Center)
                 .toTextPaint()
     }
@@ -60,29 +76,33 @@ data class ChartStyle(
             get() = null
     }
 
-    object Reh : Element {
-        override val textPaint: TextPaint
+    data class WeatherIcon(
+        val width: Dp,
+        val height: Dp,
+        val color: Color
+    ) : Element {
+        override val textPaint: TextPaint?
             @Composable
-            get() = typography.labelMedium
-                .copy(textAlign = TextAlign.Center)
-                .toTextPaint()
+            get() = null
     }
 
     companion object {
         val default = ChartStyle(
             segment = Segment(width = 64.dp),
             fcstHour = FcstHour,
-            weatherIcon = WeatherIcon(
-                width = 30.dp,
-                height = 30.dp,
-                color = Color.Unspecified
-            ),
+            pcp = Pcp,
+            pop = Pop,
+            reh = Reh,
             tmp = Tmp,
             tmpChart = TmpChart(
                 color = Color.Cyan,
                 height = 64.dp
             ),
-            reh = Reh
+            weatherIcon = WeatherIcon(
+                width = 30.dp,
+                height = 30.dp,
+                color = Color.Unspecified
+            )
         )
     }
 }

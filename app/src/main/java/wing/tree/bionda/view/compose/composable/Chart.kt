@@ -20,6 +20,8 @@ import wing.tree.bionda.data.extension.half
 import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.data.regular.fcstCalendar
 import wing.tree.bionda.extension.drawFcstHour
+import wing.tree.bionda.extension.drawPcp
+import wing.tree.bionda.extension.drawPop
 import wing.tree.bionda.extension.drawReh
 import wing.tree.bionda.extension.drawTmp
 import wing.tree.bionda.extension.drawTmpChart
@@ -41,9 +43,12 @@ fun Chart(
     val count = items.count()
 
     val segment = style.segment
+
     val fcstHourTextPaint = style.fcstHour.textPaint
-    val tmpTextPaint = style.tmp.textPaint
+    val pcpTextPaint = style.pcp.textPaint
+    val popTextPaint = style.pop.textPaint
     val rehTextPaint = style.reh.textPaint
+    val tmpTextPaint = style.tmp.textPaint
 
     val path = Path()
     val scrollState = rememberScrollState()
@@ -102,6 +107,18 @@ fun Chart(
                     path = path,
                     pointF = pointF,
                     style = style.tmpChart,
+                )
+
+                drawPcp(
+                    pcp = item.pcp ?: String.empty,
+                    pointF = pointF,
+                    textPaint = pcpTextPaint
+                )
+
+                drawPop(
+                    pop = item.pop ?: String.empty,
+                    pointF = pointF,
+                    textPaint = popTextPaint
                 )
 
                 drawReh(

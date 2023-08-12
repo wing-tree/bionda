@@ -30,6 +30,8 @@ data class Forecast(
         val codeValues: ImmutableMap<String, String>
     ) {
         val fcstHour: Int get() = fcstTime.div(Int.oneHundred)
+        val pcp = codeValues[Category.VilageFcst.PCP]
+        val pop = codeValues[Category.VilageFcst.POP]
         val pty = CodeValue.Pty(code = codeValues[Category.VilageFcst.PTY])
         val reh = codeValues[Category.VilageFcst.REH]
         val sky = CodeValue.Sky(code = codeValues[Category.VilageFcst.SKY])

@@ -45,6 +45,36 @@ fun DrawScope.drawFcstHour(
     )
 }
 
+fun DrawScope.drawPcp(
+    pcp: String,
+    pointF: PointF,
+    textPaint: TextPaint
+) {
+    nativeCanvas.drawText(
+        pcp,
+        pointF.x,
+        pointF.y,
+        textPaint
+    )
+
+    pointF.y += textPaint.height
+}
+
+fun DrawScope.drawPop(
+    pop: String,
+    pointF: PointF,
+    textPaint: TextPaint
+) {
+    nativeCanvas.drawText(
+        pop,
+        pointF.x,
+        pointF.y,
+        textPaint
+    )
+
+    pointF.y += textPaint.height
+}
+
 fun DrawScope.drawReh(
     reh: String,
     pointF: PointF,
