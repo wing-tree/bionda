@@ -79,7 +79,6 @@ class ForecastRepository(
             val detailedFunction = DetailedFunction.VILAGE_FCST
             val apiDeliveryCalendar = apiDeliveryCalendar(detailedFunction)
             val baseCalendar = baseCalendar(detailedFunction)
-
             val vilageFcst = localDataSource.load(
                 apiDeliveryCalendar.apiDeliveryDate,
                 apiDeliveryCalendar.apiDeliveryTime,
@@ -87,7 +86,7 @@ class ForecastRepository(
                 ny
             ) ?: remoteDataSource.getVilageFcst(
                 serviceKey = BuildConfig.serviceKey,
-                numOfRows = 144,
+                numOfRows = 242,
                 pageNo = Int.one,
                 dataType = DATA_TYPE,
                 baseDate = baseCalendar.baseDate,
