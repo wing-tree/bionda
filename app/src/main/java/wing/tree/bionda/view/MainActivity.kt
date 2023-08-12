@@ -111,10 +111,8 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
                 val state by viewModel.state.collectAsStateWithLifecycle()
                 val windowSizeClass = rememberWindowSizeClass()
 
-                BackHandler {
-                    if (state.inSelectionMode) {
-                        viewModel.inSelectionMode.toggle()
-                    }
+                BackHandler(enabled = state.inSelectionMode) {
+                    viewModel.inSelectionMode.toggle()
                 }
 
                 Scaffold(
