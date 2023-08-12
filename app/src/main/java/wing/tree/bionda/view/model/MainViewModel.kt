@@ -85,14 +85,21 @@ class MainViewModel @Inject constructor(
         initialValue = ForecastState.initialValue
     )
 
-    private val noticeState = noticeRepository
-        .load()
-        .map {
-            when (it) {
-                is Complete.Success -> NoticeState.Content(it.data)
-                is Complete.Failure -> NoticeState.Error(it.throwable)
-            }
-        }.stateIn(
+    private val isInSelectionMode = MutableStateFlow(false)
+    private val noticeState = combine(
+        noticeRepository.load(),
+        isInSelectionMode
+    ) { notice, isInSelectionMode ->
+        when (notice) {
+            is Complete.Success -> NoticeState.Content(
+                notices = notice.data,
+                isInSelectionMode = isInSelectionMode
+            )
+
+            is Complete.Failure -> NoticeState.Error(notice.throwable)
+        }
+    }
+        .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(stopTimeoutMillis),
             initialValue = NoticeState.initialValue

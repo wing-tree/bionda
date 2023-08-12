@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Switch
@@ -104,7 +105,7 @@ private fun Item(
                 onLongClick = {
                     onLongClick(item)
                 },
-        ),
+            ),
     ) {
         val text = simpleDateFormat.format(koreaCalendar(item.hour, item.minute))
 
@@ -118,6 +119,13 @@ private fun Item(
             var checked by remember(key1 = item.checked) {
                 mutableStateOf(item.checked)
             }
+
+            Checkbox(
+                checked = true,
+                onCheckedChange = {
+
+                }
+            )
 
             Text(
                 text = text,

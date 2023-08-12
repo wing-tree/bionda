@@ -32,7 +32,10 @@ sealed interface ForecastState {
 
 sealed interface NoticeState {
     object Loading : NoticeState
-    data class Content(val notices: ImmutableList<Notice>) : NoticeState
+    data class Content(
+        val notices: ImmutableList<Notice>,
+        val isInSelectionMode: Boolean = false
+    ) : NoticeState
     data class Error(val throwable: Throwable) : NoticeState
 
     companion object {
