@@ -3,8 +3,6 @@ package wing.tree.bionda.service
 import android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
 import android.Manifest.permission.POST_NOTIFICATIONS
 import android.app.Notification
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.app.Service
 import android.content.Intent
 import android.content.pm.ServiceInfo
@@ -16,7 +14,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import wing.tree.bionda.R
 import wing.tree.bionda.data.constant.EXTRA_NOTICE_ID
 import wing.tree.bionda.data.extension.negativeOne
 import wing.tree.bionda.data.model.Notice
@@ -32,6 +29,8 @@ import wing.tree.bionda.model.Forecast
 import wing.tree.bionda.permissions.PermissionChecker
 import wing.tree.bionda.permissions.locationPermissions
 import wing.tree.bionda.scheduler.AlarmScheduler
+import wing.tree.bionda.service.NotificationChannelProvider.Type.FORECAST
+import wing.tree.bionda.service.NotificationChannelProvider.Type.LOCATION
 import wing.tree.bionda.service.NotificationFactory.Type
 import wing.tree.bionda.template.ContentTextTemplate
 import javax.inject.Inject
@@ -50,6 +49,10 @@ class NoticeService : Service(), PermissionChecker {
     @Inject
     lateinit var noticeRepository: NoticeRepository
 
+    @Inject
+    lateinit var notificationChannelProvider: NotificationChannelProvider
+
+    private val context = this
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
     private val notificationManager by lazy {
         NotificationManagerCompat.from(this)
@@ -91,10 +94,8 @@ class NoticeService : Service(), PermissionChecker {
                                 Forecast.toPresentationModel(it)
                             }.onSuccess { forecast ->
                                 stopForeground(STOP_FOREGROUND_REMOVE)
-                                postNotification(
-                                    forecast = forecast,
-                                    notice = notice
-                                )
+
+                                notice.postNotification(forecast)
 
                                 stopSelf()
                             }.onFailure {
@@ -104,14 +105,15 @@ class NoticeService : Service(), PermissionChecker {
                             }
                         } ?: run {
                             if (checkSelfSinglePermission(ACCESS_BACKGROUND_LOCATION).not()) {
-                                val channelId = createForecastChannel()
+                                val channelId = createNotificationChannel(FORECAST)
                                 val notification = NotificationFactory.create(
                                     context,
                                     Type.AccessBackgroundLocation(channelId)
                                 )
 
                                 stopForeground(STOP_FOREGROUND_REMOVE)
-                                postNotification(notice.notificationId, notification)
+
+                                notification.post(notice.notificationId)
                             }
 
                             stopSelf()
@@ -132,34 +134,15 @@ class NoticeService : Service(), PermissionChecker {
         return START_NOT_STICKY
     }
 
-    private fun createForecastChannel(): String {
-        val channelId = packageName
-        val channelName = getString(R.string.app_name)
-        val importance = NotificationManager.IMPORTANCE_DEFAULT
-        val notificationChannel = NotificationChannel(channelId, channelName, importance).apply {
-            setShowBadge(true)
-        }
-
-        notificationManager.createNotificationChannel(notificationChannel)
-
-        return channelId
+    private fun createNotificationChannel(
+        type: NotificationChannelProvider.Type
+    ) = notificationChannelProvider.getNotificationChannel(type).also {
+        notificationManager.createNotificationChannel(it)
     }
-
-    private fun createLocationChannel(): String {
-        val channelId = packageName + "location"
-        val channelName = getString(R.string.app_name) + "location"
-        val importance = NotificationManager.IMPORTANCE_MIN
-        val locationChannel = NotificationChannel(channelId, channelName, importance).apply {
-            setShowBadge(false)
-        }
-
-        notificationManager.createNotificationChannel(locationChannel)
-
-        return channelId
-    }
+        .id
 
     private fun startForeground(notificationId: Int) {
-        val channelId = createLocationChannel()
+        val channelId = createNotificationChannel(LOCATION)
         val notification = NotificationFactory.create(
             this,
             Type.Location(channelId)
@@ -176,20 +159,18 @@ class NoticeService : Service(), PermissionChecker {
         }
     }
 
-    private fun postNotification(notificationId: Int, notification: Notification) {
-        if (checkSelfSinglePermission(POST_NOTIFICATIONS)) {
-            notificationManager.notify(notificationId, notification)
-        }
+    private fun Notice.postNotification(forecast: Forecast) {
+        val channelId = createNotificationChannel(FORECAST)
+        val ptyOrSky = ContentTextTemplate.PtyOrSky(context)
+        val type = Type.Notice(channelId, ptyOrSky(forecast), requestCode)
+        val notification = NotificationFactory.create(context, type)
+
+        notification.post(notificationId)
     }
 
-    private fun postNotification(forecast: Forecast, notice: Notice) {
-        val channelId = createForecastChannel()
-        val notificationId = notice.notificationId
-
-        val ptyOrSky = ContentTextTemplate.PtyOrSky(this)
-        val type = Type.Notice(channelId, ptyOrSky(forecast), notice.requestCode)
-        val notification = NotificationFactory.create(this, type)
-
-        postNotification(notificationId, notification)
+    private fun Notification.post(notificationId: Int) {
+        if (checkSelfSinglePermission(POST_NOTIFICATIONS)) {
+            notificationManager.notify(notificationId, this)
+        }
     }
 }
