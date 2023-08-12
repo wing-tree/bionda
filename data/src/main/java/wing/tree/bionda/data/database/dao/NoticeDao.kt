@@ -23,6 +23,9 @@ interface NoticeDao {
     @Query("SELECT * FROM notice WHERE id = :id")
     suspend fun get(id: Long): Notice?
 
+    @Query("SELECT EXISTS(SELECT * FROM notice WHERE hour = :hour AND minute = :minute)")
+    suspend fun isExists(hour: Int, minute: Int): Boolean
+
     @Query("SELECT * FROM notice ORDER BY hour AND minute ASC")
     fun load(): Flow<List<Notice>>
 }

@@ -86,8 +86,15 @@ fun fcstCalendar(hourOfDay: Int): Calendar = koreaCalendar().apply {
     this.hourOfDay = hourOfDay
 }
 
-fun koreaCalendar(hourOfDay: Int? = null): Calendar = Calendar.getInstance(Locale.KOREA).apply {
+fun koreaCalendar(
+    hourOfDay: Int? = null,
+    minute: Int? = null
+): Calendar = Calendar.getInstance(Locale.KOREA).apply {
     hourOfDay?.let {
         this.hourOfDay = it
+    }
+
+    minute?.let {
+        this.minute = it
     }
 }

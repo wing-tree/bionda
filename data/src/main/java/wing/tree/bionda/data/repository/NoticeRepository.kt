@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import wing.tree.bionda.data.extension.negativeOne
 import wing.tree.bionda.data.model.Notice
 import wing.tree.bionda.data.model.Result.Complete
 import wing.tree.bionda.data.source.local.NoticeDataSource
@@ -22,7 +23,13 @@ class NoticeRepository(private val noticeDataSource: NoticeDataSource) {
         }.flowOn(ioDispatcher)
 
     suspend fun add(notice: Notice): Long {
-        return noticeDataSource.insert(notice)
+        return with(noticeDataSource) {
+            if (isExists(notice.hour, notice.minute)) {
+                Long.negativeOne
+            } else {
+                noticeDataSource.insert(notice)
+            }
+        }
     }
 
     suspend fun update(notice: Notice) {

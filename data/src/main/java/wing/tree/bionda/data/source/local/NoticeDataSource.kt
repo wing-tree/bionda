@@ -21,4 +21,8 @@ class NoticeDataSource(private val noticeDao: NoticeDao) {
     suspend fun get(id: Long): Notice? {
         return noticeDao.get(id)
     }
+
+    suspend fun isExists(hour: Int, minute: Int): Boolean {
+        return noticeDao.isExists(hour, minute)
+    }
 }

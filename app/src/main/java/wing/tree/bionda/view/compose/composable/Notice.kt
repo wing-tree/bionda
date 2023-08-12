@@ -106,7 +106,7 @@ private fun Item(
                 },
         ),
     ) {
-        val text = simpleDateFormat.format(koreaCalendar(item.hour))
+        val text = simpleDateFormat.format(koreaCalendar(item.hour, item.minute))
 
         Row(
             modifier = Modifier

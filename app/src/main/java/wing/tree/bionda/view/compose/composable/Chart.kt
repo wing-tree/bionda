@@ -50,7 +50,6 @@ fun Chart(
     val rehTextPaint = style.reh.textPaint
     val tmpTextPaint = style.tmp.textPaint
 
-    val path = Path()
     val scrollState = rememberScrollState()
     val simpleDateFormat = SimpleDateFormat(
         context.getString(R.string.pattern_fcst_hour),
@@ -59,6 +58,7 @@ fun Chart(
 
     Row(modifier = modifier.horizontalScroll(scrollState)) {
         Canvas(modifier = Modifier.width(segment.width.times(count))) {
+            val path = Path()
             val tmpOffsets = items.toTmpOffsets(
                 density = density,
                 style = style

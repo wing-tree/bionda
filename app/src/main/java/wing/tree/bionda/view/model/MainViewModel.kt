@@ -21,6 +21,7 @@ import wing.tree.bionda.data.extension.eight
 import wing.tree.bionda.data.extension.fiveSecondsInMilliseconds
 import wing.tree.bionda.data.extension.ifTrue
 import wing.tree.bionda.data.extension.isNotNull
+import wing.tree.bionda.data.extension.negativeOne
 import wing.tree.bionda.data.model.Notice
 import wing.tree.bionda.data.model.Result
 import wing.tree.bionda.data.model.Result.Complete
@@ -152,7 +153,9 @@ class MainViewModel @Inject constructor(
             val notice = Notice(hour = hour, minute = minute)
             val id = noticeRepository.add(notice)
 
-            alarmScheduler.schedule(notice.copy(id = id))
+            if (id > Long.negativeOne) {
+                alarmScheduler.schedule(notice.copy(id = id))
+            }
         }
     }
 
