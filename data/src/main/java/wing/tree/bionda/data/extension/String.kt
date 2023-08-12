@@ -1,5 +1,6 @@
 package wing.tree.bionda.data.extension
 
+val String.Companion.degree: String get() = "°"
 val String.Companion.empty: String get() = ""
 val String.Companion.zero: String get() = "0"
 val String.floatOrNull: Float? get() = toFloatOrNull()

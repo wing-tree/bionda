@@ -17,7 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import wing.tree.bionda.data.constant.CELSIUS
+import wing.tree.bionda.data.extension.degree
 import wing.tree.bionda.data.extension.empty
 import wing.tree.bionda.data.extension.`is`
 import wing.tree.bionda.data.extension.isNotNull
@@ -124,7 +124,7 @@ private fun Header(
             currentItem?.let { item ->
                 item.tmp?.let {
                     Text(
-                        text = "$it${CELSIUS}",
+                        text = "$it${String.degree}",
                         style = typography.displayLarge
                     )
                 }

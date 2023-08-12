@@ -21,7 +21,7 @@ import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.unit.Dp
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
-import wing.tree.bionda.data.constant.CELSIUS
+import wing.tree.bionda.data.extension.degree
 import wing.tree.bionda.data.extension.half
 import wing.tree.bionda.data.extension.int
 import wing.tree.bionda.data.extension.`is`
@@ -67,7 +67,7 @@ fun DrawScope.drawTmp(
     val text = buildString {
         if (tmp.isNotBlank()) {
             append(tmp)
-            append(CELSIUS)
+            append(String.degree)
         }
     }
 
