@@ -17,12 +17,16 @@ fun List<Forecast.Item>.toTmpOffsets(
         return emptyList()
     }
 
+    val segment = style.segment
+    val height = style.tmpChart.height
     val maxTmp = maxOf {
         it.tmp?.floatOrNull ?: Float.zero
     }
 
-    val segment = style.segment
-    val height = style.tmpChart.height
+    val minTmp = minOf {
+        it.tmp?.floatOrNull ?: Float.zero
+    }
+
     val tmps = map {
         it.tmp?.toFloat() ?: Float.zero
     }
@@ -47,7 +51,8 @@ fun List<Forecast.Item>.toTmpOffsets(
                 .toPx()
 
             val y = tmp
-                .div(maxTmp)
+                .minus(minTmp)
+                .div(maxTmp.minus(minTmp))
                 .complement
                 .times(height.toPx())
 
