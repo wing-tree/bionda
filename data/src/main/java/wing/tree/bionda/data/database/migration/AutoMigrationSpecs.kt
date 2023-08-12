@@ -5,8 +5,8 @@ import androidx.room.migration.AutoMigrationSpec
 
 object AutoMigrationSpecs {
     @RenameColumn(tableName = "notice", fromColumnName = "notificationId", toColumnName = "id")
-    class Schema1To2 : AutoMigrationSpec
+    class From1To2 : AutoMigrationSpec
 
     @RenameColumn(tableName = "notice", fromColumnName = "checked", toColumnName = "on")
-    class Schema2To3 : AutoMigrationSpec
+    class From2To3 : AutoMigrationSpec
 }
