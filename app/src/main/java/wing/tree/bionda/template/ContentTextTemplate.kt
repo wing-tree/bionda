@@ -5,9 +5,13 @@ import androidx.annotation.StringRes
 import wing.tree.bionda.R
 import wing.tree.bionda.data.constant.COMMA
 import wing.tree.bionda.data.constant.NEWLINE
+import wing.tree.bionda.data.constant.SPACE
+import wing.tree.bionda.data.extension.baseDate
 import wing.tree.bionda.data.extension.hour
 import wing.tree.bionda.data.extension.hourOfDay
 import wing.tree.bionda.data.extension.ifZero
+import wing.tree.bionda.data.extension.int
+import wing.tree.bionda.data.extension.`is`
 import wing.tree.bionda.data.regular.koreaCalendar
 import wing.tree.bionda.model.Forecast
 import wing.tree.bionda.top.level.amString
@@ -20,10 +24,14 @@ sealed class ContentTextTemplate {
 
         operator fun invoke(forecast: Forecast): String {
             val koreaCalendar = koreaCalendar()
+            val separator = "$COMMA$SPACE"
 
-            return forecast.items.groupBy {
-                it.pty.value ?: it.sky.value
-            }
+            return forecast.items
+                .filter {
+                    it.fcstDate `is` koreaCalendar.baseDate.int
+                }.groupBy {
+                    it.pty.value ?: it.sky.value
+                }
                 .toList()
                 .joinToString(separator = NEWLINE) { (value, items) ->
                     val amHours = mutableListOf<Int>()
@@ -47,23 +55,23 @@ sealed class ContentTextTemplate {
 
                     buildString {
                         if (amHours.isNotEmpty()) {
-                            append("$amString ")
-                            append(amHours.joinToString(separator = "$COMMA ", postfix = getString(R.string.hour)))
+                            append("$amString$SPACE")
+                            append(amHours.joinToString(separator = separator, postfix = getString(R.string.hour)))
 
                             if (pmHours.isNotEmpty()) {
-                                append("$COMMA ")
+                                append(separator)
                             }
                         }
 
                         if (pmHours.isNotEmpty()) {
-                            append("$pmString ")
-                            append(pmHours.joinToString(separator = "$COMMA ", postfix = getString(R.string.hour)))
+                            append("$pmString$SPACE")
+                            append(pmHours.joinToString(separator = separator, postfix = getString(R.string.hour)))
                         }
 
                         append("${getString(R.string.at)} $value$COMMA")
                     }
                 }
-                .replace(Regex("$COMMA$"), "가/이 올 예정입니다.")
+                    .replace(Regex("$COMMA$"), "가/이 올 예정입니다.")
         }
     }
 }
