@@ -1,13 +1,16 @@
 package wing.tree.bionda.view.state
 
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentSetOf
 import wing.tree.bionda.data.model.Notice
 import wing.tree.bionda.model.Address
 import wing.tree.bionda.model.Forecast
 
 data class MainState(
     val forecastState: ForecastState = ForecastState.initialValue,
+    val inSelectionMode: Boolean = false,
     val noticeState: NoticeState = NoticeState.initialValue,
     val requestPermissionsState: RequestPermissionsState = RequestPermissionsState.initialValue
 ) {
@@ -34,7 +37,7 @@ sealed interface NoticeState {
     object Loading : NoticeState
     data class Content(
         val notices: ImmutableList<Notice>,
-        val isInSelectionMode: Boolean = false
+        val selected: ImmutableSet<Long> = persistentSetOf()
     ) : NoticeState
     data class Error(val throwable: Throwable) : NoticeState
 

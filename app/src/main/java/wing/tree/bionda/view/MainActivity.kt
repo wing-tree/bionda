@@ -8,18 +8,30 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -35,6 +47,7 @@ import wing.tree.bionda.data.extension.minute
 import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.extension.rememberWindowSizeClass
+import wing.tree.bionda.extension.toggle
 import wing.tree.bionda.model.WindowSizeClass
 import wing.tree.bionda.permissions.PermissionChecker
 import wing.tree.bionda.permissions.RequestMultiplePermissions
@@ -98,23 +111,84 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
                 val state by viewModel.state.collectAsStateWithLifecycle()
                 val windowSizeClass = rememberWindowSizeClass()
 
+                BackHandler {
+                    if (state.inSelectionMode) {
+                        viewModel.inSelectionMode.toggle()
+                    }
+                }
+
                 Scaffold(
+                    bottomBar = {
+                        AnimatedVisibility(
+                            visible = state.inSelectionMode,
+                            enter = slideInVertically {
+                                it
+                            },
+                            exit = slideOutVertically {
+                                it
+                            },
+                        ) {
+                            BottomAppBar {
+                                TextButton(
+                                    onClick = {
+                                        viewModel.alarmOn()
+                                    },
+                                    modifier = Modifier.weight(Float.one)
+                                ) {
+                                    Column(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.baseline_alarm_on_24),
+                                            contentDescription = null,
+                                            modifier = Modifier
+                                                .size(32.dp)
+                                                .padding(4.dp)
+                                        )
+
+                                        VerticalSpacer(height = 4.dp)
+
+                                        Text(
+                                            text = "Alarm On",
+                                            style = typography.labelMedium
+                                        )
+                                    }
+                                }
+
+                                TextButton(
+                                    onClick = {
+                                        viewModel.delete()
+                                    },
+                                    modifier = Modifier.weight(Float.one)
+                                ) {
+                                    Column(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Delete,
+                                            contentDescription = null,
+                                            modifier = Modifier
+                                                .size(32.dp)
+                                                .padding(4.dp)
+                                        )
+
+                                        VerticalSpacer(height = 4.dp)
+
+                                        Text(
+                                            text = "Delete",
+                                            style = typography.labelMedium
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    },
                     floatingActionButton = {
                         FloatingActionButton(
                             onClick = {
-                                val calendar = Calendar.getInstance(Locale.KOREA)
-                                val materialTimePicker = MaterialTimePicker.Builder()
-                                    .setHour(calendar.hourOfDay)
-                                    .setMinute(calendar.minute)
-                                    .build()
-
-                                with(materialTimePicker) {
-                                    addOnPositiveButtonClickListener {
-                                        viewModel.add(hour, minute)
-                                    }
-
-                                    show(supportFragmentManager, tag)
-                                }
+                                onFloatingActionButtonClick()
                             }
                         ) {
                             Icon(
@@ -183,14 +257,27 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
 
                         Notice(
                             state = state.noticeState,
+                            inSelectionMode = state.inSelectionMode,
                             onClick = {
 
                             },
                             onLongClick = {
-                                viewModel.delete(it)
+                                with(viewModel) {
+                                    inSelectionMode.toggle()
+                                    select(it)
+                                }
                             },
                             onCheckedChange = { notice, checked ->
                                 viewModel.update(notice.copy(on = checked))
+                            },
+                            onSelectedChange = { notice, selected ->
+                                with(viewModel) {
+                                    if (selected) {
+                                        select(notice)
+                                    } else {
+                                        deselect(notice)
+                                    }
+                                }
                             },
                             modifier = Modifier
                                 .weight(Float.one)
@@ -213,6 +300,22 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
             } else {
                 viewModel.notifyPermissionsGranted(permissions)
             }
+        }
+    }
+
+    private fun onFloatingActionButtonClick() {
+        val calendar = Calendar.getInstance(Locale.KOREA)
+        val materialTimePicker = MaterialTimePicker.Builder()
+            .setHour(calendar.hourOfDay)
+            .setMinute(calendar.minute)
+            .build()
+
+        with(materialTimePicker) {
+            addOnPositiveButtonClickListener {
+                viewModel.add(hour, minute)
+            }
+
+            show(supportFragmentManager, tag)
         }
     }
 }

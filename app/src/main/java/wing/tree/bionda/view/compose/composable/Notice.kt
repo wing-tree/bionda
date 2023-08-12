@@ -2,6 +2,7 @@ package wing.tree.bionda.view.compose.composable
 
 import android.icu.text.SimpleDateFormat
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
@@ -30,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import wing.tree.bionda.data.extension.empty
+import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.model.Notice
 import wing.tree.bionda.data.regular.koreaCalendar
 import wing.tree.bionda.view.state.NoticeState
@@ -41,9 +43,11 @@ private val simpleDateFormat = SimpleDateFormat("a h:mm", Locale.KOREA)
 @Composable
 fun Notice(
     state: NoticeState,
+    inSelectionMode: Boolean,
     onClick: (Notice) -> Unit,
     onLongClick: (Notice) -> Unit,
     onCheckedChange: (Notice, Boolean) -> Unit,
+    onSelectedChange: (Notice, Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     AnimatedContent(
@@ -71,9 +75,12 @@ fun Notice(
                 ) { item ->
                     Item(
                         item = item,
+                        inSelectionMode = inSelectionMode,
+                        selected = item.id in it.selected,
                         onClick = onClick,
                         onLongClick = onLongClick,
                         onCheckedChange = onCheckedChange,
+                        onSelectedChange = onSelectedChange,
                         modifier = Modifier
                             .fillMaxWidth()
                             .animateItemPlacement()
@@ -90,9 +97,12 @@ fun Notice(
 @Composable
 private fun Item(
     item: Notice,
+    inSelectionMode: Boolean,
+    selected: Boolean,
     onClick: (Notice) -> Unit,
     onLongClick: (Notice) -> Unit,
     onCheckedChange: (Notice, Boolean) -> Unit,
+    onSelectedChange: (Notice, Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     ElevatedCard(
@@ -113,22 +123,24 @@ private fun Item(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             var on by remember(key1 = item.on) {
                 mutableStateOf(item.on)
             }
 
-            Checkbox(
-                checked = true,
-                onCheckedChange = {
-
-                }
-            )
+            AnimatedVisibility(visible = inSelectionMode) {
+                Checkbox(
+                    checked = selected,
+                    onCheckedChange = {
+                        onSelectedChange(item, it)
+                    }
+                )
+            }
 
             Text(
                 text = text,
+                modifier = Modifier.weight(Float.one),
                 style = typography.titleLarge
             )
 

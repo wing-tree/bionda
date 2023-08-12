@@ -7,6 +7,7 @@ import android.os.Build
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -85,15 +86,16 @@ class MainViewModel @Inject constructor(
         initialValue = ForecastState.initialValue
     )
 
-    private val isInSelectionMode = MutableStateFlow(false)
+    val inSelectionMode = MutableStateFlow(false)
+    private val selected = MutableStateFlow(persistentSetOf<Long>())
     private val noticeState = combine(
         noticeRepository.load(),
-        isInSelectionMode
-    ) { notice, isInSelectionMode ->
+        selected
+    ) { notice, selected ->
         when (notice) {
             is Complete.Success -> NoticeState.Content(
                 notices = notice.data,
-                isInSelectionMode = isInSelectionMode
+                selected = selected
             )
 
             is Complete.Failure -> NoticeState.Error(notice.throwable)
@@ -109,11 +111,13 @@ class MainViewModel @Inject constructor(
 
     val state: StateFlow<MainState> = combine(
         forecastState,
+        inSelectionMode,
         noticeState,
         requestPermissionsState
-    ) { forecastState, noticeState, requestPermissionsState ->
+    ) { forecastState, inSelectionMode, noticeState, requestPermissionsState ->
         MainState(
             forecastState = forecastState,
+            inSelectionMode = inSelectionMode,
             noticeState = noticeState,
             requestPermissionsState = requestPermissionsState
         )
@@ -166,10 +170,29 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun delete(notice: Notice) {
+    fun alarmOn() {
+        noticeState.selected().forEach {
+            update(it.copy(on = true))
+        }
+    }
+
+    fun delete(notice: Notice? = null) {
         viewModelScope.launch {
-            noticeRepository.delete(notice)
-            alarmScheduler.cancel(notice)
+            if (notice.isNotNull()) {
+                noticeRepository.delete(notice)
+                alarmScheduler.cancel(notice)
+            } else {
+                noticeState.selected().forEach {
+                    noticeRepository.delete(it)
+                    alarmScheduler.cancel(it)
+                }
+            }
+        }
+    }
+
+    fun deselect(notice: Notice) {
+        selected.update {
+            it.remove(notice.id)
         }
     }
 
@@ -218,6 +241,12 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    fun select(notice: Notice) {
+        selected.update {
+            it.add(notice.id)
+        }
+    }
+
     fun update(notice: Notice) {
         viewModelScope.launch {
             noticeRepository.update(notice)
@@ -227,6 +256,16 @@ class MainViewModel @Inject constructor(
             } else {
                 alarmScheduler.cancel(notice)
             }
+        }
+    }
+
+    private fun StateFlow<NoticeState>.selected(): List<Notice> = with(value) {
+        if (this is NoticeState.Content) {
+            notices.filter {
+                it.id in selected
+            }
+        } else {
+            emptyList()
         }
     }
 }
