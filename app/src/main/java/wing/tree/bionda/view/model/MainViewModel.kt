@@ -222,7 +222,7 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             noticeRepository.update(notice)
 
-            if (notice.checked) {
+            if (notice.on) {
                 alarmScheduler.schedule(notice)
             } else {
                 alarmScheduler.cancel(notice)

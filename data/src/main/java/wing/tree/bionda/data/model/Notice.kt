@@ -14,13 +14,17 @@ import wing.tree.bionda.data.extension.zero
 data class Notice(
     @PrimaryKey(autoGenerate = true)
     val id: Long = Long.zero,
-    val checked: Boolean = true,
     val hour: Int,
-    val minute: Int
+    val minute: Int,
+    val on: Boolean = true
 ) : Parcelable {
     @IgnoredOnParcel
     @get:Ignore
     val notificationId: Int get() = id.inc().int
+
+    @IgnoredOnParcel
+    @get:Ignore
+    val off: Boolean get() = on.not()
 
     @IgnoredOnParcel
     @get:Ignore

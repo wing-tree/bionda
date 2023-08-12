@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import wing.tree.bionda.data.database.dao.ForecastDao
 import wing.tree.bionda.data.database.dao.NoticeDao
-import wing.tree.bionda.data.database.migration.RenameColumn
+import wing.tree.bionda.data.database.migration.AutoMigrationSpecs
 import wing.tree.bionda.data.database.type.converters.TypeConverters
 import wing.tree.bionda.data.model.Notice
 import wing.tree.bionda.data.model.forecast.local.Forecast
@@ -14,13 +14,10 @@ import wing.tree.bionda.data.model.forecast.local.Forecast
 @androidx.room.Database(
     entities = [Forecast::class, Notice::class],
     exportSchema = true,
-    version = 2,
+    version = 3,
     autoMigrations = [
-        AutoMigration(
-            from = 1,
-            to = 2,
-            spec = RenameColumn::class
-        )
+        AutoMigration(from = 1, to = 2, spec = AutoMigrationSpecs.Schema1To2::class),
+        AutoMigration(from = 2, to = 3, spec = AutoMigrationSpecs.Schema2To3::class)
     ]
 )
 @androidx.room.TypeConverters(TypeConverters::class)

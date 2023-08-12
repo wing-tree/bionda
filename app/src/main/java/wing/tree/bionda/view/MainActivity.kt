@@ -190,7 +190,7 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
                                 viewModel.delete(it)
                             },
                             onCheckedChange = { notice, checked ->
-                                viewModel.update(notice.copy(checked = checked))
+                                viewModel.update(notice.copy(on = checked))
                             },
                             modifier = Modifier
                                 .weight(Float.one)

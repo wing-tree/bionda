@@ -73,7 +73,7 @@ class NoticeService : Service(), PermissionChecker {
             val noticeId = intent.getLongExtra(EXTRA_NOTICE_ID, Long.negativeOne)
             val notice = noticeRepository.get(noticeId) ?: return@launch
 
-            if (notice.checked.not()) {
+            if (notice.off) {
                 alarmScheduler.cancel(notice)
 
                 return@launch

@@ -116,8 +116,8 @@ private fun Item(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            var checked by remember(key1 = item.checked) {
-                mutableStateOf(item.checked)
+            var on by remember(key1 = item.on) {
+                mutableStateOf(item.on)
             }
 
             Checkbox(
@@ -133,10 +133,10 @@ private fun Item(
             )
 
             Switch(
-                checked = checked,
+                checked = on,
                 onCheckedChange = {
-                    checked = it
-                    onCheckedChange(item, checked)
+                    on = it
+                    onCheckedChange(item, on)
                 }
             )
         }
