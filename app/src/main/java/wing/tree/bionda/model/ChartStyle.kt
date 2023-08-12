@@ -88,7 +88,7 @@ data class ChartStyle(
 
     companion object {
         val default = ChartStyle(
-            segment = Segment(width = 64.dp),
+            segment = Segment(width = 72.dp),
             fcstHour = FcstHour,
             pcp = Pcp,
             pop = Pop,
@@ -96,7 +96,7 @@ data class ChartStyle(
             tmp = Tmp,
             tmpChart = TmpChart(
                 color = Color.Cyan,
-                height = 32.dp
+                height = 24.dp
             ),
             weatherIcon = WeatherIcon(
                 width = 30.dp,
