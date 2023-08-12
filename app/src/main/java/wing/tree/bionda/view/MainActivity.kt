@@ -23,6 +23,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.core.view.WindowCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.material.timepicker.MaterialTimePicker
 import dagger.hilt.android.AndroidEntryPoint
@@ -88,6 +89,8 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        WindowCompat.setDecorFitsSystemWindows(window, false)
 
         requestMultiplePermissions()
         setContent {
