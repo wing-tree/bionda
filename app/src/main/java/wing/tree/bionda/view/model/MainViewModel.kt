@@ -121,10 +121,12 @@ class MainViewModel @Inject constructor(
         selected
     ) { notice, selected ->
         when (notice) {
-            is Complete.Success -> NoticeState.Content(
-                notices = notice.data,
-                selected = selected
-            )
+            is Complete.Success -> {
+                NoticeState.Content(
+                    notices = notice.data,
+                    selected = selected
+                )
+            }
 
             is Complete.Failure -> NoticeState.Error(notice.throwable)
         }
@@ -201,31 +203,41 @@ class MainViewModel @Inject constructor(
 
     fun alarmOff() {
         viewModelScope.launch {
-            val notices = noticeState.selected().map {
+            noticeState.selected().map {
                 it.copy(on = false)
             }
+                .let {
+                    it.forEach { notice ->
+                        alarmScheduler.cancel(notice)
+                    }
 
-            noticeRepository.updateAll(notices)
+                    noticeRepository.updateAll(it)
+                }
         }
     }
 
     fun alarmOn() {
         viewModelScope.launch {
-            val notices = noticeState.selected().map {
+            noticeState.selected().map {
                 it.copy(on = true)
             }
+                .let {
+                    it.forEach { notice ->
+                        alarmScheduler.schedule(notice)
+                    }
 
-            noticeRepository.updateAll(notices)
+                    noticeRepository.updateAll(it)
+                }
         }
     }
 
     fun deleteAll() {
         viewModelScope.launch {
+            noticeRepository.deleteAll(noticeState.selected())
+
             noticeState.selected().forEach {
                 alarmScheduler.cancel(it)
             }
-
-            noticeRepository.deleteAll(noticeState.selected())
 
             selected.update {
                 it.clear()
@@ -242,11 +254,12 @@ class MainViewModel @Inject constructor(
     fun load() {
         locationPermissions.any {
             checkSelfPermission(it)
-        }.ifTrue {
-            viewModelScope.launch {
-                location.value = locationProvider.getLocation()
-            }
         }
+            .ifTrue {
+                viewModelScope.launch {
+                    location.value = locationProvider.getLocation()
+                }
+            }
     }
 
     fun notifyPermissionsDenied(
