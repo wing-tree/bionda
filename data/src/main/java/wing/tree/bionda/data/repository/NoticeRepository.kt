@@ -36,8 +36,16 @@ class NoticeRepository(private val noticeDataSource: NoticeDataSource) {
         noticeDataSource.update(notice)
     }
 
+    suspend fun updateAll(notices: List<Notice>) {
+        noticeDataSource.updateAll(notices)
+    }
+
     suspend fun delete(notice: Notice) {
         noticeDataSource.delete(notice)
+    }
+
+    suspend fun deleteAll(notices: List<Notice>) {
+        noticeDataSource.deleteAll(notices)
     }
 
     suspend fun get(id: Long): Notice? {

@@ -284,7 +284,7 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
                     Tab(
                         selected = false,
                         onClick = {
-                            viewModel.delete()
+                            viewModel.deleteAll()
                         },
                         modifier = Modifier.weight(Float.one),
                         text = {

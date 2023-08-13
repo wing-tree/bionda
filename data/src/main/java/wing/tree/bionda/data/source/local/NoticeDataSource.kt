@@ -14,8 +14,16 @@ class NoticeDataSource(private val noticeDao: NoticeDao) {
         noticeDao.delete(notice)
     }
 
+    suspend fun deleteAll(notices: List<Notice>) {
+        noticeDao.deleteAll(notices)
+    }
+
     suspend fun update(notice: Notice) {
         noticeDao.update(notice)
+    }
+
+    suspend fun updateAll(notices: List<Notice>) {
+        noticeDao.updateAll(notices)
     }
 
     suspend fun get(id: Long): Notice? {

@@ -200,40 +200,42 @@ class MainViewModel @Inject constructor(
     }
 
     fun alarmOff() {
-        noticeState.selected().forEach {
-            update(it.copy(on = false))
+        viewModelScope.launch {
+            val notices = noticeState.selected().map {
+                it.copy(on = false)
+            }
+
+            noticeRepository.updateAll(notices)
         }
     }
 
     fun alarmOn() {
-        noticeState.selected().forEach {
-            update(it.copy(on = true))
-        }
-    }
-
-    fun delete(notice: Notice? = null) {
         viewModelScope.launch {
-            if (notice.isNotNull()) {
-                noticeRepository.delete(notice)
-                alarmScheduler.cancel(notice)
-            } else {
-                noticeState.selected().forEach {
-                    noticeRepository.delete(it)
-                    alarmScheduler.cancel(it)
-                }
+            val notices = noticeState.selected().map {
+                it.copy(on = true)
             }
+
+            noticeRepository.updateAll(notices)
         }
     }
 
-    fun deselect(notice: Notice? = null) {
-        if (notice.isNotNull()) {
-            selected.update {
-                it.remove(notice.id)
+    fun deleteAll() {
+        viewModelScope.launch {
+            noticeState.selected().forEach {
+                alarmScheduler.cancel(it)
             }
-        } else {
+
+            noticeRepository.deleteAll(noticeState.selected())
+
             selected.update {
                 it.clear()
             }
+        }
+    }
+
+    fun deselect(notice: Notice) {
+        selected.update {
+            it.remove(notice.id)
         }
     }
 

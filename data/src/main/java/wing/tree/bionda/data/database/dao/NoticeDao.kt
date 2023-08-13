@@ -17,8 +17,14 @@ interface NoticeDao {
     @Update
     suspend fun update(notice: Notice)
 
+    @Update
+    suspend fun updateAll(notices: List<Notice>)
+
     @Delete
     suspend fun delete(notice: Notice)
+
+    @Delete
+    suspend fun deleteAll(notices: List<Notice>)
 
     @Query("SELECT * FROM notice WHERE id = :id")
     suspend fun get(id: Long): Notice?
