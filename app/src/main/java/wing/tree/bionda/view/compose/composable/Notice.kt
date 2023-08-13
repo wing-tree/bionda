@@ -9,10 +9,12 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CardDefaults
@@ -29,11 +31,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import wing.tree.bionda.data.extension.empty
 import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.model.Notice
 import wing.tree.bionda.data.regular.koreaCalendar
+import wing.tree.bionda.extension.zero
 import wing.tree.bionda.view.state.NoticeState
 import java.util.Locale
 
@@ -65,6 +69,13 @@ fun Notice(
             NoticeState.Loading -> Loading(modifier = Modifier.fillMaxSize())
             is NoticeState.Content -> LazyColumn(
                 modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(
+                    bottom = if (inSelectionMode) {
+                        72.dp
+                    } else {
+                        Dp.zero
+                    }
+                ),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(
@@ -122,7 +133,12 @@ private fun Item(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(
+                    start = 16.dp,
+                    top = 16.dp,
+                    end = 24.dp,
+                    bottom = 16.dp
+                ),
             verticalAlignment = Alignment.CenterVertically
         ) {
             var on by remember(key1 = item.on) {
@@ -134,7 +150,10 @@ private fun Item(
                     checked = selected,
                     onCheckedChange = {
                         onSelectedChange(item, it)
-                    }
+                    },
+                    modifier = Modifier
+                        .padding(end = 16.dp)
+                        .size(24.dp)
                 )
             }
 

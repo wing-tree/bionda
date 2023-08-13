@@ -14,26 +14,33 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -116,170 +123,90 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
                 }
 
                 Scaffold(
-                    bottomBar = {
-                        AnimatedVisibility(
-                            visible = state.inSelectionMode,
-                            enter = slideInVertically {
-                                it
-                            },
-                            exit = slideOutVertically {
-                                it
-                            },
-                        ) {
-                            BottomAppBar {
-                                TextButton(
-                                    onClick = {
-                                        viewModel.alarmOn()
-                                    },
-                                    modifier = Modifier.weight(Float.one)
-                                ) {
-                                    Column(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalAlignment = Alignment.CenterHorizontally
-                                    ) {
-                                        Icon(
-                                            painter = painterResource(id = R.drawable.baseline_alarm_on_24),
-                                            contentDescription = null,
-                                            modifier = Modifier
-                                                .size(32.dp)
-                                                .padding(4.dp)
-                                        )
-
-                                        VerticalSpacer(height = 4.dp)
-
-                                        Text(
-                                            text = "Alarm On",
-                                            style = typography.labelMedium
-                                        )
-                                    }
-                                }
-
-                                TextButton(
-                                    onClick = {
-                                        viewModel.delete()
-                                    },
-                                    modifier = Modifier.weight(Float.one)
-                                ) {
-                                    Column(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalAlignment = Alignment.CenterHorizontally
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Default.Delete,
-                                            contentDescription = null,
-                                            modifier = Modifier
-                                                .size(32.dp)
-                                                .padding(4.dp)
-                                        )
-
-                                        VerticalSpacer(height = 4.dp)
-
-                                        Text(
-                                            text = "Delete",
-                                            style = typography.labelMedium
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    },
                     floatingActionButton = {
-                        FloatingActionButton(
-                            onClick = {
-                                onFloatingActionButtonClick()
-                            }
+                        AnimatedVisibility(
+                            visible = state.inSelectionMode.not(),
+                            enter = scaleIn().plus(fadeIn()),
+                            exit = scaleOut().plus(fadeOut())
                         ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.baseline_add_alarm_24),
-                                contentDescription = null
-                            )
+                            FloatingActionButton(
+                                onClick = {
+                                    onFloatingActionButtonClick()
+                                }
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.baseline_add_alarm_24),
+                                    contentDescription = null
+                                )
+                            }
                         }
                     }
                 ) { innerPadding ->
-                    Column(
+                    Box(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(innerPadding)
                     ) {
-                        Forecast(
-                            state = state.forecastState,
-                            windowSizeClass = windowSizeClass,
-                            modifier = Modifier.fillMaxWidth()
-                        )
+                        Column {
+                            Forecast(
+                                state = state.forecastState,
+                                windowSizeClass = windowSizeClass,
+                                modifier = Modifier.fillMaxWidth()
+                            )
 
-                        VerticalSpacer(
-                            height = when (windowSizeClass) {
-                                is WindowSizeClass.Compact -> 16.dp
-                                else -> 24.dp
-                            }
-                        )
+                            VerticalSpacer(
+                                height = when (windowSizeClass) {
+                                    is WindowSizeClass.Compact -> 16.dp
+                                    else -> 24.dp
+                                }
+                            )
 
-                        RequestPermissions(
-                            state = state.requestPermissionsState,
-                            onClick = {
-                                when (it) {
-                                    Action.ACCESS_BACKGROUND_LOCATION -> {
-                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                                            if (checkSelfSinglePermission(ACCESS_BACKGROUND_LOCATION).not()) {
-                                                if (shouldShowRequestPermissionRationale(ACCESS_BACKGROUND_LOCATION)) {
-                                                    requestPermissions(
-                                                        arrayOf(ACCESS_BACKGROUND_LOCATION),
-                                                        Int.zero
-                                                    )
-                                                } else {
-                                                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                                                        .apply {
-                                                            data = Uri.fromParts(
-                                                                SCHEME_PACKAGE,
-                                                                packageName,
-                                                                null
-                                                            )
-                                                        }
+                            RequestPermissions(
+                                state = state.requestPermissionsState,
+                                onClick = {
+                                    onRequestPermissionsClick(it)
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(windowSizeClass.marginValues)
+                                    .animateContentSize()
+                            )
 
-                                                    startActivity(intent)
-                                                }
-                                            } else {
-                                                viewModel.notifyPermissionsGranted(listOf(ACCESS_BACKGROUND_LOCATION))
-                                            }
+                            Notice(
+                                state = state.noticeState,
+                                inSelectionMode = state.inSelectionMode,
+                                onClick = {
+
+                                },
+                                onLongClick = {
+                                    if (state.inSelectionMode.not()) {
+                                        with(viewModel) {
+                                            select(it)
+                                            inSelectionMode.toggle()
                                         }
                                     }
-
-                                    Action.POST_NOTIFICATIONS -> {}
-                                }
-                            },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(windowSizeClass.marginValues)
-                                .animateContentSize()
-                        )
-
-                        Notice(
-                            state = state.noticeState,
-                            inSelectionMode = state.inSelectionMode,
-                            onClick = {
-
-                            },
-                            onLongClick = {
-                                with(viewModel) {
-                                    inSelectionMode.toggle()
-                                    select(it)
-                                }
-                            },
-                            onCheckedChange = { notice, checked ->
-                                viewModel.update(notice.copy(on = checked))
-                            },
-                            onSelectedChange = { notice, selected ->
-                                with(viewModel) {
-                                    if (selected) {
-                                        select(notice)
-                                    } else {
-                                        deselect(notice)
+                                },
+                                onCheckedChange = { notice, checked ->
+                                    viewModel.update(notice.copy(on = checked))
+                                },
+                                onSelectedChange = { notice, selected ->
+                                    with(viewModel) {
+                                        if (selected) {
+                                            select(notice)
+                                        } else {
+                                            deselect(notice)
+                                        }
                                     }
-                                }
-                            },
-                            modifier = Modifier
-                                .weight(Float.one)
-                                .padding(windowSizeClass.marginValues)
+                                },
+                                modifier = Modifier
+                                    .weight(Float.one)
+                                    .padding(windowSizeClass.marginValues)
+                            )
+                        }
+
+                        SelectionMode(
+                            inSelectionMode = state.inSelectionMode,
+                            modifier = Modifier.align(Alignment.BottomCenter)
                         )
                     }
                 }
@@ -301,6 +228,80 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
         }
     }
 
+    @Composable
+    private fun SelectionMode(
+        inSelectionMode: Boolean,
+        modifier: Modifier = Modifier
+    ) {
+        AnimatedVisibility(
+            visible = inSelectionMode,
+            modifier = modifier,
+            enter = slideInVertically {
+                it
+            },
+            exit = slideOutVertically {
+                it
+            }
+        ) {
+            TabRowDefaults
+            Surface(
+                color = TabRowDefaults.containerColor,
+                contentColor = TabRowDefaults.contentColor
+            ) {
+                Row {
+                    Tab(
+                        selected = false,
+                        onClick = {
+                            viewModel.alarmOn()
+                        },
+                        modifier = Modifier.weight(Float.one),
+                        text = {
+                            Text(text = stringResource(id = R.string.alarm_on))
+                        },
+                        icon = {
+                            Icon(
+                                painter = painterResource(id = R.drawable.baseline_alarm_on_24),
+                                contentDescription = null
+                            )
+                        }
+                    )
+
+                    Tab(
+                        selected = false,
+                        onClick = { viewModel.alarmOff() },
+                        modifier = Modifier.weight(Float.one),
+                        text = {
+                            Text(text = stringResource(id = R.string.alarm_off))
+                        },
+                        icon = {
+                            Icon(
+                                painter = painterResource(id = R.drawable.baseline_alarm_off_24),
+                                contentDescription = null
+                            )
+                        }
+                    )
+
+                    Tab(
+                        selected = false,
+                        onClick = {
+                            viewModel.delete()
+                        },
+                        modifier = Modifier.weight(Float.one),
+                        text = {
+                            Text(text = stringResource(id = R.string.delete))
+                        },
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = null
+                            )
+                        }
+                    )
+                }
+            }
+        }
+    }
+
     private fun onFloatingActionButtonClick() {
         val calendar = Calendar.getInstance(Locale.KOREA)
         val materialTimePicker = MaterialTimePicker.Builder()
@@ -314,6 +315,56 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
             }
 
             show(supportFragmentManager, tag)
+        }
+    }
+
+    private fun onRequestPermissionsClick(action: Action) {
+        when (action) {
+            Action.ACCESS_BACKGROUND_LOCATION -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    if (checkSelfSinglePermission(ACCESS_BACKGROUND_LOCATION)) {
+                        viewModel.notifyPermissionsGranted(listOf(ACCESS_BACKGROUND_LOCATION))
+                    } else {
+                        if (shouldShowRequestPermissionRationale(ACCESS_BACKGROUND_LOCATION)) {
+                            requestPermissions(
+                                arrayOf(ACCESS_BACKGROUND_LOCATION),
+                                Int.zero
+                            )
+                        } else {
+                            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                                .apply {
+                                    data = Uri.fromParts(
+                                        SCHEME_PACKAGE,
+                                        packageName,
+                                        null
+                                    )
+                                }
+
+                            startActivity(intent)
+                        }
+                    }
+                }
+            }
+
+            Action.POST_NOTIFICATIONS -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    if (checkSelfSinglePermission(POST_NOTIFICATIONS)) {
+                        viewModel.notifyPermissionsGranted(listOf(POST_NOTIFICATIONS))
+                    } else {
+                        val intent =
+                            Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                                .apply {
+                                    data = Uri.fromParts(
+                                        SCHEME_PACKAGE,
+                                        packageName,
+                                        null
+                                    )
+                                }
+
+                        startActivity(intent)
+                    }
+                }
+            }
         }
     }
 }

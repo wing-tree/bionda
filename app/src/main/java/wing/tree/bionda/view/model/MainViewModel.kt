@@ -4,14 +4,17 @@ import android.app.Application
 import android.location.Geocoder
 import android.location.Location
 import android.os.Build
+import androidx.compose.animation.core.AnimationConstants.DefaultDurationMillis
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -22,6 +25,7 @@ import wing.tree.bionda.data.extension.eight
 import wing.tree.bionda.data.extension.fiveSecondsInMilliseconds
 import wing.tree.bionda.data.extension.ifTrue
 import wing.tree.bionda.data.extension.isNotNull
+import wing.tree.bionda.data.extension.long
 import wing.tree.bionda.data.extension.negativeOne
 import wing.tree.bionda.data.model.Notice
 import wing.tree.bionda.data.model.Result
@@ -87,7 +91,31 @@ class MainViewModel @Inject constructor(
     )
 
     val inSelectionMode = MutableStateFlow(false)
+
     private val selected = MutableStateFlow(persistentSetOf<Long>())
+
+    init {
+        viewModelScope.launch {
+            inSelectionMode.collectLatest {
+                if (it.not()) {
+                    delay(DefaultDurationMillis.long)
+
+                    selected.update { persistentSet ->
+                        persistentSet.clear()
+                    }
+                }
+            }
+        }
+
+        viewModelScope.launch {
+            selected.collectLatest {
+                delay(DefaultDurationMillis.long)
+
+                inSelectionMode.value = it.isNotEmpty()
+            }
+        }
+    }
+
     private val noticeState = combine(
         noticeRepository.load(),
         selected
@@ -155,7 +183,8 @@ class MainViewModel @Inject constructor(
                     cancellableContinuation.resume(Address(thoroughfare = it))
                 }
                     ?: cancellableContinuation.resume(null)
-            } ?: cancellableContinuation.resume(null)
+            }
+                ?: cancellableContinuation.resume(null)
         }
     }
 
@@ -167,6 +196,12 @@ class MainViewModel @Inject constructor(
             if (id > Long.negativeOne) {
                 alarmScheduler.schedule(notice.copy(id = id))
             }
+        }
+    }
+
+    fun alarmOff() {
+        noticeState.selected().forEach {
+            update(it.copy(on = false))
         }
     }
 
@@ -190,9 +225,15 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun deselect(notice: Notice) {
-        selected.update {
-            it.remove(notice.id)
+    fun deselect(notice: Notice? = null) {
+        if (notice.isNotNull()) {
+            selected.update {
+                it.remove(notice.id)
+            }
+        } else {
+            selected.update {
+                it.clear()
+            }
         }
     }
 
