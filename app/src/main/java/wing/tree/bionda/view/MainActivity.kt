@@ -118,16 +118,17 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
         setContent {
             BiondaTheme {
                 val state by viewModel.state.collectAsStateWithLifecycle()
+                val inSelectionMode = state.inSelectionMode
                 val windowSizeClass = rememberWindowSizeClass()
 
-                BackHandler(enabled = state.inSelectionMode) {
+                BackHandler(enabled = inSelectionMode) {
                     viewModel.inSelectionMode.toggle()
                 }
 
                 Scaffold(
                     floatingActionButton = {
                         AnimatedVisibility(
-                            visible = state.inSelectionMode.not(),
+                            visible = inSelectionMode.not(),
                             enter = scaleIn().plus(fadeIn()),
                             exit = scaleOut().plus(fadeOut())
                         ) {
@@ -176,16 +177,17 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
 
                             Notice(
                                 state = state.noticeState,
-                                inSelectionMode = state.inSelectionMode,
+                                inSelectionMode = inSelectionMode,
                                 onClick = {
-
+                                    if (inSelectionMode) {
+                                        viewModel.selected.toggle(it.id)
+                                    }
                                 },
                                 onLongClick = {
-                                    if (state.inSelectionMode.not()) {
-                                        with(viewModel) {
-                                            selected.toggle(it.id)
-                                            inSelectionMode.toggle()
-                                        }
+                                    if (inSelectionMode.not()) {
+                                        viewModel.selected.toggle(it.id)
+
+                                        viewModel.inSelectionMode.value = true
                                     }
                                 },
                                 onCheckedChange = { notice, checked ->
@@ -270,7 +272,9 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
 
                     Tab(
                         selected = false,
-                        onClick = { viewModel.alarmOff() },
+                        onClick = {
+                            viewModel.alarmOff()
+                        },
                         modifier = Modifier.weight(Float.one),
                         text = {
                             Text(text = stringResource(id = R.string.alarm_off))
