@@ -53,7 +53,9 @@ import wing.tree.bionda.data.extension.hourOfDay
 import wing.tree.bionda.data.extension.minute
 import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.zero
+import wing.tree.bionda.extension.add
 import wing.tree.bionda.extension.rememberWindowSizeClass
+import wing.tree.bionda.extension.remove
 import wing.tree.bionda.extension.toggle
 import wing.tree.bionda.model.WindowSizeClass
 import wing.tree.bionda.permissions.PermissionChecker
@@ -181,7 +183,7 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
                                 onLongClick = {
                                     if (state.inSelectionMode.not()) {
                                         with(viewModel) {
-                                            select(it)
+                                            selected.toggle(it.id)
                                             inSelectionMode.toggle()
                                         }
                                     }
@@ -190,11 +192,11 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
                                     viewModel.update(notice.copy(on = checked))
                                 },
                                 onSelectedChange = { notice, selected ->
-                                    with(viewModel) {
+                                    with(viewModel.selected) {
                                         if (selected) {
-                                            select(notice)
+                                            add(notice.id)
                                         } else {
-                                            deselect(notice)
+                                            remove(notice.id)
                                         }
                                     }
                                 },

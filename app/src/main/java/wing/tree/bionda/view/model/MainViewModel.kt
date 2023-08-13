@@ -8,6 +8,7 @@ import androidx.compose.animation.core.AnimationConstants.DefaultDurationMillis
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.delay
@@ -80,7 +81,8 @@ class MainViewModel @Inject constructor(
                         is Complete.Failure -> ForecastState.Error(forecast.throwable)
                     }
                 }
-            } ?: ForecastState.Error(NullPointerException())
+            }
+                ?: ForecastState.Error(NullPointerException())
 
             is Complete.Failure -> ForecastState.Error(it.throwable)
         }
@@ -91,8 +93,7 @@ class MainViewModel @Inject constructor(
     )
 
     val inSelectionMode = MutableStateFlow(false)
-
-    private val selected = MutableStateFlow(persistentSetOf<Long>())
+    val selected = MutableStateFlow<ImmutableSet<Long>>(persistentSetOf())
 
     init {
         viewModelScope.launch {
@@ -100,9 +101,7 @@ class MainViewModel @Inject constructor(
                 if (it.not()) {
                     delay(DefaultDurationMillis.long)
 
-                    selected.update { persistentSet ->
-                        persistentSet.clear()
-                    }
+                    selected.value = persistentSetOf()
                 }
             }
         }
@@ -239,15 +238,7 @@ class MainViewModel @Inject constructor(
                 alarmScheduler.cancel(it)
             }
 
-            selected.update {
-                it.clear()
-            }
-        }
-    }
-
-    fun deselect(notice: Notice) {
-        selected.update {
-            it.remove(notice.id)
+            selected.value = persistentSetOf()
         }
     }
 
@@ -294,12 +285,6 @@ class MainViewModel @Inject constructor(
                 }.toImmutableList()
 
             it.copy(permissions = immutableList)
-        }
-    }
-
-    fun select(notice: Notice) {
-        selected.update {
-            it.add(notice.id)
         }
     }
 
