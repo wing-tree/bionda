@@ -26,6 +26,7 @@ import wing.tree.bionda.data.extension.half
 import wing.tree.bionda.data.extension.int
 import wing.tree.bionda.data.extension.`is`
 import wing.tree.bionda.data.extension.isZero
+import wing.tree.bionda.data.extension.quarter
 import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.model.ChartStyle
 import wing.tree.bionda.model.Forecast
@@ -43,6 +44,8 @@ fun DrawScope.drawFcstHour(
         pointF.y,
         textPaint
     )
+
+    pointF.y += textPaint.height
 }
 
 fun DrawScope.drawPcp(
@@ -107,6 +110,8 @@ fun DrawScope.drawTmp(
         pointF.y.plus(offset.y),
         textPaint
     )
+
+    pointF.y += textPaint.height.quarter
 }
 
 fun DrawScope.drawTmpChart(
@@ -128,7 +133,7 @@ fun DrawScope.drawTmpChart(
     if (index.isZero()) {
         path.moveTo(Float.zero, offsets.first().y)
     } else {
-        path.apply {
+        with(path) {
             quadraticBezierTo(
                 index,
                 offsets
@@ -146,33 +151,14 @@ fun DrawScope.drawTmpChart(
                     style = Stroke(width = Dp.one.toPx())
                 )
 
-                val fillPath = android.graphics.Path(path.asAndroidPath())
-                    .asComposePath()
-                    .apply {
-                        lineTo(size.width, pointF.y.plus(height))
-                        lineTo(Float.zero, pointF.y.plus(height))
-                        close()
-                    }
-
-                val paint = Paint().apply {
-                    shader = LinearGradientShader(
-                        colors = listOf(
-                            style.color.copy(alpha = Float.half),
-                            Color.Transparent,
-                        ),
-                        from = Offset(Float.zero, pointF.y),
-                        to = Offset(Float.zero, pointF.y.plus(height))
-                    )
-                }
-
-                drawIntoCanvas {
-                    it.drawPath(fillPath, paint)
-                }
+                fillGradient(path, pointF, style)
             }
         }
     }
 
-    pointF.y += height
+    pointF.y += with(height) {
+        plus(half)
+    }
 }
 
 fun DrawScope.drawWeatherIcon(
@@ -195,13 +181,42 @@ fun DrawScope.drawWeatherIcon(
             image?.let {
                 drawImage(
                     image = image,
-                    topLeft = Offset(pointF.x.minus(image.width.half), pointF.y),
+                    topLeft = Offset(pointF.x.minus(image.width.half), Float.zero),
                     colorFilter = ColorFilter.tint(style.color, BlendMode.SrcAtop)
                 )
             }
         }
 
-    pointF.y += with(height) {
-        plus(half)
+    pointF.y += height
+}
+
+fun DrawScope.fillGradient(
+    path: Path,
+    pointF: PointF,
+    style: ChartStyle.TmpChart
+) {
+    val height = style.height.toPx()
+    val y = pointF.y.plus(height.plus(height.half))
+    val fillPath = android.graphics.Path(path.asAndroidPath())
+        .asComposePath()
+        .apply {
+            lineTo(size.width, y)
+            lineTo(Float.zero, y)
+            close()
+        }
+
+    val paint = Paint().apply {
+        shader = LinearGradientShader(
+            colors = listOf(
+                style.color.copy(alpha = Float.half),
+                Color.Transparent,
+            ),
+            from = Offset(Float.zero, pointF.y),
+            to = Offset(Float.zero, y)
+        )
+    }
+
+    drawIntoCanvas {
+        it.drawPath(fillPath, paint)
     }
 }
