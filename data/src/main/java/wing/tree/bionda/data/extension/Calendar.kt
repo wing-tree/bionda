@@ -2,6 +2,7 @@ package wing.tree.bionda.data.extension
 
 import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
+import wing.tree.bionda.data.regular.calendarOf
 import java.util.Locale
 
 val Calendar.apiDeliveryDate: String get() = baseDate
@@ -36,3 +37,11 @@ var Calendar.minute: Int
     set(value) {
         set(Calendar.MINUTE, value)
     }
+
+fun Calendar.cloneAsCalendar(): Calendar = with(clone()) {
+    if (this is Calendar) {
+        this
+    } else {
+        calendarOf(timeInMillis)
+    }
+}

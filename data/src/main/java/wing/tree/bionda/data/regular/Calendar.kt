@@ -82,6 +82,15 @@ fun baseCalendar(
     }
 }
 
+fun calendarOf(
+    timeInMillis: Long? = null,
+    locale: Locale = Locale.KOREA
+): Calendar = Calendar.getInstance(locale).apply {
+    timeInMillis?.let {
+        this.timeInMillis = it
+    }
+}
+
 fun fcstCalendar(hourOfDay: Int): Calendar = koreaCalendar().apply {
     this.hourOfDay = hourOfDay
 }
