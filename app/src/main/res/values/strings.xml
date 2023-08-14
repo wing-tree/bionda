@@ -9,4 +9,9 @@
     <string name="pattern_fcst_hour">a h시</string>
     <string name="share_the_app">앱 공유하기</string>
     <string name="take_an_umbrella">우산 챙기세요!</string>
+
+    <string-array name="subject_markers">
+        <item>이</item>
+        <item>가</item>
+    </string-array>
 </resources>
