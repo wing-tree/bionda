@@ -7,7 +7,15 @@ sealed interface CodeValue {
     data class Pty(
         override val code: String?,
         override val value: String? = pty[code]
-    ) : CodeValue
+    ) : CodeValue {
+        val rain: Boolean get() = code in listOf(
+            "1", "2", "5", "6"
+        )
+
+        val snow: Boolean get() = code in listOf(
+            "3", "6", "7"
+        )
+    }
 
     data class Sky(
         override val code: String?,

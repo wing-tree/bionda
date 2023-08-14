@@ -12,3 +12,4 @@ val Float.complement: Float get() = run {
 
 val Float.half: Float get() = div(2.0F)
 val Float.int: Int get() = toInt()
+val Float.quarter: Float get() = div(4.0F)
