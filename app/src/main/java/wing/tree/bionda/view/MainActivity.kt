@@ -247,7 +247,6 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
                 it
             }
         ) {
-            TabRowDefaults
             Surface(
                 color = TabRowDefaults.containerColor,
                 contentColor = TabRowDefaults.contentColor
