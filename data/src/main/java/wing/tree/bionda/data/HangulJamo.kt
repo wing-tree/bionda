@@ -6,7 +6,7 @@ object HangulJamo {
     private const val MEDIAL_COUNT = 21
     private const val FINAL_CONSONANT_COUNT = 28
 
-    private val initialConsonant = arrayOf(
+    private val initialConsonants = arrayOf(
         "ㄱ", "ㄲ", "ㄴ", "ㄷ",
         "ㄸ", "ㄹ", "ㅁ", "ㅂ",
         "ㅃ", "ㅅ", "ㅆ", "ㅇ",
@@ -23,7 +23,7 @@ object HangulJamo {
         "ㅣ"
     )
 
-    private val finalConsonant = arrayOf(
+    private val finalConsonants = arrayOf(
         "", "ㄱ", "ㄲ", "ㄳ",
         "ㄴ", "ㄵ", "ㄶ", "ㄷ",
         "ㄹ", "ㄺ", "ㄻ", "ㄼ",
@@ -33,14 +33,25 @@ object HangulJamo {
         "ㅋ", "ㅌ", "ㅍ", "ㅎ"
     )
 
+    val consonants = arrayOf(
+        "ㄱ", "ㄲ", "ㄳ", "ㄴ",
+        "ㄵ", "ㄶ", "ㄷ", "ㄸ",
+        "ㄹ", "ㄺ", "ㄻ", "ㄼ",
+        "ㄽ", "ㄾ", "ㄿ", "ㅀ",
+        "ㅁ", "ㅂ", "ㅄ", "ㅃ",
+        "ㅅ", "ㅆ", "ㅇ", "ㅈ",
+        "ㅉ", "ㅊ", "ㅋ", "ㅌ",
+        "ㅍ", "ㅎ"
+    )
+
     val String.jamo: String
         get() = buildString {
             this@jamo.forEach {
                 if(it.code >= HANGUL_SYLLABLES_START) {
                     with(it.code.minus(HANGUL_SYLLABLES_START)) {
-                        append(initialConsonant[div(FINAL_CONSONANT_COUNT).div(MEDIAL_COUNT)])
+                        append(initialConsonants[div(FINAL_CONSONANT_COUNT).div(MEDIAL_COUNT)])
                         append(medial[div(FINAL_CONSONANT_COUNT).mod(MEDIAL_COUNT)])
-                        append(finalConsonant[mod(FINAL_CONSONANT_COUNT)])
+                        append(finalConsonants[mod(FINAL_CONSONANT_COUNT)])
                     }
                 } else {
                     append(it)
