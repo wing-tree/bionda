@@ -3,6 +3,8 @@ package wing.tree.bionda.template
 import android.content.Context
 import androidx.annotation.StringRes
 import wing.tree.bionda.R
+import wing.tree.bionda.data.HangulJamo.consonants
+import wing.tree.bionda.data.HangulJamo.jamo
 import wing.tree.bionda.data.constant.COMMA
 import wing.tree.bionda.data.constant.NEWLINE
 import wing.tree.bionda.data.constant.SPACE
@@ -12,6 +14,8 @@ import wing.tree.bionda.data.extension.hourOfDay
 import wing.tree.bionda.data.extension.ifZero
 import wing.tree.bionda.data.extension.int
 import wing.tree.bionda.data.extension.`is`
+import wing.tree.bionda.data.extension.one
+import wing.tree.bionda.data.extension.second
 import wing.tree.bionda.data.regular.koreaCalendar
 import wing.tree.bionda.model.Forecast
 import wing.tree.bionda.top.level.amString
@@ -21,6 +25,18 @@ import java.time.LocalTime
 sealed class ContentTextTemplate {
     class PtyOrSky(private val context: Context) : ContentTextTemplate() {
         private fun getString(@StringRes resId: Int) = context.getString(resId)
+        private fun getSubjectMarker(subject: String): String {
+            val jamo = subject.jamo
+            val subjectMarkers = context.resources.getStringArray(R.array.subject_markers)
+
+            return when {
+                consonants.any {
+                    jamo.endsWith(it)
+                } -> subjectMarkers.first()
+
+                else -> subjectMarkers.second()
+            }
+        }
 
         operator fun invoke(forecast: Forecast): String {
             val koreaCalendar = koreaCalendar()
@@ -71,7 +87,13 @@ sealed class ContentTextTemplate {
                         append("${getString(R.string.at)} $value$COMMA")
                     }
                 }
-                    .replace(Regex("$COMMA$"), "가/이 올 예정입니다.")
+                    .let {
+                        val subject = "${it.dropLast(Int.one).last()}"
+                        val subjectMarker = getSubjectMarker(subject)
+                        val replacement = "$subjectMarker 올 예정입니다."
+
+                        it.replace(Regex("$COMMA$"), replacement)
+                    }
         }
     }
 }
