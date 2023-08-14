@@ -7,7 +7,9 @@
     <string name="delete">삭제</string>
     <string name="hour">시</string>
     <string name="pattern_fcst_hour">a h시</string>
+    <string name="rain">비</string>
     <string name="share_the_app">앱 공유하기</string>
+    <string name="snow">눈</string>
     <string name="take_an_umbrella">우산 챙기세요!</string>
 
     <string-array name="subject_markers">
