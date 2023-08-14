@@ -1,6 +1,7 @@
 package wing.tree.bionda.template
 
 import android.content.Context
+import android.icu.util.Calendar
 import androidx.annotation.StringRes
 import wing.tree.bionda.R
 import wing.tree.bionda.data.HangulJamo.consonants
@@ -13,7 +14,7 @@ import wing.tree.bionda.data.extension.hour
 import wing.tree.bionda.data.extension.hourOfDay
 import wing.tree.bionda.data.extension.ifZero
 import wing.tree.bionda.data.extension.int
-import wing.tree.bionda.data.extension.`is`
+import wing.tree.bionda.data.extension.not
 import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.second
 import wing.tree.bionda.data.regular.koreaCalendar
@@ -44,7 +45,7 @@ sealed class ContentTextTemplate {
 
             return forecast.items
                 .filter {
-                    it.fcstDate `is` koreaCalendar.baseDate.int
+                    koreaCalendar.predicate(it)
                 }.groupBy {
                     it.pty.value ?: it.sky.value
                 }
@@ -95,5 +96,17 @@ sealed class ContentTextTemplate {
                         it.replace(Regex("$COMMA$"), replacement)
                     }
         }
+    }
+
+    protected fun Calendar.predicate(item: Forecast.Item): Boolean {
+        if (item.fcstDate not baseDate.int) {
+            return false
+        }
+
+        if (item.fcstHour < hourOfDay) {
+            return false
+        }
+
+        return true
     }
 }
