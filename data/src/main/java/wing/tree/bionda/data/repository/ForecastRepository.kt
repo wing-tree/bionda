@@ -1,5 +1,6 @@
 package wing.tree.bionda.data.repository
 
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -122,7 +123,7 @@ class ForecastRepository(
         ny: Int
     ): LocalDataModel {
         return LocalDataModel(
-            items = items,
+            items = items.toImmutableList(),
             apiDeliveryDate = apiDeliveryDate,
             apiDeliveryTime = apiDeliveryTime,
             nx = nx,
