@@ -30,9 +30,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import wing.tree.bionda.R
 import wing.tree.bionda.data.extension.empty
 import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.model.Notice
@@ -135,9 +138,9 @@ private fun Item(
                 .fillMaxWidth()
                 .padding(
                     start = 16.dp,
-                    top = 16.dp,
+                    top = 12.dp,
                     end = 24.dp,
-                    bottom = 16.dp
+                    bottom = 12.dp
                 ),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -160,8 +163,29 @@ private fun Item(
             Text(
                 text = text,
                 modifier = Modifier.weight(Float.one),
-                style = typography.titleLarge
+                style = typography.titleMedium
             )
+
+            Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                Notice.Type.values().forEach {
+                    Text(
+                        text = when (it) {
+                            Notice.Type.RAIN -> stringResource(id = R.string.rain)
+                            Notice.Type.SNOW -> stringResource(id = R.string.snow)
+                        },
+                        modifier = Modifier.alpha(
+                            if (it in item.types) {
+                                1.0F
+                            } else {
+                                0.38F
+                            }
+                        ),
+                        style = typography.titleSmall
+                    )
+                }
+            }
+
+            HorizontalSpacer(width = 16.dp)
 
             Switch(
                 checked = on,

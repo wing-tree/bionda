@@ -162,8 +162,7 @@ private fun Address(
             Text(text = thoroughfare)
             Icon(
                 imageVector = Icons.Default.LocationOn,
-                contentDescription = null,
-                modifier.size(18.dp)
+                contentDescription = null
             )
         }
     }
