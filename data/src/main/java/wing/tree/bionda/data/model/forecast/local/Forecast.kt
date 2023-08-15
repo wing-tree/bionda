@@ -19,5 +19,5 @@ data class Forecast(
     override val nx: Int,
     override val ny: Int,
     val baseDate: String,
-    val baseTime: String,
+    val baseTime: String
 ) : Forecast
