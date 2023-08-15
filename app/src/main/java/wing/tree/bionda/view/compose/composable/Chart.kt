@@ -26,6 +26,7 @@ import wing.tree.bionda.extension.drawReh
 import wing.tree.bionda.extension.drawTmp
 import wing.tree.bionda.extension.drawTmpChart
 import wing.tree.bionda.extension.drawWeatherIcon
+import wing.tree.bionda.extension.drawWsd
 import wing.tree.bionda.extension.height
 import wing.tree.bionda.extension.toTmpOffsets
 import wing.tree.bionda.model.ChartStyle
@@ -127,6 +128,12 @@ fun Chart(
                 drawReh(
                     reh = item.reh ?: String.empty,
                     pointF = pointF,
+                    textPaint = rehTextPaint
+                )
+
+                drawWsd(
+                    wsd = item.wsd ?: String.empty,
+                    pointF,
                     textPaint = rehTextPaint
                 )
             }

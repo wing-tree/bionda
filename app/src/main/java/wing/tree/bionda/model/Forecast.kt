@@ -39,6 +39,7 @@ data class Forecast(
         val tmn = codeValues[Category.TMN]
         val tmx = codeValues[Category.TMX]
         val weatherIcon = WeatherIcons.Daytime
+        val wsd = codeValues[Category.WSD]
     }
 
     companion object : DataModelMapper<DataModel, Forecast> {

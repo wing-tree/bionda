@@ -89,6 +89,8 @@ fun DrawScope.drawReh(
         pointF.y,
         textPaint
     )
+
+    pointF.y += textPaint.height
 }
 
 fun DrawScope.drawTmp(
@@ -188,6 +190,21 @@ fun DrawScope.drawWeatherIcon(
         }
 
     pointF.y += height
+}
+
+fun DrawScope.drawWsd(
+    wsd: String,
+    pointF: PointF,
+    textPaint: TextPaint
+) {
+    nativeCanvas.drawText(
+        wsd,
+        pointF.x,
+        pointF.y,
+        textPaint
+    )
+
+    pointF.y += textPaint.height
 }
 
 fun DrawScope.fillGradient(
