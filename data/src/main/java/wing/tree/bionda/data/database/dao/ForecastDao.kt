@@ -12,15 +12,15 @@ interface ForecastDao {
 
     @Query(
         """
-            SELECT * FROM forecast WHERE apiDeliveryDate = :apiDeliveryDate 
-            AND apiDeliveryTime = :apiDeliveryTime 
+            SELECT * FROM forecast WHERE baseDate = :baseDate 
+            AND baseTime = :baseTime 
             AND nx = :nx 
             AND ny = :ny
         """
     )
     suspend fun load(
-        apiDeliveryDate : String,
-        apiDeliveryTime : String,
+        baseDate : String,
+        baseTime : String,
         nx: Int,
         ny: Int
     ): Forecast?

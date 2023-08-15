@@ -5,8 +5,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import wing.tree.bionda.data.BuildConfig
-import wing.tree.bionda.data.extension.apiDeliveryDate
-import wing.tree.bionda.data.extension.apiDeliveryTime
 import wing.tree.bionda.data.extension.baseDate
 import wing.tree.bionda.data.extension.baseTime
 import wing.tree.bionda.data.extension.one
@@ -15,7 +13,6 @@ import wing.tree.bionda.data.model.DetailedFunction
 import wing.tree.bionda.data.model.Result
 import wing.tree.bionda.data.model.Result.Complete
 import wing.tree.bionda.data.model.forecast.Forecast
-import wing.tree.bionda.data.regular.apiDeliveryCalendar
 import wing.tree.bionda.data.regular.baseCalendar
 import wing.tree.bionda.data.model.forecast.local.Forecast as LocalDataModel
 import wing.tree.bionda.data.source.local.ForecastDataSource as LocalDataSource
@@ -31,14 +28,12 @@ class ForecastRepository(
         nx: Int,
         ny: Int
     ): Result<Forecast> {
-        val detailedFunction = DetailedFunction.ULTRA_SRT_FCST
-        val apiDeliveryCalendar = apiDeliveryCalendar(detailedFunction)
-        val baseCalendar = baseCalendar(detailedFunction)
+        val baseCalendar = baseCalendar(DetailedFunction.ULTRA_SRT_FCST)
 
         return try {
             val forecast = localDataSource.load(
-                apiDeliveryCalendar.apiDeliveryDate,
-                apiDeliveryCalendar.apiDeliveryTime,
+                baseCalendar.baseDate,
+                baseCalendar.baseTime,
                 nx,
                 ny
             ) ?: remoteDataSource.getUltraSrtFcst(
@@ -56,8 +51,8 @@ class ForecastRepository(
                         clear()
                         insert(
                             it.toLocalDataModel(
-                                apiDeliveryDate = apiDeliveryCalendar.apiDeliveryDate,
-                                apiDeliveryTime = apiDeliveryCalendar.apiDeliveryTime,
+                                baseDate = baseCalendar.baseDate,
+                                baseTime = baseCalendar.baseTime,
                                 nx = nx,
                                 ny = ny
                             )
@@ -77,12 +72,10 @@ class ForecastRepository(
         ny: Int
     ): Result<Forecast> {
         return try {
-            val detailedFunction = DetailedFunction.VILAGE_FCST
-            val apiDeliveryCalendar = apiDeliveryCalendar(detailedFunction)
-            val baseCalendar = baseCalendar(detailedFunction)
+            val baseCalendar = baseCalendar(DetailedFunction.VILAGE_FCST)
             val vilageFcst = localDataSource.load(
-                apiDeliveryCalendar.apiDeliveryDate,
-                apiDeliveryCalendar.apiDeliveryTime,
+                baseCalendar.baseDate,
+                baseCalendar.baseTime,
                 nx,
                 ny
             ) ?: remoteDataSource.getVilageFcst(
@@ -100,8 +93,8 @@ class ForecastRepository(
                         clear()
                         insert(
                             it.toLocalDataModel(
-                                apiDeliveryDate = apiDeliveryCalendar.apiDeliveryDate,
-                                apiDeliveryTime = apiDeliveryCalendar.apiDeliveryTime,
+                                baseDate = baseCalendar.baseDate,
+                                baseTime = baseCalendar.baseTime,
                                 nx = nx,
                                 ny = ny
                             )
@@ -117,15 +110,15 @@ class ForecastRepository(
     }
 
     private fun Forecast.toLocalDataModel(
-        apiDeliveryDate: String,
-        apiDeliveryTime: String,
+        baseDate: String,
+        baseTime: String,
         nx: Int,
         ny: Int
     ): LocalDataModel {
         return LocalDataModel(
             items = items.toImmutableList(),
-            apiDeliveryDate = apiDeliveryDate,
-            apiDeliveryTime = apiDeliveryTime,
+            baseDate = baseDate,
+            baseTime = baseTime,
             nx = nx,
             ny = ny
         )

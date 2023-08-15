@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "1065a1a97279094d4ac79c6dc3f0e94b",
+    "identityHash": "24ddbc5d58205bbbe9a453a578f9f0cf",
     "entities": [
       {
         "tableName": "forecast",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`items` TEXT NOT NULL, `nx` INTEGER NOT NULL, `ny` INTEGER NOT NULL, `apiDeliveryDate` TEXT NOT NULL, `apiDeliveryTime` TEXT NOT NULL, PRIMARY KEY(`apiDeliveryDate`, `apiDeliveryTime`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`items` TEXT NOT NULL, `nx` INTEGER NOT NULL, `ny` INTEGER NOT NULL, `baseDate` TEXT NOT NULL, `baseTime` TEXT NOT NULL, PRIMARY KEY(`nx`, `ny`, `baseDate`, `baseTime`))",
         "fields": [
           {
             "fieldPath": "items",
@@ -27,14 +27,14 @@
             "notNull": true
           },
           {
-            "fieldPath": "apiDeliveryDate",
-            "columnName": "apiDeliveryDate",
+            "fieldPath": "baseDate",
+            "columnName": "baseDate",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "apiDeliveryTime",
-            "columnName": "apiDeliveryTime",
+            "fieldPath": "baseTime",
+            "columnName": "baseTime",
             "affinity": "TEXT",
             "notNull": true
           }
@@ -42,8 +42,10 @@
         "primaryKey": {
           "autoGenerate": false,
           "columnNames": [
-            "apiDeliveryDate",
-            "apiDeliveryTime"
+            "nx",
+            "ny",
+            "baseDate",
+            "baseTime"
           ]
         },
         "indices": [],
@@ -97,7 +99,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '1065a1a97279094d4ac79c6dc3f0e94b')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '24ddbc5d58205bbbe9a453a578f9f0cf')"
     ]
   }
 }
