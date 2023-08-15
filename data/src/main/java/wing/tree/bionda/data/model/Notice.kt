@@ -17,10 +17,10 @@ data class Notice(
     val hour: Int,
     val minute: Int,
     val on: Boolean = true,
-    val types: ImmutableList<Type> = persistentListOf(Type.RAIN, Type.SNOW)
+    val conditions: ImmutableList<Condition> = persistentListOf(Condition.RAIN, Condition.SNOW)
 ) {
     @Serializable
-    enum class Type {
+    enum class Condition {
         RAIN, SNOW
     }
 

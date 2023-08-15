@@ -1,10 +1,12 @@
 package wing.tree.bionda.data.database
 
 import android.content.Context
+import androidx.room.AutoMigration
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import wing.tree.bionda.data.database.dao.ForecastDao
 import wing.tree.bionda.data.database.dao.NoticeDao
+import wing.tree.bionda.data.database.migration.AutoMigrationSpecs
 import wing.tree.bionda.data.database.type.converters.TypeConverters
 import wing.tree.bionda.data.model.Notice
 import wing.tree.bionda.data.model.forecast.local.Forecast
@@ -12,7 +14,10 @@ import wing.tree.bionda.data.model.forecast.local.Forecast
 @androidx.room.Database(
     entities = [Forecast::class, Notice::class],
     exportSchema = true,
-    version = 1
+    version = 2,
+    autoMigrations = [
+        AutoMigration(from = 1, to = 2, spec = AutoMigrationSpecs.From1To2::class)
+    ]
 )
 @androidx.room.TypeConverters(TypeConverters::class)
 abstract class Database: RoomDatabase() {

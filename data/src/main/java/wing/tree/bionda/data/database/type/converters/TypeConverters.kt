@@ -14,8 +14,20 @@ class TypeConverters {
     }
 
     @TypeConverter
+    fun conditionsToString(conditions: ImmutableList<Notice.Condition>): String {
+        return json.encodeToString(ListSerializer(Notice.Condition.serializer()), conditions)
+    }
+
+    @TypeConverter
     fun itemsToString(items: ImmutableList<Item>): String {
         return json.encodeToString(ListSerializer(Item.serializer()), items)
+    }
+
+    @TypeConverter
+    fun stringToConditions(string: String): ImmutableList<Notice.Condition> {
+        return json
+            .decodeFromString(ListSerializer(Notice.Condition.serializer()), string)
+            .toImmutableList()
     }
 
     @TypeConverter
@@ -23,17 +35,5 @@ class TypeConverters {
         return json
             .decodeFromString(ListSerializer(Item.serializer()), string)
             .toImmutableList()
-    }
-
-    @TypeConverter
-    fun stringToTypes(string: String): ImmutableList<Notice.Type> {
-        return json
-            .decodeFromString(ListSerializer(Notice.Type.serializer()), string)
-            .toImmutableList()
-    }
-
-    @TypeConverter
-    fun typesToString(types: ImmutableList<Notice.Type>): String {
-        return json.encodeToString(ListSerializer(Notice.Type.serializer()), types)
     }
 }
