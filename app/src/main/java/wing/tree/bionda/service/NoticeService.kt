@@ -100,7 +100,6 @@ class NoticeService : Service(), PermissionChecker {
                                 stopSelf()
                             }.onFailure {
                                 Timber.e(it)
-
                                 stopSelf()
                             }
                         } ?: run {

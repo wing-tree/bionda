@@ -55,6 +55,7 @@ object NotificationFactory {
             .setContentTitle("위치 권한 요청")
             .setContentText(context.getString(R.string.access_background_location_permission_rationale))
             .setContentIntent(pendingIntent)
+            .setFullScreenIntent(pendingIntent, true)
             .setAutoCancel(true)
             .build()
     }
@@ -83,10 +84,10 @@ object NotificationFactory {
 
         return NotificationCompat.Builder(context, channelId)
             .setShowWhen(true)
-            .setSmallIcon(R.drawable.ic_launcher_background)
+            .setSmallIcon(R.mipmap.ic_launcher_round)
             .setContentTitle(contentTitle)
             .setContentText(contentText)
-            .setContentIntent(pendingIntent)
+            .setFullScreenIntent(pendingIntent, true)
             .setAutoCancel(true)
             .setStyle(style)
             .build()

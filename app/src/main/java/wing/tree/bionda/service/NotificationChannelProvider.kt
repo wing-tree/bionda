@@ -17,7 +17,7 @@ class NotificationChannelProvider(private val context: Context) {
             Type.FORECAST -> {
                 val channelId = packageName.plus("$DOT${Type.FORECAST.name}")
                 val channelName = getString(R.string.app_name).plus("$DOT${Type.FORECAST.name}")
-                val importance = NotificationManager.IMPORTANCE_DEFAULT
+                val importance = NotificationManager.IMPORTANCE_HIGH
 
                 NotificationChannel(channelId, channelName, importance).apply {
                     setShowBadge(true)
