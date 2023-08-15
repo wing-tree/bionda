@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme.typography
@@ -31,7 +30,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -119,23 +117,20 @@ private fun Item(
     onSelectedChange: (Notice, Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    ElevatedCard(
-        modifier = modifier
-            .clip(CardDefaults.elevatedShape)
-            .combinedClickable(
-                onClick = {
-                    onClick(item)
-                },
-                onLongClick = {
-                    onLongClick(item)
-                },
-            ),
-    ) {
+    ElevatedCard(modifier = modifier) {
         val text = simpleDateFormat.format(koreaCalendar(item.hour, item.minute))
 
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .combinedClickable(
+                    onClick = {
+                        onClick(item)
+                    },
+                    onLongClick = {
+                        onLongClick(item)
+                    }
+                )
                 .padding(
                     start = 16.dp,
                     top = 12.dp,
@@ -180,7 +175,7 @@ private fun Item(
                                 0.38F
                             }
                         ),
-                        style = typography.titleSmall
+                        style = typography.labelMedium
                     )
                 }
             }

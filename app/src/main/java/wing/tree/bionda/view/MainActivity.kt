@@ -41,7 +41,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.material.timepicker.MaterialTimePicker
@@ -57,7 +56,6 @@ import wing.tree.bionda.extension.add
 import wing.tree.bionda.extension.rememberWindowSizeClass
 import wing.tree.bionda.extension.remove
 import wing.tree.bionda.extension.toggle
-import wing.tree.bionda.model.WindowSizeClass
 import wing.tree.bionda.permissions.PermissionChecker
 import wing.tree.bionda.permissions.RequestMultiplePermissions
 import wing.tree.bionda.permissions.locationPermissions
@@ -65,7 +63,6 @@ import wing.tree.bionda.theme.BiondaTheme
 import wing.tree.bionda.view.compose.composable.Forecast
 import wing.tree.bionda.view.compose.composable.Notice
 import wing.tree.bionda.view.compose.composable.RequestPermissions
-import wing.tree.bionda.view.compose.composable.VerticalSpacer
 import wing.tree.bionda.view.model.MainViewModel
 import wing.tree.bionda.view.state.MainState.Action
 import java.util.Locale
@@ -157,13 +154,6 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
                                 modifier = Modifier.fillMaxWidth()
                             )
 
-                            VerticalSpacer(
-                                height = when (windowSizeClass) {
-                                    is WindowSizeClass.Compact -> 16.dp
-                                    else -> 24.dp
-                                }
-                            )
-
                             RequestPermissions(
                                 state = state.requestPermissionsState,
                                 onClick = {
@@ -171,7 +161,6 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
                                 },
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(windowSizeClass.marginValues)
                                     .animateContentSize()
                             )
 
