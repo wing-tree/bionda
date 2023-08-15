@@ -3,7 +3,6 @@ package wing.tree.bionda.view
 import android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
 import android.Manifest.permission.POST_NOTIFICATIONS
 import android.content.Intent
-import android.icu.util.Calendar
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -53,6 +52,7 @@ import wing.tree.bionda.data.extension.minute
 import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.toggle
 import wing.tree.bionda.data.extension.zero
+import wing.tree.bionda.data.regular.koreaCalendar
 import wing.tree.bionda.extension.add
 import wing.tree.bionda.extension.rememberWindowSizeClass
 import wing.tree.bionda.extension.remove
@@ -67,7 +67,6 @@ import wing.tree.bionda.view.compose.composable.RequestPermissions
 import wing.tree.bionda.view.model.MainViewModel
 import wing.tree.bionda.view.state.MainState.Action
 import wing.tree.bionda.view.state.NoticeState
-import java.util.Locale
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
@@ -176,6 +175,18 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
                                         is NoticeState.Action.Click -> {
                                             if (inSelectionMode) {
                                                 viewModel.selected.toggle(notice.id)
+                                            } else {
+                                                showMaterialTimePicker(
+                                                    notice.hour,
+                                                    notice.minute
+                                                ) { hour, minute ->
+                                                    viewModel.update(
+                                                        notice.copy(
+                                                            hour = hour,
+                                                            minute = minute
+                                                        )
+                                                    )
+                                                }
                                             }
                                         }
                                         is NoticeState.Action.LongClick -> {
@@ -312,18 +323,35 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
     }
 
     private fun onFloatingActionButtonClick() {
-        val calendar = Calendar.getInstance(Locale.KOREA)
+        val koreaCalendar = koreaCalendar()
+
+        showMaterialTimePicker(
+            hour = koreaCalendar.hourOfDay,
+            minute = koreaCalendar.minute
+        ) { hour, minute ->
+            viewModel.add(hour, minute)
+        }
+    }
+
+    private fun showMaterialTimePicker(
+        hour: Int,
+        minute: Int,
+        onPositiveButtonClick: (hour: Int, minute: Int) -> Unit
+    ) {
         val materialTimePicker = MaterialTimePicker.Builder()
-            .setHour(calendar.hourOfDay)
-            .setMinute(calendar.minute)
+            .setHour(hour)
+            .setMinute(minute)
             .build()
 
-        with(materialTimePicker) {
-            addOnPositiveButtonClickListener {
-                viewModel.add(hour, minute)
+        materialTimePicker.also {
+            it.addOnPositiveButtonClickListener { _ ->
+                onPositiveButtonClick(
+                    it.hour,
+                    it.minute
+                )
             }
 
-            show(supportFragmentManager, tag)
+            it.show(supportFragmentManager, it.tag)
         }
     }
 
