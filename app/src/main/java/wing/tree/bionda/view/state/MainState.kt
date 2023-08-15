@@ -39,7 +39,18 @@ sealed interface NoticeState {
         val notices: ImmutableList<Notice>,
         val selected: ImmutableSet<Long> = persistentSetOf()
     ) : NoticeState
+
     data class Error(val throwable: Throwable) : NoticeState
+
+    sealed interface Action {
+        val notice: Notice
+
+        data class Click(override val notice: Notice) : Action
+        data class LongClick(override val notice: Notice) : Action
+        data class CheckChange(override val notice: Notice, val checked: Boolean) : Action
+        data class SelectedChange(override val notice: Notice, val selected: Boolean) : Action
+        data class ConditionClick(override val notice: Notice, val condition: Notice.Condition) : Action
+    }
 
     companion object {
         val initialValue = Loading

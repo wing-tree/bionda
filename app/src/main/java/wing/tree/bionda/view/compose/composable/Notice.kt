@@ -7,7 +7,9 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -17,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme.typography
@@ -49,10 +52,7 @@ private val simpleDateFormat = SimpleDateFormat("a h:mm", Locale.KOREA)
 fun Notice(
     state: NoticeState,
     inSelectionMode: Boolean,
-    onClick: (Notice) -> Unit,
-    onLongClick: (Notice) -> Unit,
-    onCheckedChange: (Notice, Boolean) -> Unit,
-    onSelectedChange: (Notice, Boolean) -> Unit,
+    onAction: (NoticeState.Action) -> Unit,
     modifier: Modifier = Modifier
 ) {
     AnimatedContent(
@@ -89,10 +89,7 @@ fun Notice(
                         item = item,
                         inSelectionMode = inSelectionMode,
                         selected = item.id in it.selected,
-                        onClick = onClick,
-                        onLongClick = onLongClick,
-                        onCheckedChange = onCheckedChange,
-                        onSelectedChange = onSelectedChange,
+                        onAction = onAction,
                         modifier = Modifier
                             .fillMaxWidth()
                             .animateItemPlacement()
@@ -111,10 +108,7 @@ private fun Item(
     item: Notice,
     inSelectionMode: Boolean,
     selected: Boolean,
-    onClick: (Notice) -> Unit,
-    onLongClick: (Notice) -> Unit,
-    onCheckedChange: (Notice, Boolean) -> Unit,
-    onSelectedChange: (Notice, Boolean) -> Unit,
+    onAction: (NoticeState.Action) -> Unit,
     modifier: Modifier = Modifier
 ) {
     ElevatedCard(modifier = modifier) {
@@ -125,10 +119,10 @@ private fun Item(
                 .fillMaxWidth()
                 .combinedClickable(
                     onClick = {
-                        onClick(item)
+                        onAction(NoticeState.Action.Click(item))
                     },
                     onLongClick = {
-                        onLongClick(item)
+                        onAction(NoticeState.Action.LongClick(item))
                     }
                 )
                 .padding(
@@ -147,7 +141,7 @@ private fun Item(
                 Checkbox(
                     checked = selected,
                     onCheckedChange = {
-                        onSelectedChange(item, it)
+                        onAction(NoticeState.Action.SelectedChange(item, it))
                     },
                     modifier = Modifier
                         .padding(end = 16.dp)
@@ -162,19 +156,28 @@ private fun Item(
             )
 
             Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                Notice.Type.values().forEach {
+                Notice.Condition.values().forEach {
+                    val alpha = if (it in item.conditions) {
+                        1.0F
+                    } else {
+                        0.38F
+                    }
+
                     Text(
                         text = when (it) {
-                            Notice.Type.RAIN -> stringResource(id = R.string.rain)
-                            Notice.Type.SNOW -> stringResource(id = R.string.snow)
+                            Notice.Condition.RAIN -> stringResource(id = R.string.rain)
+                            Notice.Condition.SNOW -> stringResource(id = R.string.snow)
                         },
-                        modifier = Modifier.alpha(
-                            if (it in item.types) {
-                                1.0F
-                            } else {
-                                0.38F
+                        modifier = Modifier
+                            .clickable(
+                                interactionSource = remember {
+                                    MutableInteractionSource()
+                                },
+                                indication = rememberRipple(bounded = false)
+                            ) {
+                                onAction(NoticeState.Action.ConditionClick(item, it))
                             }
-                        ),
+                            .alpha(alpha),
                         style = typography.labelMedium
                     )
                 }
@@ -186,7 +189,7 @@ private fun Item(
                 checked = on,
                 onCheckedChange = {
                     on = it
-                    onCheckedChange(item, on)
+                    onAction(NoticeState.Action.CheckChange(item, on))
                 }
             )
         }

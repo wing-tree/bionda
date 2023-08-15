@@ -51,6 +51,7 @@ import wing.tree.bionda.data.extension.containsAny
 import wing.tree.bionda.data.extension.hourOfDay
 import wing.tree.bionda.data.extension.minute
 import wing.tree.bionda.data.extension.one
+import wing.tree.bionda.data.extension.toggle
 import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.extension.add
 import wing.tree.bionda.extension.rememberWindowSizeClass
@@ -65,6 +66,7 @@ import wing.tree.bionda.view.compose.composable.Notice
 import wing.tree.bionda.view.compose.composable.RequestPermissions
 import wing.tree.bionda.view.model.MainViewModel
 import wing.tree.bionda.view.state.MainState.Action
+import wing.tree.bionda.view.state.NoticeState
 import java.util.Locale
 
 @AndroidEntryPoint
@@ -167,27 +169,40 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
                             Notice(
                                 state = state.noticeState,
                                 inSelectionMode = inSelectionMode,
-                                onClick = {
-                                    if (inSelectionMode) {
-                                        viewModel.selected.toggle(it.id)
-                                    }
-                                },
-                                onLongClick = {
-                                    if (inSelectionMode.not()) {
-                                        viewModel.selected.toggle(it.id)
+                                onAction = {
+                                    val notice = it.notice
 
-                                        viewModel.inSelectionMode.value = true
-                                    }
-                                },
-                                onCheckedChange = { notice, checked ->
-                                    viewModel.update(notice.copy(on = checked))
-                                },
-                                onSelectedChange = { notice, selected ->
-                                    with(viewModel.selected) {
-                                        if (selected) {
-                                            add(notice.id)
-                                        } else {
-                                            remove(notice.id)
+                                    when(it) {
+                                        is NoticeState.Action.Click -> {
+                                            if (inSelectionMode) {
+                                                viewModel.selected.toggle(notice.id)
+                                            }
+                                        }
+                                        is NoticeState.Action.LongClick -> {
+                                            if (inSelectionMode.not()) {
+                                                viewModel.selected.toggle(notice.id)
+
+                                                viewModel.inSelectionMode.value = true
+                                            }
+                                        }
+                                        is NoticeState.Action.CheckChange -> {
+                                            viewModel.update(notice.copy(on = it.checked))
+                                        }
+                                        is NoticeState.Action.SelectedChange -> {
+                                            with(viewModel.selected) {
+                                                if (it.selected) {
+                                                    add(notice.id)
+                                                } else {
+                                                    remove(notice.id)
+                                                }
+                                            }
+                                        }
+                                        is NoticeState.Action.ConditionClick -> {
+                                            viewModel.update(
+                                                with(notice) {
+                                                    copy(conditions = conditions.toggle(it.condition))
+                                                }
+                                            )
                                         }
                                     }
                                 },
