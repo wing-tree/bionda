@@ -29,8 +29,7 @@ class ForecastDataSource(private val forecastService: ForecastService) {
         return block()
     }
 
-    @Suppress("unused")
-    suspend fun getUltraSrtFcst(
+    suspend fun get(
         serviceKey: String,
         numOfRows: Int,
         pageNo: Int,
@@ -40,29 +39,7 @@ class ForecastDataSource(private val forecastService: ForecastService) {
         nx: Int,
         ny: Int
     ) = retry {
-        forecastService.getUltraSrtFcst(
-            serviceKey,
-            numOfRows,
-            pageNo,
-            dataType,
-            baseDate,
-            baseTime,
-            nx,
-            ny
-        )
-    }
-
-    suspend fun getVilageFcst(
-        serviceKey: String,
-        numOfRows: Int,
-        pageNo: Int,
-        dataType: String,
-        baseDate: String,
-        baseTime: String,
-        nx: Int,
-        ny: Int
-    ) = retry {
-        forecastService.getVilageFcst(
+        forecastService.get(
             serviceKey,
             numOfRows,
             pageNo,

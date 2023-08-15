@@ -87,7 +87,7 @@ class NoticeService : Service(), PermissionChecker {
                 when (val location = locationProvider.getLocation()) {
                     is Complete.Success -> {
                         location.data?.toCoordinate()?.let { (nx, ny) ->
-                            forecastRepository.getVilageFcst(
+                            forecastRepository.get(
                                 nx = nx,
                                 ny = ny
                             ).map {

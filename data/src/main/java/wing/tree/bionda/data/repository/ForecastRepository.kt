@@ -22,18 +22,18 @@ class ForecastRepository(
 ) {
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
-    suspend fun getVilageFcst(
+    suspend fun get(
         nx: Int,
         ny: Int
     ): Result<Forecast> {
         return try {
             val baseCalendar = baseCalendar()
-            val vilageFcst = localDataSource.load(
+            val forecast = localDataSource.load(
                 baseCalendar.baseDate,
                 baseCalendar.baseTime,
                 nx,
                 ny
-            ) ?: remoteDataSource.getVilageFcst(
+            ) ?: remoteDataSource.get(
                 serviceKey = BuildConfig.serviceKey,
                 numOfRows = 290,
                 pageNo = Int.one,
@@ -58,7 +58,7 @@ class ForecastRepository(
                 }
             }
 
-            Complete.Success(vilageFcst)
+            Complete.Success(forecast)
         } catch (throwable: Throwable) {
             Complete.Failure(throwable)
         }

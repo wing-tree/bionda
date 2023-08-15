@@ -65,7 +65,7 @@ class MainViewModel @Inject constructor(
             is Complete.Success -> it.data?.let { location ->
                 val (nx, ny) = location.toCoordinate()
                 val address = getAddress(location)
-                val forecast = forecastRepository.getVilageFcst(
+                val forecast = forecastRepository.get(
                     nx = nx,
                     ny = ny
                 )
