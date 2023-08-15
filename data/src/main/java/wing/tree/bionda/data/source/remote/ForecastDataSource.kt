@@ -29,6 +29,7 @@ class ForecastDataSource(private val forecastService: ForecastService) {
         return block()
     }
 
+    @Suppress("unused")
     suspend fun getUltraSrtFcst(
         serviceKey: String,
         numOfRows: Int,

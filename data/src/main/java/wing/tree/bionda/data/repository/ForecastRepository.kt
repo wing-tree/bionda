@@ -8,8 +8,6 @@ import wing.tree.bionda.data.BuildConfig
 import wing.tree.bionda.data.extension.baseDate
 import wing.tree.bionda.data.extension.baseTime
 import wing.tree.bionda.data.extension.one
-import wing.tree.bionda.data.extension.sixty
-import wing.tree.bionda.data.model.DetailedFunction
 import wing.tree.bionda.data.model.Result
 import wing.tree.bionda.data.model.Result.Complete
 import wing.tree.bionda.data.model.forecast.Forecast
@@ -24,55 +22,12 @@ class ForecastRepository(
 ) {
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
-    suspend fun getUltraSrtFcst(
-        nx: Int,
-        ny: Int
-    ): Result<Forecast> {
-        val baseCalendar = baseCalendar(DetailedFunction.ULTRA_SRT_FCST)
-
-        return try {
-            val forecast = localDataSource.load(
-                baseCalendar.baseDate,
-                baseCalendar.baseTime,
-                nx,
-                ny
-            ) ?: remoteDataSource.getUltraSrtFcst(
-                serviceKey = BuildConfig.serviceKey,
-                numOfRows = Int.sixty,
-                pageNo = Int.one,
-                dataType = DATA_TYPE,
-                baseDate = baseCalendar.baseDate,
-                baseTime = baseCalendar.baseTime,
-                nx = nx,
-                ny = ny
-            ).also {
-                coroutineScope.launch {
-                    with(localDataSource) {
-                        clear()
-                        insert(
-                            it.toLocalDataModel(
-                                baseDate = baseCalendar.baseDate,
-                                baseTime = baseCalendar.baseTime,
-                                nx = nx,
-                                ny = ny
-                            )
-                        )
-                    }
-                }
-            }
-
-            Complete.Success(forecast)
-        } catch (throwable: Throwable) {
-            Complete.Failure(throwable)
-        }
-    }
-
     suspend fun getVilageFcst(
         nx: Int,
         ny: Int
     ): Result<Forecast> {
         return try {
-            val baseCalendar = baseCalendar(DetailedFunction.VILAGE_FCST)
+            val baseCalendar = baseCalendar()
             val vilageFcst = localDataSource.load(
                 baseCalendar.baseDate,
                 baseCalendar.baseTime,
