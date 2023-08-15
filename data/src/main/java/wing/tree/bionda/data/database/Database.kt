@@ -16,7 +16,7 @@ import wing.tree.bionda.data.model.forecast.local.Forecast
     exportSchema = true,
     version = 2,
     autoMigrations = [
-        AutoMigration(from = 1, to = 2, spec = AutoMigrationSpecs.From1To2::class)
+        AutoMigration(from = 1, to = 2, spec = AutoMigrationSpecs.Version1To2::class)
     ]
 )
 @androidx.room.TypeConverters(TypeConverters::class)
