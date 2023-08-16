@@ -17,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import wing.tree.bionda.data.extension.degree
 import wing.tree.bionda.data.extension.empty
@@ -162,7 +163,8 @@ private fun Address(
             Text(text = thoroughfare)
             Icon(
                 imageVector = Icons.Default.LocationOn,
-                contentDescription = null
+                contentDescription = null,
+                modifier = Modifier.size(20.dp)
             )
         }
     }
