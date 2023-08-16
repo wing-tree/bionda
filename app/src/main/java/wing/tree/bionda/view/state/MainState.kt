@@ -16,7 +16,8 @@ data class MainState(
 ) {
     enum class Action {
         ACCESS_BACKGROUND_LOCATION,
-        POST_NOTIFICATIONS
+        POST_NOTIFICATIONS,
+        SCHEDULE_EXACT_ALARM
     }
 }
 

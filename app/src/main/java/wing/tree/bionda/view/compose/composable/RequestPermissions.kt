@@ -2,6 +2,7 @@ package wing.tree.bionda.view.compose.composable
 
 import android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
 import android.Manifest.permission.POST_NOTIFICATIONS
+import android.Manifest.permission.SCHEDULE_EXACT_ALARM
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -34,6 +35,7 @@ fun RequestPermissions(
                         when (permission) {
                             ACCESS_BACKGROUND_LOCATION -> onClick(Action.ACCESS_BACKGROUND_LOCATION)
                             POST_NOTIFICATIONS -> onClick(Action.POST_NOTIFICATIONS)
+                            SCHEDULE_EXACT_ALARM -> onClick(Action.SCHEDULE_EXACT_ALARM)
                         }
                     }
                 ) {

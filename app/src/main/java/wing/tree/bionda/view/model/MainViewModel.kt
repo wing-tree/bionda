@@ -9,6 +9,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.delay
@@ -82,7 +83,7 @@ class MainViewModel @Inject constructor(
                     }
                 }
             }
-                ?: ForecastState.Error(NullPointerException())
+                ?: ForecastState.Error(NullPointerException()) // TODO error define.
 
             is Complete.Failure -> ForecastState.Error(it.throwable)
         }
@@ -253,9 +254,7 @@ class MainViewModel @Inject constructor(
             }
     }
 
-    fun notifyPermissionsDenied(
-        permissions: Collection<String>
-    ) {
+    fun notifyPermissionsDenied(permissions: Collection<String>) {
         if (permissions.containsAll(locationPermissions)) {
             location.value = Complete.Failure(
                 PermissionsDeniedException(locationPermissions)
@@ -274,14 +273,31 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun notifyPermissionsGranted(
-        permissions: Collection<String>
-    ) {
+    fun notifyPermissionDenied(permission: String) {
+        if (permission in locationPermissions) {
+            location.value = Complete.Failure(
+                PermissionsDeniedException(persistentListOf(permission))
+            )
+        }
+
+        requestPermissionsState.update {
+            val immutableList = buildSet {
+                add(permission)
+                addAll(it.permissions)
+                removeAll(locationPermissions)
+            }
+                .toImmutableList()
+
+            it.copy(permissions = immutableList)
+        }
+    }
+
+    fun notifyPermissionGranted(permission: String) {
         requestPermissionsState.update {
             val immutableList = it.permissions
                 .toMutableList()
                 .apply {
-                    removeAll(permissions)
+                    remove(permission)
                 }.toImmutableList()
 
             it.copy(permissions = immutableList)

@@ -2,11 +2,14 @@ package wing.tree.bionda.view
 
 import android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
 import android.Manifest.permission.POST_NOTIFICATIONS
+import android.Manifest.permission.SCHEDULE_EXACT_ALARM
+import android.app.AlarmManager
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -48,14 +51,15 @@ import wing.tree.bionda.R
 import wing.tree.bionda.data.constant.SCHEME_PACKAGE
 import wing.tree.bionda.data.extension.containsAny
 import wing.tree.bionda.data.extension.hourOfDay
+import wing.tree.bionda.data.extension.`is`
 import wing.tree.bionda.data.extension.minute
 import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.toggle
-import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.data.regular.koreaCalendar
 import wing.tree.bionda.extension.add
 import wing.tree.bionda.extension.rememberWindowSizeClass
 import wing.tree.bionda.extension.remove
+import wing.tree.bionda.extension.requestAccessBackgroundLocationPermission
 import wing.tree.bionda.extension.toggle
 import wing.tree.bionda.permissions.PermissionChecker
 import wing.tree.bionda.permissions.RequestMultiplePermissions
@@ -81,6 +85,10 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             add(POST_NOTIFICATIONS)
         }
+    }
+
+    private val alarmManager by lazy {
+        getSystemService(AlarmManager::class.java)
     }
 
     override fun onCheckSelfMultiplePermissions(result: PermissionChecker.Result) {
@@ -237,12 +245,18 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
         super.onResume()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            val permissions = listOf(ACCESS_BACKGROUND_LOCATION)
-
-            if (checkSelfSinglePermission(ACCESS_BACKGROUND_LOCATION).not()) {
-                viewModel.notifyPermissionsDenied(permissions)
+            if (checkSelfSinglePermission(ACCESS_BACKGROUND_LOCATION)) {
+                viewModel.notifyPermissionGranted(ACCESS_BACKGROUND_LOCATION)
             } else {
-                viewModel.notifyPermissionsGranted(permissions)
+                viewModel.notifyPermissionDenied(ACCESS_BACKGROUND_LOCATION)
+            }
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (alarmManager?.canScheduleExactAlarms() `is` false) {
+                viewModel.notifyPermissionDenied(SCHEDULE_EXACT_ALARM)
+            } else {
+                viewModel.notifyPermissionGranted(SCHEDULE_EXACT_ALARM)
             }
         }
     }
@@ -360,25 +374,9 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
             Action.ACCESS_BACKGROUND_LOCATION -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     if (checkSelfSinglePermission(ACCESS_BACKGROUND_LOCATION)) {
-                        viewModel.notifyPermissionsGranted(listOf(ACCESS_BACKGROUND_LOCATION))
+                        viewModel.notifyPermissionGranted(ACCESS_BACKGROUND_LOCATION)
                     } else {
-                        if (shouldShowRequestPermissionRationale(ACCESS_BACKGROUND_LOCATION)) {
-                            requestPermissions(
-                                arrayOf(ACCESS_BACKGROUND_LOCATION),
-                                Int.zero
-                            )
-                        } else {
-                            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                                .apply {
-                                    data = Uri.fromParts(
-                                        SCHEME_PACKAGE,
-                                        packageName,
-                                        null
-                                    )
-                                }
-
-                            startActivity(intent)
-                        }
+                        requestAccessBackgroundLocationPermission()
                     }
                 }
             }
@@ -386,7 +384,7 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
             Action.POST_NOTIFICATIONS -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     if (checkSelfSinglePermission(POST_NOTIFICATIONS)) {
-                        viewModel.notifyPermissionsGranted(listOf(POST_NOTIFICATIONS))
+                        viewModel.notifyPermissionGranted(POST_NOTIFICATIONS)
                     } else {
                         val intent =
                             Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
@@ -399,6 +397,16 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
                                 }
 
                         startActivity(intent)
+                    }
+                }
+            }
+
+            Action.SCHEDULE_EXACT_ALARM -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    if (alarmManager?.canScheduleExactAlarms() `is` false) {
+                        startActivity(Intent(ACTION_REQUEST_SCHEDULE_EXACT_ALARM))
+                    } else {
+                        viewModel.notifyPermissionGranted(SCHEDULE_EXACT_ALARM)
                     }
                 }
             }
