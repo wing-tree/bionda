@@ -1,7 +1,12 @@
 package wing.tree.bionda.extension
 
+import android.Manifest
 import android.app.Activity
 import android.content.Intent
+import android.net.Uri
+import android.os.Build
+import android.provider.Settings
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.geometry.Size
@@ -10,6 +15,8 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.window.layout.WindowMetricsCalculator
 import wing.tree.bionda.R
+import wing.tree.bionda.data.constant.SCHEME_PACKAGE
+import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.model.WindowSizeClass
 
 @Composable
@@ -31,6 +38,27 @@ private fun Activity.rememberWindowSize(): Size {
     }
 
     return currentWindowMetrics.bounds.toComposeRect().size
+}
+
+@RequiresApi(Build.VERSION_CODES.Q)
+fun Activity.requestAccessBackgroundLocationPermission() {
+    if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_BACKGROUND_LOCATION)) {
+        requestPermissions(
+            arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION),
+            Int.zero
+        )
+    } else {
+        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+            .apply {
+                data = Uri.fromParts(
+                    SCHEME_PACKAGE,
+                    packageName,
+                    null
+                )
+            }
+
+        startActivity(intent)
+    }
 }
 
 fun Activity.shareApp() {
