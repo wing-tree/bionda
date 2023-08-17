@@ -13,7 +13,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.ImmutableList
 import wing.tree.bionda.R
 import wing.tree.bionda.data.extension.empty
@@ -28,7 +27,6 @@ import wing.tree.bionda.extension.drawTmp
 import wing.tree.bionda.extension.drawTmpChart
 import wing.tree.bionda.extension.drawWeatherIcon
 import wing.tree.bionda.extension.drawWsd
-import wing.tree.bionda.extension.height
 import wing.tree.bionda.extension.toTmpOffsets
 import wing.tree.bionda.model.ChartStyle
 import wing.tree.bionda.model.Forecast
@@ -82,8 +80,6 @@ fun Chart(
                     textPaint = fcstHourTextPaint
                 )
 
-                pointF.y += 12.dp.toPx()
-
                 drawWeatherIcon(
                     item = item,
                     context = context,
@@ -96,8 +92,6 @@ fun Chart(
                         )
                     }
                 )
-
-                pointF.y += 12.dp.toPx()
 
                 drawTmp(
                     tmp = item.tmp ?: String.empty,
@@ -115,8 +109,6 @@ fun Chart(
                     pointF = pointF,
                     style = style.tmpChart,
                 )
-
-                pointF.y += tmpTextPaint.height.plus(12.dp.toPx())
 
                 drawPcp(
                     pcp = item.pcp ?: String.empty,

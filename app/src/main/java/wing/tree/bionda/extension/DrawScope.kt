@@ -38,14 +38,14 @@ fun DrawScope.drawFcstHour(
     pointF: PointF,
     textPaint: TextPaint
 ) {
+    pointF.y += textPaint.height
+
     nativeCanvas.drawText(
         fcstHour,
         pointF.x,
         pointF.y,
         textPaint
     )
-
-    pointF.y += textPaint.height
 }
 
 fun DrawScope.drawPcp(
@@ -53,14 +53,14 @@ fun DrawScope.drawPcp(
     pointF: PointF,
     textPaint: TextPaint
 ) {
+    pointF.y += textPaint.height
+
     nativeCanvas.drawText(
         pcp,
         pointF.x,
         pointF.y,
         textPaint
     )
-
-    pointF.y += textPaint.height
 }
 
 fun DrawScope.drawPop(
@@ -68,14 +68,14 @@ fun DrawScope.drawPop(
     pointF: PointF,
     textPaint: TextPaint
 ) {
+    pointF.y += textPaint.height
+
     nativeCanvas.drawText(
         pop,
         pointF.x,
         pointF.y,
         textPaint
     )
-
-    pointF.y += textPaint.height
 }
 
 fun DrawScope.drawReh(
@@ -83,14 +83,14 @@ fun DrawScope.drawReh(
     pointF: PointF,
     textPaint: TextPaint
 ) {
+    pointF.y += textPaint.height
+
     nativeCanvas.drawText(
         reh,
         pointF.x,
         pointF.y,
         textPaint
     )
-
-    pointF.y += textPaint.height
 }
 
 fun DrawScope.drawTmp(
@@ -99,6 +99,8 @@ fun DrawScope.drawTmp(
     offset: Offset,
     textPaint: TextPaint
 ) {
+    pointF.y += textPaint.height.quarter
+
     val text = buildString {
         if (tmp.isNotBlank()) {
             append(tmp)
@@ -112,8 +114,6 @@ fun DrawScope.drawTmp(
         pointF.y.plus(offset.y),
         textPaint
     )
-
-    pointF.y += textPaint.height.quarter
 }
 
 fun DrawScope.drawTmpChart(
@@ -172,6 +172,8 @@ fun DrawScope.drawWeatherIcon(
     val width = style.width.toPx()
     val height = style.height.toPx()
 
+    pointF.y += height
+
     with(item.weatherIcon) {
         pty[item.pty.code] ?: sky[item.sky.code]
     }
@@ -185,14 +187,12 @@ fun DrawScope.drawWeatherIcon(
                     image = image,
                     topLeft = Offset(
                         pointF.x.minus(image.width.half),
-                        pointF.y.minus(image.height.half)
+                        pointF.y.minus(image.height)
                     ),
                     colorFilter = ColorFilter.tint(style.color, BlendMode.SrcAtop)
                 )
             }
         }
-
-    pointF.y += height
 }
 
 fun DrawScope.drawWsd(
@@ -200,14 +200,14 @@ fun DrawScope.drawWsd(
     pointF: PointF,
     textPaint: TextPaint
 ) {
+    pointF.y += textPaint.height
+
     nativeCanvas.drawText(
         wsd,
         pointF.x,
         pointF.y,
         textPaint
     )
-
-    pointF.y += textPaint.height
 }
 
 fun DrawScope.fillGradient(

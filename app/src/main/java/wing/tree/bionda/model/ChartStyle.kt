@@ -88,7 +88,7 @@ data class ChartStyle(
 
     companion object {
         val default = ChartStyle(
-            segment = Segment(width = 72.dp),
+            segment = Segment(width = 64.dp),
             fcstHour = FcstHour,
             pcp = Pcp,
             pop = Pop,
