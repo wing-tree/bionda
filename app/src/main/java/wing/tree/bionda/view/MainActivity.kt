@@ -14,6 +14,8 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.fadeIn
@@ -22,6 +24,7 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -36,12 +39,18 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -54,11 +63,14 @@ import dagger.hilt.android.AndroidEntryPoint
 import wing.tree.bionda.R
 import wing.tree.bionda.data.constant.SCHEME_PACKAGE
 import wing.tree.bionda.data.extension.containsAny
+import wing.tree.bionda.data.extension.empty
 import wing.tree.bionda.data.extension.hourOfDay
 import wing.tree.bionda.data.extension.`is`
 import wing.tree.bionda.data.extension.minute
 import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.toggle
+import wing.tree.bionda.data.extension.two
+import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.data.regular.koreaCalendar
 import wing.tree.bionda.data.regular.noOperations
 import wing.tree.bionda.extension.add
@@ -133,24 +145,28 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
                 val inSelectionMode = state.inSelectionMode
                 val windowSizeClass = rememberWindowSizeClass()
 
+                var selectedTabIndex by remember {
+                    mutableIntStateOf(Int.zero)
+                }
+
                 BackHandler(enabled = inSelectionMode) {
                     viewModel.inSelectionMode.toggle()
                 }
 
                 Scaffold(
                     topBar = {
-                             CenterAlignedTopAppBar(
-                                 title = {
-                                     noOperations
-                                 },
-                                 navigationIcon = {
-                                     Icon(
-                                         imageVector = Icons.Default.Menu,
-                                         contentDescription = null,
-                                         modifier = Modifier.padding(horizontal = 16.dp)
-                                     )
-                                 }
-                             )
+                        CenterAlignedTopAppBar(
+                            title = {
+                                noOperations
+                            },
+                            navigationIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.Menu,
+                                    contentDescription = null,
+                                    modifier = Modifier.padding(horizontal = 16.dp)
+                                )
+                            }
+                        )
                     },
                     floatingActionButton = {
                         AnimatedVisibility(
@@ -171,90 +187,148 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
                         }
                     }
                 ) { innerPadding ->
-                    Box(
+                    Column(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(innerPadding)
                     ) {
-                        Column {
-                            Forecast(
-                                state = state.forecastState,
-                                windowSizeClass = windowSizeClass,
-                                modifier = Modifier.fillMaxWidth()
-                            )
-
-                            RequestPermissions(
-                                state = state.requestPermissionsState,
+                        SingleChoiceSegmentedButtonRow(
+                            modifier = Modifier.padding(windowSizeClass.marginValues)
+                        ) {
+                            SegmentedButton(
+                                selected = Int.zero `is` selectedTabIndex,
                                 onClick = {
-                                    onRequestPermissionsClick(it)
+                                    selectedTabIndex = Int.zero
                                 },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .animateContentSize()
-                            )
+                                shape = SegmentedButtonDefaults.shape(
+                                    position = Int.zero,
+                                    count = Int.two
+                                )
+                            ) {
+                                Text(stringResource(id = R.string.weather))
+                            }
 
-                            Notice(
-                                state = state.noticeState,
-                                inSelectionMode = inSelectionMode,
-                                onAction = {
-                                    val notice = it.notice
-
-                                    when(it) {
-                                        is NoticeState.Action.Click -> {
-                                            if (inSelectionMode) {
-                                                viewModel.selected.toggle(notice.id)
-                                            } else {
-                                                showMaterialTimePicker(
-                                                    notice.hour,
-                                                    notice.minute
-                                                ) { hour, minute ->
-                                                    viewModel.update(
-                                                        notice.copy(
-                                                            hour = hour,
-                                                            minute = minute
-                                                        )
-                                                    )
-                                                }
-                                            }
-                                        }
-                                        is NoticeState.Action.LongClick -> {
-                                            if (inSelectionMode.not()) {
-                                                viewModel.selected.toggle(notice.id)
-
-                                                viewModel.inSelectionMode.value = true
-                                            }
-                                        }
-                                        is NoticeState.Action.CheckChange -> {
-                                            viewModel.update(notice.copy(on = it.checked))
-                                        }
-                                        is NoticeState.Action.SelectedChange -> {
-                                            with(viewModel.selected) {
-                                                if (it.selected) {
-                                                    add(notice.id)
-                                                } else {
-                                                    remove(notice.id)
-                                                }
-                                            }
-                                        }
-                                        is NoticeState.Action.ConditionClick -> {
-                                            viewModel.update(
-                                                with(notice) {
-                                                    copy(conditions = conditions.toggle(it.condition))
-                                                }
-                                            )
-                                        }
-                                    }
+                            SegmentedButton(
+                                selected = Int.one `is` selectedTabIndex,
+                                onClick = {
+                                    selectedTabIndex = Int.one
                                 },
-                                modifier = Modifier
-                                    .weight(Float.one)
-                                    .padding(windowSizeClass.marginValues)
-                            )
+                                shape = SegmentedButtonDefaults.shape(
+                                    position = Int.one,
+                                    count = Int.two
+                                )
+                            ) {
+                                Text(stringResource(id = R.string.alarm))
+                            }
                         }
 
-                        SelectionMode(
-                            inSelectionMode = state.inSelectionMode,
-                            modifier = Modifier.align(Alignment.BottomCenter)
-                        )
+                        AnimatedContent(
+                            targetState = selectedTabIndex,
+                            modifier = Modifier.weight(Float.one),
+                            transitionSpec = {
+                                val slideDirection = if (targetState `is` Int.zero) {
+                                    SlideDirection.Right
+                                } else {
+                                    SlideDirection.Left
+                                }
+
+                                slideIntoContainer(slideDirection).plus(fadeIn()) togetherWith
+                                        slideOutOfContainer(slideDirection).plus(fadeOut())
+                            },
+                            label = String.empty
+                        ) { targetState ->
+                            when (targetState) {
+                                Int.zero -> Forecast(
+                                    state = state.forecastState,
+                                    windowSizeClass = windowSizeClass,
+                                    modifier = Modifier.fillMaxSize()
+                                )
+
+                                Int.one -> Box(modifier = Modifier.fillMaxSize()) {
+                                    Column(modifier = Modifier.fillMaxSize()) {
+                                        RequestPermissions(
+                                            state = state.requestPermissionsState,
+                                            onClick = {
+                                                onRequestPermissionsClick(it)
+                                            },
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .animateContentSize()
+                                        )
+
+                                        Notice(
+                                            state = state.noticeState,
+                                            inSelectionMode = inSelectionMode,
+                                            onAction = {
+                                                val notice = it.notice
+
+                                                when (it) {
+                                                    is NoticeState.Action.Click -> {
+                                                        if (inSelectionMode) {
+                                                            viewModel.selected.toggle(notice.id)
+                                                        } else {
+                                                            showMaterialTimePicker(
+                                                                notice.hour,
+                                                                notice.minute
+                                                            ) { hour, minute ->
+                                                                viewModel.update(
+                                                                    notice.copy(
+                                                                        hour = hour,
+                                                                        minute = minute
+                                                                    )
+                                                                )
+                                                            }
+                                                        }
+                                                    }
+
+                                                    is NoticeState.Action.LongClick -> {
+                                                        if (inSelectionMode.not()) {
+                                                            viewModel.selected.toggle(notice.id)
+
+                                                            viewModel.inSelectionMode.value = true
+                                                        }
+                                                    }
+
+                                                    is NoticeState.Action.CheckChange -> {
+                                                        viewModel.update(notice.copy(on = it.checked))
+                                                    }
+
+                                                    is NoticeState.Action.SelectedChange -> {
+                                                        with(viewModel.selected) {
+                                                            if (it.selected) {
+                                                                add(notice.id)
+                                                            } else {
+                                                                remove(notice.id)
+                                                            }
+                                                        }
+                                                    }
+
+                                                    is NoticeState.Action.ConditionClick -> {
+                                                        viewModel.update(
+                                                            with(notice) {
+                                                                copy(
+                                                                    conditions = conditions.toggle(
+                                                                        it.condition
+                                                                    )
+                                                                )
+                                                            }
+                                                        )
+                                                    }
+                                                }
+                                            },
+                                            modifier = Modifier
+                                                .weight(Float.one)
+                                                .padding(windowSizeClass.marginValues)
+                                        )
+                                    }
+
+                                    SelectionMode(
+                                        inSelectionMode = state.inSelectionMode,
+                                        modifier = Modifier.align(Alignment.BottomCenter)
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
             }
