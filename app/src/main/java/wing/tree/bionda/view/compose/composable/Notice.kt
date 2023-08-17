@@ -47,7 +47,6 @@ import java.util.Locale
 
 private val simpleDateFormat = SimpleDateFormat("a h:mm", Locale.KOREA)
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Notice(
     state: NoticeState,
@@ -68,36 +67,52 @@ fun Notice(
     ) {
         when (it) {
             NoticeState.Loading -> Loading(modifier = Modifier.fillMaxSize())
-            is NoticeState.Content -> LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(
-                    bottom = if (inSelectionMode) {
-                        72.dp
-                    } else {
-                        Dp.zero
-                    }
-                ),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(
-                    items = it.notices,
-                    key = { notice ->
-                        notice.id
-                    }
-                ) { item ->
-                    Item(
-                        item = item,
-                        inSelectionMode = inSelectionMode,
-                        selected = item.id in it.selected,
-                        onAction = onAction,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .animateItemPlacement()
-                    )
-                }
-            }
+            is NoticeState.Content -> Content(
+                content = it,
+                inSelectionMode = inSelectionMode,
+                onAction = onAction,
+                modifier = Modifier.fillMaxSize()
+            )
 
             is NoticeState.Error -> {}
+        }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun Content(
+    content: NoticeState.Content,
+    inSelectionMode: Boolean,
+    onAction: (NoticeState.Action) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    LazyColumn(
+        modifier = modifier,
+        contentPadding = PaddingValues(
+            bottom = if (inSelectionMode) {
+                72.dp
+            } else {
+                Dp.zero
+            }
+        ),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        items(
+            items = content.notices,
+            key = { notice ->
+                notice.id
+            }
+        ) { item ->
+            Item(
+                item = item,
+                inSelectionMode = inSelectionMode,
+                selected = item.id in content.selected,
+                onAction = onAction,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .animateItemPlacement()
+            )
         }
     }
 }
