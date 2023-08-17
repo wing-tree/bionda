@@ -84,7 +84,7 @@ private fun Content(
             modifier = Modifier.fillMaxWidth()
         )
 
-        VerticalSpacer(32.dp)
+        VerticalSpacer(16.dp)
 
         // TODO 아래 내용 체크, 기본 api 제공도 확인,
 //        contentPadding = windowSizeClass.marginValues.copy(
@@ -95,7 +95,7 @@ private fun Content(
         ElevatedCard(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(200.dp) // todo, style에서 계산 필요. or requireHeight 등도 확인.
+                .height(180.dp) // todo, style에서 계산 필요. or requireHeight 등도 확인.
                 .padding(windowSizeClass.marginValues)
         ) {
             Chart(

@@ -174,8 +174,6 @@ fun DrawScope.drawWeatherIcon(
     val width = style.width.toPx()
     val height = style.height.toPx()
 
-    pointF.y += height
-
     with(item.weatherIcon) {
         pty[item.pty.code] ?: sky[item.sky.code]
     }
@@ -188,11 +186,13 @@ fun DrawScope.drawWeatherIcon(
                 drawImage(
                     image = image,
                     topLeft = Offset(
-                        pointF.x.minus(image.width.half),
-                        pointF.y.minus(image.height)
+                        pointF.x.minus(width.half),
+                        height.half,
                     ),
                     colorFilter = ColorFilter.tint(style.color, BlendMode.SrcAtop)
                 )
+
+                pointF.y += height.half
             }
         }
 }

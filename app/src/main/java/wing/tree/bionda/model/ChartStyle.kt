@@ -38,7 +38,7 @@ data class ChartStyle(
     object Pcp : Element {
         override val textPaint: TextPaint
             @Composable
-            get() = typography.labelLarge
+            get() = typography.labelMedium
                 .copy(textAlign = TextAlign.Center)
                 .toTextPaint()
     }
@@ -46,7 +46,7 @@ data class ChartStyle(
     object Pop : Element {
         override val textPaint: TextPaint
             @Composable
-            get() = typography.labelLarge
+            get() = typography.labelMedium
                 .copy(textAlign = TextAlign.Center)
                 .toTextPaint()
     }
@@ -54,7 +54,7 @@ data class ChartStyle(
     object Reh : Element {
         override val textPaint: TextPaint
             @Composable
-            get() = typography.labelLarge
+            get() = typography.labelMedium
                 .copy(textAlign = TextAlign.Center)
                 .toTextPaint()
     }
@@ -96,7 +96,7 @@ data class ChartStyle(
             tmp = Tmp,
             tmpChart = TmpChart(
                 color = Color.Cyan,
-                height = 24.dp
+                height = 16.dp
             ),
             weatherIcon = WeatherIcon(
                 width = 30.dp,
