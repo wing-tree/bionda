@@ -95,8 +95,8 @@ private fun Content(
         ElevatedCard(
             modifier = Modifier
                 .fillMaxWidth()
-                //.padding(windowSizeClass.marginValues)
                 .height(200.dp) // todo, style에서 계산 필요. or requireHeight 등도 확인.
+                .padding(windowSizeClass.marginValues)
         ) {
             Chart(
                 items = forecast.items,

@@ -99,7 +99,7 @@ fun DrawScope.drawTmp(
     offset: Offset,
     textPaint: TextPaint
 ) {
-    pointF.y += textPaint.height.quarter
+    pointF.y += textPaint.height
 
     val text = buildString {
         if (tmp.isNotBlank()) {
@@ -114,6 +114,8 @@ fun DrawScope.drawTmp(
         pointF.y.plus(offset.y),
         textPaint
     )
+
+    pointF.y += textPaint.height.quarter
 }
 
 fun DrawScope.drawTmpChart(
