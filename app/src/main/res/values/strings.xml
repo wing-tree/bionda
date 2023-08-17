@@ -1,5 +1,6 @@
 <resources>
     <string name="access_background_location_permission_rationale">알림을 받으시려면 위치 액세스 권한을 \'항상 허용\'으로 유지해 주세요.</string>
+    <string name="alarm">알람</string>
     <string name="alarm_off">알람 끄기</string>
     <string name="alarm_on">알람 켜기</string>
     <string name="app_name">비온다</string>
@@ -12,6 +13,7 @@
     <string name="share_the_app">앱 공유하기</string>
     <string name="snow">눈</string>
     <string name="take_an_umbrella">우산 챙기세요!</string>
+    <string name="weather">날씨</string>
 
     <string-array name="subject_markers">
         <item>이</item>
