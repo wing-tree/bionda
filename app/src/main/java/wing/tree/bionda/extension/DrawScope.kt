@@ -183,7 +183,10 @@ fun DrawScope.drawWeatherIcon(
             image?.let {
                 drawImage(
                     image = image,
-                    topLeft = Offset(pointF.x.minus(image.width.half), Float.zero),
+                    topLeft = Offset(
+                        pointF.x.minus(image.width.half),
+                        pointF.y.minus(image.height.half)
+                    ),
                     colorFilter = ColorFilter.tint(style.color, BlendMode.SrcAtop)
                 )
             }

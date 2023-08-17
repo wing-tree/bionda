@@ -30,6 +30,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -43,6 +46,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.material.timepicker.MaterialTimePicker
@@ -56,6 +60,7 @@ import wing.tree.bionda.data.extension.minute
 import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.toggle
 import wing.tree.bionda.data.regular.koreaCalendar
+import wing.tree.bionda.data.regular.noOperations
 import wing.tree.bionda.extension.add
 import wing.tree.bionda.extension.rememberWindowSizeClass
 import wing.tree.bionda.extension.remove
@@ -115,6 +120,7 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
 
     private val viewModel by viewModels<MainViewModel>()
 
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -132,6 +138,20 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
                 }
 
                 Scaffold(
+                    topBar = {
+                             CenterAlignedTopAppBar(
+                                 title = {
+                                     noOperations
+                                 },
+                                 navigationIcon = {
+                                     Icon(
+                                         imageVector = Icons.Default.Menu,
+                                         contentDescription = null,
+                                         modifier = Modifier.padding(horizontal = 16.dp)
+                                     )
+                                 }
+                             )
+                    },
                     floatingActionButton = {
                         AnimatedVisibility(
                             visible = inSelectionMode.not(),

@@ -17,7 +17,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import wing.tree.bionda.data.extension.degree
 import wing.tree.bionda.data.extension.empty
@@ -82,12 +81,7 @@ private fun Content(
             modifier = Modifier.fillMaxWidth()
         )
 
-        VerticalSpacer(
-            height = when (windowSizeClass) {
-                is WindowSizeClass.Compact -> 16.dp
-                else -> 24.dp
-            }
-        )
+        VerticalSpacer(32.dp)
 
         // TODO 아래 내용 체크, 기본 api 제공도 확인,
 //        contentPadding = windowSizeClass.marginValues.copy(
@@ -98,7 +92,7 @@ private fun Content(
             items = forecast.items,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(160.dp)
+                .height(200.dp) // todo, style에서 계산 필요.
         )
     }
 }
