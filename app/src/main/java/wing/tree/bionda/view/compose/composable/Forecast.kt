@@ -81,12 +81,7 @@ private fun Content(
             modifier = Modifier.fillMaxWidth()
         )
 
-        VerticalSpacer(
-            height = when (windowSizeClass) {
-                is WindowSizeClass.Compact -> 16.dp
-                else -> 24.dp
-            }
-        )
+        VerticalSpacer(32.dp)
 
         // TODO 아래 내용 체크, 기본 api 제공도 확인,
 //        contentPadding = windowSizeClass.marginValues.copy(
@@ -97,7 +92,7 @@ private fun Content(
             items = forecast.items,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(160.dp)
+                .height(200.dp) // todo, style에서 계산 필요.
         )
     }
 }
@@ -162,7 +157,8 @@ private fun Address(
             Text(text = thoroughfare)
             Icon(
                 imageVector = Icons.Default.LocationOn,
-                contentDescription = null
+                contentDescription = null,
+                modifier = Modifier.size(20.dp)
             )
         }
     }
