@@ -5,7 +5,10 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableMap
+import wing.tree.bionda.data.extension.baseDate
 import wing.tree.bionda.data.extension.hourOfDay
+import wing.tree.bionda.data.extension.int
+import wing.tree.bionda.data.extension.not
 import wing.tree.bionda.data.extension.oneHundred
 import wing.tree.bionda.data.model.Category
 import wing.tree.bionda.data.model.CodeValue
@@ -18,7 +21,13 @@ data class Forecast(
 ) {
     val currentItem: Item? get() = with(items) {
         firstOrNull {
-            it.fcstHour == koreaCalendar().hourOfDay
+            with(koreaCalendar()) {
+                when  {
+                    it.fcstDate not baseDate.int -> false
+                    it.fcstHour not hourOfDay -> false
+                    else -> true
+                }
+            }
         }
             ?: firstOrNull()
     }
