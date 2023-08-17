@@ -6,12 +6,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import wing.tree.bionda.data.BuildConfig
 import wing.tree.bionda.data.extension.baseDate
-import wing.tree.bionda.data.extension.baseTime
 import wing.tree.bionda.data.extension.one
+import wing.tree.bionda.data.model.BaseCalendar
 import wing.tree.bionda.data.model.Result
 import wing.tree.bionda.data.model.Result.Complete
 import wing.tree.bionda.data.model.forecast.Forecast
-import wing.tree.bionda.data.regular.baseCalendar
+import wing.tree.bionda.data.regular.koreaCalendar
 import wing.tree.bionda.data.model.forecast.local.Forecast as LocalDataModel
 import wing.tree.bionda.data.source.local.ForecastDataSource as LocalDataSource
 import wing.tree.bionda.data.source.remote.ForecastDataSource as RemoteDataSource
@@ -22,40 +22,58 @@ class ForecastRepository(
 ) {
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
+    private fun cache(localDataModel: LocalDataModel) {
+        coroutineScope.launch {
+            with(localDataSource) {
+                clear()
+                insert(localDataModel)
+            }
+        }
+    }
+
     suspend fun get(
         nx: Int,
         ny: Int
     ): Result<Forecast> {
         return try {
-            val baseCalendar = baseCalendar()
+            val baseCalendar = BaseCalendar()
+            val baseDate = baseCalendar.baseDate
+            val baseTime = baseCalendar.baseTime
             val forecast = localDataSource.load(
-                baseCalendar.baseDate,
-                baseCalendar.baseTime,
-                nx,
-                ny
+                baseDate = baseDate,
+                baseTime = baseTime,
+                nx = nx,
+                ny = ny
             ) ?: remoteDataSource.get(
                 serviceKey = BuildConfig.serviceKey,
                 numOfRows = 290,
                 pageNo = Int.one,
                 dataType = DATA_TYPE,
-                baseDate = baseCalendar.baseDate,
-                baseTime = baseCalendar.baseTime,
+                baseDate = baseDate,
+                baseTime = baseTime,
                 nx = nx,
                 ny = ny
-            ).also {
-                coroutineScope.launch {
-                    with(localDataSource) {
-                        clear()
-                        insert(
-                            it.toLocalDataModel(
-                                baseDate = baseCalendar.baseDate,
-                                baseTime = baseCalendar.baseTime,
-                                nx = nx,
-                                ny = ny
-                            )
-                        )
-                    }
+            ).let {
+                val previousForecast = with(baseCalendar.previous()) {
+                    localDataSource.load(
+                        baseDate = this.baseDate,
+                        baseTime = this.baseDate,
+                        nx = nx,
+                        ny = ny
+                    )
                 }
+
+                val localDataModel = it.toLocalDataModel(
+                    previousForecast = previousForecast,
+                    baseDate = baseDate,
+                    baseTime = baseTime,
+                    nx = nx,
+                    ny = ny
+                )
+
+                cache(localDataModel)
+
+                localDataModel
             }
 
             Complete.Success(forecast)
@@ -65,13 +83,19 @@ class ForecastRepository(
     }
 
     private fun Forecast.toLocalDataModel(
+        previousForecast: LocalDataModel?,
         baseDate: String,
         baseTime: String,
         nx: Int,
         ny: Int
     ): LocalDataModel {
+        val koreaCalendar = koreaCalendar()
+        val previousItems = previousForecast?.items?.filter {
+            false // TODO. 베이스 date/time 받아서 캘린더 생성하는 함수 필요. 해당 캘린더와 3시간 차이나는 케이스. 필터링.
+        } ?: emptyList()
+
         return LocalDataModel(
-            items = items.toImmutableList(),
+            items = items.plus(previousItems).toImmutableList(),
             baseDate = baseDate,
             baseTime = baseTime,
             nx = nx,

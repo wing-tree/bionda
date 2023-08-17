@@ -1,12 +1,9 @@
 package wing.tree.bionda.data.regular
 
 import android.icu.util.Calendar
-import wing.tree.bionda.data.extension.cloneAsBaseCalendar
 import wing.tree.bionda.data.extension.hourOfDay
 import wing.tree.bionda.data.extension.minute
 import java.util.Locale
-
-fun baseCalendar(): Calendar = koreaCalendar().cloneAsBaseCalendar()
 
 fun calendarOf(
     timeInMillis: Long? = null
