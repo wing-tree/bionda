@@ -191,10 +191,10 @@ fun DrawScope.drawWeatherIcon(
                     ),
                     colorFilter = ColorFilter.tint(style.color, BlendMode.SrcAtop)
                 )
-
-                pointF.y += height.half
             }
         }
+
+    pointF.y += height.half
 }
 
 fun DrawScope.drawWsd(
