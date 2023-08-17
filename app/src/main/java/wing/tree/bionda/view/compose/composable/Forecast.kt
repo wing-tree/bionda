@@ -6,11 +6,14 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
@@ -88,12 +91,20 @@ private fun Content(
 //            top = Dp.zero,
 //            bottom = Dp.zero
 //        )
-        Chart(
-            items = forecast.items,
+
+        ElevatedCard(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(200.dp) // todo, style에서 계산 필요.
-        )
+                //.padding(windowSizeClass.marginValues)
+                .height(200.dp) // todo, style에서 계산 필요. or requireHeight 등도 확인.
+        ) {
+            Chart(
+                items = forecast.items,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(vertical = 12.dp)
+            )
+        }
     }
 }
 
