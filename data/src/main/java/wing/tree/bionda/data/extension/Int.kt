@@ -11,6 +11,7 @@ val Int.Companion.two: Int get() = 2
 val Int.Companion.zero: Int get() = 0
 val Int.half: Int get() = div(2)
 val Int.long: Long get() = toLong()
+val Int.string: String get() = toString()
 
 fun Int.ifZero(defaultValue: () -> Int) = if (this `is` Int.zero) {
     defaultValue()

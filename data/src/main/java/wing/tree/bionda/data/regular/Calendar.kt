@@ -3,6 +3,8 @@ package wing.tree.bionda.data.regular
 import android.icu.util.Calendar
 import wing.tree.bionda.data.extension.hourOfDay
 import wing.tree.bionda.data.extension.minute
+import wing.tree.bionda.data.top.level.baseDateFormat
+import wing.tree.bionda.data.top.level.baseTimeFormat
 import java.util.Date
 import java.util.Locale
 
@@ -32,5 +34,14 @@ fun koreaCalendar(
 
     minute?.let {
         this.minute = it
+    }
+}
+
+fun koreaCalendar(baseDate: String, baseTime: String): Calendar = koreaCalendar(
+    baseDateFormat.parse(baseDate)
+).also {
+    with(koreaCalendar(baseTimeFormat.parse(baseTime))) {
+        it.hourOfDay = hourOfDay
+        it.minute = minute
     }
 }
