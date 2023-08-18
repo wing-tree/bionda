@@ -12,7 +12,6 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object ServiceModule {
     @Provides
-    @Singleton
     fun providesForecastService(
         retrofit: Retrofit
     ): ForecastService {
