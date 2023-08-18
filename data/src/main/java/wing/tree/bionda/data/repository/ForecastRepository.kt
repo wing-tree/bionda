@@ -65,7 +65,7 @@ class ForecastRepository(
                 nx = nx,
                 ny = ny
             ) ?: remoteDataSource.getVilageFcst(
-                serviceKey = BuildConfig.serviceKey,
+                serviceKey = BuildConfig.vilageFcstInfoServiceKey,
                 numOfRows = 290,
                 pageNo = Int.one,
                 dataType = DATA_TYPE,
