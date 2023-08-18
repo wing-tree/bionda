@@ -6,7 +6,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import wing.tree.bionda.data.service.ForecastService
-import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
