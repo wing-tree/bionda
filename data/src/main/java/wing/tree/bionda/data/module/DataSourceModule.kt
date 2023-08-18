@@ -5,9 +5,9 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import wing.tree.bionda.data.database.Database
-import wing.tree.bionda.data.service.ForecastService
+import wing.tree.bionda.data.service.MidFcstInfoService
+import wing.tree.bionda.data.service.VilageFcstInfoService
 import wing.tree.bionda.data.source.local.NoticeDataSource
-import javax.inject.Singleton
 import wing.tree.bionda.data.source.local.ForecastDataSource as LocalDataSource
 import wing.tree.bionda.data.source.remote.ForecastDataSource as RemoteDataSource
 
@@ -15,7 +15,6 @@ import wing.tree.bionda.data.source.remote.ForecastDataSource as RemoteDataSourc
 @InstallIn(SingletonComponent::class)
 object DataSourceModule {
     @Provides
-    @Singleton
     fun providesLocalDataSource(
         database: Database
     ): LocalDataSource {
@@ -23,7 +22,6 @@ object DataSourceModule {
     }
 
     @Provides
-    @Singleton
     fun providesNoticeDataSource(
         database: Database
     ): NoticeDataSource {
@@ -31,10 +29,13 @@ object DataSourceModule {
     }
 
     @Provides
-    @Singleton
     fun providesRemoteDataSource(
-        forecastService: ForecastService
+        midFcstInfoService: MidFcstInfoService,
+        vilageFcstInfoService: VilageFcstInfoService
     ): RemoteDataSource {
-        return RemoteDataSource(forecastService)
+        return RemoteDataSource(
+            midFcstInfoService = midFcstInfoService,
+            vilageFcstInfoService = vilageFcstInfoService
+        )
     }
 }

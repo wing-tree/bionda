@@ -7,10 +7,14 @@ import wing.tree.bionda.data.extension.hundreds
 import wing.tree.bionda.data.extension.long
 import wing.tree.bionda.data.extension.three
 import wing.tree.bionda.data.extension.two
-import wing.tree.bionda.data.service.ForecastService
+import wing.tree.bionda.data.service.MidFcstInfoService
+import wing.tree.bionda.data.service.VilageFcstInfoService
 import kotlin.math.pow
 
-class ForecastDataSource(private val forecastService: ForecastService) {
+class ForecastDataSource(
+    private val midFcstInfoService: MidFcstInfoService,
+    private val vilageFcstInfoService: VilageFcstInfoService
+) {
     private suspend fun <T> retry(
         retries: Int = Int.three,
         initialDelay: Long = Long.five.hundreds,
@@ -29,7 +33,25 @@ class ForecastDataSource(private val forecastService: ForecastService) {
         return block()
     }
 
-    suspend fun get(
+    suspend fun getMidLandFcst(
+        serviceKey: String,
+        numOfRows: Int,
+        pageNo: Int,
+        dataType: String,
+        regId: String,
+        tmFc: String
+    ) = retry {
+        midFcstInfoService.getMidLandFcst(
+            serviceKey = serviceKey,
+            numOfRows = numOfRows,
+            pageNo = pageNo,
+            dataType = dataType,
+            regId = regId,
+            tmFc = tmFc
+        )
+    }
+
+    suspend fun getVilageFcst(
         serviceKey: String,
         numOfRows: Int,
         pageNo: Int,
@@ -39,15 +61,15 @@ class ForecastDataSource(private val forecastService: ForecastService) {
         nx: Int,
         ny: Int
     ) = retry {
-        forecastService.getVilageFcst(
-            serviceKey,
-            numOfRows,
-            pageNo,
-            dataType,
-            baseDate,
-            baseTime,
-            nx,
-            ny
+        vilageFcstInfoService.getVilageFcst(
+            serviceKey = serviceKey,
+            numOfRows = numOfRows,
+            pageNo = pageNo,
+            dataType = dataType,
+            baseDate = baseDate,
+            baseTime = baseTime,
+            nx = nx,
+            ny = ny
         )
     }
 }

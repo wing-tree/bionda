@@ -9,24 +9,34 @@ import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
-import javax.inject.Singleton
+import wing.tree.bionda.data.qualifier.Qualifier
 
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
-    private const val BASE_URL = "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/"
+    private const val MID_FCST_INFO_SERVICE_URL = "http://apis.data.go.kr/1360000/MidFcstInfoService/"
+    private const val VILAGE_FCST_INFO_SERVICE_URL = "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/"
 
     @Provides
-    @Singleton
     fun providesOkHttpClient(): OkHttpClient = OkHttpClient.Builder()
         .build()
 
     @Provides
-    @Singleton
-    fun providesRetrofit(
+    @Qualifier.MidFcstInfoService
+    fun providesMidFcstInfoServiceRetrofit(
         okHttpClient: OkHttpClient
     ): Retrofit = Retrofit.Builder()
-        .baseUrl(BASE_URL)
+        .baseUrl(MID_FCST_INFO_SERVICE_URL)
+        .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
+        .client(okHttpClient)
+        .build()
+
+    @Provides
+    @Qualifier.VilageFcstInfoService
+    fun providesVilageFcstInfoServiceRetrofit(
+        okHttpClient: OkHttpClient
+    ): Retrofit = Retrofit.Builder()
+        .baseUrl(VILAGE_FCST_INFO_SERVICE_URL)
         .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
         .client(okHttpClient)
         .build()

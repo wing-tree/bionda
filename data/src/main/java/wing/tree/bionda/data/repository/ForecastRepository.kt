@@ -11,10 +11,13 @@ import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.string
 import wing.tree.bionda.data.extension.two
 import wing.tree.bionda.data.model.BaseCalendar
+import wing.tree.bionda.data.model.MidLandFcst
 import wing.tree.bionda.data.model.Result
 import wing.tree.bionda.data.model.Result.Complete
 import wing.tree.bionda.data.model.forecast.Forecast
 import wing.tree.bionda.data.regular.koreaCalendar
+import wing.tree.bionda.data.regular.tmFcCalendar
+import wing.tree.bionda.data.top.level.tmFcFormat
 import wing.tree.bionda.data.model.forecast.local.Forecast as LocalDataModel
 import wing.tree.bionda.data.source.local.ForecastDataSource as LocalDataSource
 import wing.tree.bionda.data.source.remote.ForecastDataSource as RemoteDataSource
@@ -34,7 +37,21 @@ class ForecastRepository(
         }
     }
 
-    suspend fun get(
+    suspend fun getMidLandFcst(regId: String): Result<MidLandFcst> {
+        val tmFc = tmFcFormat.format(tmFcCalendar())
+        val midLandFcst = remoteDataSource.getMidLandFcst(
+            serviceKey = BuildConfig.midFcstInfoServiceKey,
+            numOfRows = Int.one,
+            pageNo = Int.one,
+            dataType = DATA_TYPE,
+            regId = regId,
+            tmFc = tmFc
+        )
+
+        return Complete.Success(midLandFcst)
+    }
+
+    suspend fun getVilageFcst(
         nx: Int,
         ny: Int
     ): Result<Forecast> {
@@ -47,7 +64,7 @@ class ForecastRepository(
                 baseTime = baseTime,
                 nx = nx,
                 ny = ny
-            ) ?: remoteDataSource.get(
+            ) ?: remoteDataSource.getVilageFcst(
                 serviceKey = BuildConfig.serviceKey,
                 numOfRows = 290,
                 pageNo = Int.one,

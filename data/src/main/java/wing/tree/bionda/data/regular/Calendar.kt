@@ -1,8 +1,11 @@
 package wing.tree.bionda.data.regular
 
 import android.icu.util.Calendar
+import wing.tree.bionda.data.extension.date
 import wing.tree.bionda.data.extension.hourOfDay
 import wing.tree.bionda.data.extension.minute
+import wing.tree.bionda.data.extension.one
+import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.data.top.level.baseDateFormat
 import wing.tree.bionda.data.top.level.baseTimeFormat
 import java.util.Date
@@ -43,5 +46,17 @@ fun koreaCalendar(baseDate: String, baseTime: String): Calendar = koreaCalendar(
     with(koreaCalendar(baseTimeFormat.parse(baseTime))) {
         it.hourOfDay = hourOfDay
         it.minute = minute
+    }
+}
+
+fun tmFcCalendar() = koreaCalendar(minute = Int.zero).apply {
+    hourOfDay = when {
+        hourOfDay < 6 -> {
+            date -= Int.one
+            18
+        }
+
+        hourOfDay < 18 -> 6
+        else -> 18
     }
 }

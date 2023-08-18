@@ -5,3 +5,4 @@ import java.util.Locale
 
 val baseDateFormat = SimpleDateFormat("yyyyMMdd", Locale.KOREA)
 val baseTimeFormat = SimpleDateFormat("HHmm", Locale.KOREA)
+val tmFcFormat = SimpleDateFormat("yyyyMMddHHmm", Locale.KOREA)

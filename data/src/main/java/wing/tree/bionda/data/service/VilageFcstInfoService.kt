@@ -4,7 +4,7 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 import wing.tree.bionda.data.model.forecast.remote.Forecast
 
-interface ForecastService {
+interface VilageFcstInfoService {
     @GET("getVilageFcst")
     suspend fun getVilageFcst(
         @Query("serviceKey") serviceKey: String,

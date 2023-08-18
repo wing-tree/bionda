@@ -66,7 +66,7 @@ class MainViewModel @Inject constructor(
             is Complete.Success -> it.data?.let { location ->
                 val (nx, ny) = location.toCoordinate()
                 val address = getAddress(location)
-                val forecast = forecastRepository.get(
+                val forecast = forecastRepository.getVilageFcst(
                     nx = nx,
                     ny = ny
                 )
@@ -83,7 +83,7 @@ class MainViewModel @Inject constructor(
                     }
                 }
             }
-                ?: ForecastState.Error(NullPointerException()) // TODO error define.
+                ?: ForecastState.Error(NullPointerException("Location is Null")) // TODO error define.
 
             is Complete.Failure -> ForecastState.Error(it.throwable)
         }
