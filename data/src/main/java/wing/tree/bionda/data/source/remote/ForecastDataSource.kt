@@ -39,7 +39,7 @@ class ForecastDataSource(private val forecastService: ForecastService) {
         nx: Int,
         ny: Int
     ) = retry {
-        forecastService.get(
+        forecastService.getVilageFcst(
             serviceKey,
             numOfRows,
             pageNo,

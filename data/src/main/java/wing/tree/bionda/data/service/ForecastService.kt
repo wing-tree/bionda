@@ -6,7 +6,7 @@ import wing.tree.bionda.data.model.forecast.remote.Forecast
 
 interface ForecastService {
     @GET("getVilageFcst")
-    suspend fun get(
+    suspend fun getVilageFcst(
         @Query("serviceKey") serviceKey: String,
         @Query("numOfRows") numOfRows: Int,
         @Query("pageNo") pageNo: Int,
