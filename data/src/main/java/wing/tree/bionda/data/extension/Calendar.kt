@@ -1,15 +1,12 @@
 package wing.tree.bionda.data.extension
 
-import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
 import wing.tree.bionda.data.regular.calendarOf
-import java.util.Locale
+import wing.tree.bionda.data.top.level.baseDateFormat
+import wing.tree.bionda.data.top.level.baseTimeFormat
 
-val Calendar.baseDate: String get() = SimpleDateFormat("yyyyMMdd", Locale.KOREA)
-    .format(time)
-
-val Calendar.baseTime: String get() = SimpleDateFormat("HHmm", Locale.KOREA)
-    .format(time)
+val Calendar.baseDate: String get() = baseDateFormat.format(time)
+val Calendar.baseTime: String get() = baseTimeFormat.format(time)
 
 var Calendar.date: Int
     get() = get(Calendar.DATE)
