@@ -27,37 +27,22 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.ripple.LocalRippleTheme
-import androidx.compose.material.ripple.RippleAlpha
-import androidx.compose.material.ripple.RippleTheme
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.SemanticsProperties
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.material.timepicker.MaterialTimePicker
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.collections.immutable.persistentListOf
 import wing.tree.bionda.R
 import wing.tree.bionda.data.constant.SCHEME_PACKAGE
 import wing.tree.bionda.data.extension.containsAny
@@ -80,6 +65,7 @@ import wing.tree.bionda.permissions.RequestMultiplePermissions
 import wing.tree.bionda.permissions.locationPermissions
 import wing.tree.bionda.theme.BiondaTheme
 import wing.tree.bionda.view.compose.composable.Alarm
+import wing.tree.bionda.view.compose.composable.SingleChoiceSegmentedButtonRow
 import wing.tree.bionda.view.compose.composable.Weather
 import wing.tree.bionda.view.model.MainViewModel
 import wing.tree.bionda.view.state.AlarmState.Action
@@ -272,16 +258,8 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
                 if (inSelectionMode) {
                     viewModel.selected.toggle(alarm.id)
                 } else {
-                    showMaterialTimePicker(
-                        alarm.hour,
-                        alarm.minute
-                    ) { hour, minute ->
-                        viewModel.update(
-                            alarm.copy(
-                                hour = hour,
-                                minute = minute
-                            )
-                        )
+                    showMaterialTimePicker(hour = alarm.hour, minute = alarm.minute) { hour, minute ->
+                        viewModel.update(alarm.copy(hour = hour, minute = minute))
                     }
                 }
             }
@@ -404,65 +382,6 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
             }
 
             it.show(supportFragmentManager, it.tag)
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun SingleChoiceSegmentedButtonRow(
-    selectedSegmentedButtonIndex: Int,
-    onClick: (Int) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val items = persistentListOf(
-        R.string.weather,
-        R.string.alarm
-    )
-
-    SingleChoiceSegmentedButtonRow(
-        modifier = modifier.semantics(false) {
-            SemanticsProperties.SelectableGroup
-        }
-    ) {
-        val colors = SegmentedButtonDefaults.colors(
-            activeContainerColor = Color.Transparent,
-            activeContentColor = colorScheme.primary,
-            activeBorderColor = Color.Transparent,
-            inactiveContainerColor = Color.Transparent,
-            inactiveBorderColor = Color.Transparent
-        )
-
-        val rippleTheme = remember {
-            object : RippleTheme {
-                @Composable
-                override fun defaultColor(): Color = Color.Red
-
-                @Composable
-                override fun rippleAlpha(): RippleAlpha = RippleAlpha(
-                    draggedAlpha = Float.zero,
-                    focusedAlpha = Float.zero,
-                    hoveredAlpha = Float.zero,
-                    pressedAlpha = Float.zero
-                )
-
-            }
-        }
-
-        CompositionLocalProvider(
-            LocalRippleTheme provides rippleTheme
-        ) {
-            items.forEachIndexed { index, item ->
-                SegmentedButton(
-                    selected = index `is` selectedSegmentedButtonIndex,
-                    onClick = {
-                        onClick(index)
-                    },
-                    colors = colors
-                ) {
-                    Text(stringResource(id = item))
-                }
-            }
         }
     }
 }
