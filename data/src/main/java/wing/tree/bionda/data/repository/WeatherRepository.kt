@@ -10,8 +10,6 @@ import wing.tree.bionda.data.model.Result.Complete
 import wing.tree.bionda.data.model.VilageFcst
 import wing.tree.bionda.data.model.calendar.BaseCalendar
 import wing.tree.bionda.data.model.calendar.TmFcCalendar
-import wing.tree.bionda.data.regular.tmFcCalendar
-import wing.tree.bionda.data.top.level.tmFcFormat
 import wing.tree.bionda.data.source.local.WeatherDataSource as LocalDataSource
 import wing.tree.bionda.data.source.remote.WeatherDataSource as RemoteDataSource
 
@@ -19,51 +17,80 @@ class WeatherRepository(
     private val localDataSource: LocalDataSource,
     private val remoteDataSource: RemoteDataSource
 ) {
+    suspend fun getMidLandFcst(regId: String): Result<MidLandFcst.Local> {
+        val tmFcCalendar = TmFcCalendar()
+        val tmFc = tmFcCalendar.tmFc
+
+        return try {
+            val local = localDataSource.loadMidLandFcst(
+                regId = regId,
+                tmFc = tmFc
+            ) ?: remoteDataSource.getMidLandFcst(
+                serviceKey = BuildConfig.midFcstInfoServiceKey,
+                numOfRows = Int.one,
+                pageNo = Int.one,
+                dataType = DATA_TYPE,
+                regId = regId,
+                tmFc = tmFc
+            ).let {
+                with(it.toLocal(tmFc = tmFc)) {
+                    if (it.item.rnSt3Am.isNull()) {
+                        val previous = localDataSource.loadMidLandFcst(
+                            regId = regId,
+                            tmFc = tmFcCalendar.previous().tmFc
+                        )
+
+                        prepend(previous)
+                    } else {
+                        this
+                    }
+                }
+            }.also {
+                localDataSource.cache(it)
+            }
+
+            Complete.Success(local)
+        } catch (throwable: Throwable) {
+            Complete.Failure(throwable)
+        }
+    }
+
     suspend fun getMidTa(regId: String): Result<MidTa.Local> {
         val tmFcCalendar = TmFcCalendar()
         val tmFc = tmFcCalendar.tmFc
-        val local = localDataSource.load(
-            regId = regId,
-            tmFc = tmFc
-        ) ?: remoteDataSource.getMidTa(
-            serviceKey = BuildConfig.midFcstInfoServiceKey,
-            numOfRows = Int.one,
-            pageNo = Int.one,
-            dataType = DATA_TYPE,
-            regId = regId,
-            tmFc = tmFc
-        ).let { remote ->
-            with(remote.toLocal(tmFc)) {
-                if (item.taMin3.isNull()) {
-                    val previous = localDataSource.load(
-                        regId = regId,
-                        tmFc = tmFcCalendar.previous().tmFc
-                    )
 
-                    prepend(previous)
-                } else {
-                    this
+        return try {
+            val local = localDataSource.loadMidTa(
+                regId = regId,
+                tmFc = tmFc
+            ) ?: remoteDataSource.getMidTa(
+                serviceKey = BuildConfig.midFcstInfoServiceKey,
+                numOfRows = Int.one,
+                pageNo = Int.one,
+                dataType = DATA_TYPE,
+                regId = regId,
+                tmFc = tmFc
+            ).let { remote ->
+                with(remote.toLocal(tmFc)) {
+                    if (item.taMin3.isNull()) {
+                        val previous = localDataSource.loadMidTa(
+                            regId = regId,
+                            tmFc = tmFcCalendar.previous().tmFc
+                        )
+
+                        prepend(previous)
+                    } else {
+                        this
+                    }
                 }
+            }.also {
+                localDataSource.cache(it)
             }
-        }.also {
-            localDataSource.cache(it)
+
+            Complete.Success(local)
+        } catch (throwable: Throwable) {
+            Complete.Failure(throwable)
         }
-
-        return Complete.Success(local)
-    }
-
-    suspend fun getMidLandFcst(regId: String): Result<MidLandFcst> {
-        val tmFc = tmFcFormat.format(tmFcCalendar())
-        val midLandFcst = remoteDataSource.getMidLandFcst(
-            serviceKey = BuildConfig.midFcstInfoServiceKey,
-            numOfRows = Int.one,
-            pageNo = Int.one,
-            dataType = DATA_TYPE,
-            regId = regId,
-            tmFc = tmFc
-        )
-
-        return Complete.Success(midLandFcst)
     }
 
     suspend fun getVilageFcst(

@@ -19,6 +19,7 @@ object DataSourceModule {
         database: Database
     ): LocalDataSource {
         return LocalDataSource(
+            midLandFcstDao = database.midLandFcstDao(),
             midTaDao = database.midTaDao(),
             vilageFcstDao = database.vilageFcstDao()
         )

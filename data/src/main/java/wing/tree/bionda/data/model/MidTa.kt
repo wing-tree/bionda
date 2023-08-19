@@ -2,6 +2,7 @@ package wing.tree.bionda.data.model
 
 import androidx.room.Entity
 import androidx.room.Ignore
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.serialization.Serializable
 import wing.tree.bionda.data.extension.zero
@@ -91,7 +92,8 @@ sealed interface MidTa {
             val minHigh: Int,
             val max: Int,
             val maxLow: Int,
-            val maxHigh: Int
+            val maxHigh: Int,
+            val n: Int
         )
 
         @Ignore
@@ -101,7 +103,8 @@ sealed interface MidTa {
             minHigh = item.taMin3High ?: Int.zero,
             max = item.taMax3 ?: Int.zero,
             maxLow = item.taMax3Low ?: Int.zero,
-            maxHigh = item.taMax3High ?: Int.zero
+            maxHigh = item.taMax3High ?: Int.zero,
+            n = 3
         )
 
         @Ignore
@@ -111,7 +114,8 @@ sealed interface MidTa {
             minHigh = item.taMin4High,
             max = item.taMax4,
             maxLow = item.taMax4Low,
-            maxHigh = item.taMax4High
+            maxHigh = item.taMax4High,
+            n = 4
         )
 
         @Ignore
@@ -121,7 +125,8 @@ sealed interface MidTa {
             minHigh = item.taMin5High,
             max = item.taMax5,
             maxLow = item.taMax5Low,
-            maxHigh = item.taMax5High
+            maxHigh = item.taMax5High,
+            n = 5
         )
 
         @Ignore
@@ -131,7 +136,8 @@ sealed interface MidTa {
             minHigh = item.taMin6High,
             max = item.taMax6,
             maxLow = item.taMax6Low,
-            maxHigh = item.taMax6High
+            maxHigh = item.taMax6High,
+            n = 6
         )
 
         @Ignore
@@ -141,7 +147,8 @@ sealed interface MidTa {
             minHigh = item.taMin7High,
             max = item.taMax7,
             maxLow = item.taMax7Low,
-            maxHigh = item.taMax7High
+            maxHigh = item.taMax7High,
+            n = 7
         )
 
         @Ignore
@@ -151,7 +158,8 @@ sealed interface MidTa {
             minHigh = item.taMin8High,
             max = item.taMax8,
             maxLow = item.taMax8Low,
-            maxHigh = item.taMax8High
+            maxHigh = item.taMax8High,
+            n = 8
         )
 
         @Ignore
@@ -161,7 +169,8 @@ sealed interface MidTa {
             minHigh = item.taMin9High,
             max = item.taMax9,
             maxLow = item.taMax9Low,
-            maxHigh = item.taMax9High
+            maxHigh = item.taMax9High,
+            n = 9
         )
 
         @Ignore
@@ -171,13 +180,13 @@ sealed interface MidTa {
             minHigh = item.taMin10High,
             max = item.taMax10,
             maxLow = item.taMax10Low,
-            maxHigh = item.taMax10High
+            maxHigh = item.taMax10High,
+            n = 10
         )
 
         @Ignore
-        val items = persistentListOf(
-            ta3, ta4, ta5, ta6,
-            ta7, ta8, ta9, ta10
+        val tas: ImmutableList<Ta> = persistentListOf(
+            ta3, ta4, ta5, ta6, ta7, ta8, ta9, ta10
         )
     }
 
@@ -185,8 +194,8 @@ sealed interface MidTa {
     data class Remote(val response: Response<Item>) : MidTa {
         override val item: Item = response.body.items.item.first()
 
-        fun toLocal(tmFc: String, item: Item? = null) = Local(
-            item = item ?: this.item,
+        fun toLocal(tmFc: String) = Local(
+            item = item,
             tmFc = tmFc
         )
     }

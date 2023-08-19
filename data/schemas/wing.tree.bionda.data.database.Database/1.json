@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "e5d4a5fbf33a52bc04fb44116285421e",
+    "identityHash": "d547b6b7f818d5b220b66fe6a752c898",
     "entities": [
       {
-        "tableName": "mid_ta",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`item` TEXT NOT NULL, `tmFc` TEXT NOT NULL, `regId` TEXT NOT NULL, PRIMARY KEY(`regId`, `tmFc`))",
+        "tableName": "mid_land_fcst",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`item` TEXT NOT NULL, `regId` TEXT NOT NULL, `tmFc` TEXT NOT NULL, PRIMARY KEY(`regId`, `tmFc`))",
         "fields": [
           {
             "fieldPath": "item",
@@ -15,14 +15,47 @@
             "notNull": true
           },
           {
+            "fieldPath": "regId",
+            "columnName": "regId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
             "fieldPath": "tmFc",
             "columnName": "tmFc",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "regId",
+            "tmFc"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "mid_ta",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`item` TEXT NOT NULL, `regId` TEXT NOT NULL, `tmFc` TEXT NOT NULL, PRIMARY KEY(`regId`, `tmFc`))",
+        "fields": [
+          {
+            "fieldPath": "item",
+            "columnName": "item",
             "affinity": "TEXT",
             "notNull": true
           },
           {
             "fieldPath": "regId",
             "columnName": "regId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tmFc",
+            "columnName": "tmFc",
             "affinity": "TEXT",
             "notNull": true
           }
@@ -132,7 +165,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e5d4a5fbf33a52bc04fb44116285421e')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd547b6b7f818d5b220b66fe6a752c898')"
     ]
   }
 }
