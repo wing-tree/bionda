@@ -133,12 +133,11 @@ class MainViewModel @Inject constructor(
                 throwable = alarm.throwable
             )
         }
-    }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(stopTimeoutMillis),
-            initialValue = AlarmState.initialValue
-        )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(stopTimeoutMillis),
+        initialValue = AlarmState.initialValue
+    )
 
     val state: StateFlow<MainState> = combine(
         alarmState,
@@ -162,30 +161,21 @@ class MainViewModel @Inject constructor(
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             geocoder.getFromLocation(location.latitude, location.longitude, maxResults) { geocode ->
-                val thoroughfare = geocode.firstOrNull {
-                    it.thoroughfare.isNotNull()
-                }
-                    ?.thoroughfare
-
-                thoroughfare?.let {
-                    cancellableContinuation.resume(Address(thoroughfare = it))
-                }
-                    ?: cancellableContinuation.resume(null)
+                cancellableContinuation.resume(
+                    Address.get(
+                        geocode = geocode.filterNotNull()
+                    )
+                )
             }
         } else {
             @Suppress("DEPRECATION")
             geocoder.getFromLocation(location.latitude, location.longitude, maxResults)?.let { geocode ->
-                val thoroughfare = geocode.firstOrNull {
-                    it.thoroughfare.isNotNull()
-                }
-                    ?.thoroughfare
-
-                thoroughfare?.let {
-                    cancellableContinuation.resume(Address(thoroughfare = it))
-                }
-                    ?: cancellableContinuation.resume(null)
-            }
-                ?: cancellableContinuation.resume(null)
+                cancellableContinuation.resume(
+                    Address.get(
+                        geocode.filterNotNull()
+                    )
+                )
+            } ?: cancellableContinuation.resume(null)
         }
     }
 
