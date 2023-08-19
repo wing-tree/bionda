@@ -4,11 +4,11 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import wing.tree.bionda.data.repository.ForecastRepository
+import wing.tree.bionda.data.repository.WeatherRepository
 import wing.tree.bionda.data.repository.NoticeRepository
 import wing.tree.bionda.data.source.local.NoticeDataSource
-import wing.tree.bionda.data.source.local.ForecastDataSource as LocalDataSource
-import wing.tree.bionda.data.source.remote.ForecastDataSource as RemoteDataSource
+import wing.tree.bionda.data.source.local.WeatherDataSource as LocalDataSource
+import wing.tree.bionda.data.source.remote.WeatherDataSource as RemoteDataSource
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -17,8 +17,8 @@ object RepositoryModule {
     fun providesForecastRepository(
         localDataSource: LocalDataSource,
         remoteDataSource: RemoteDataSource
-    ): ForecastRepository {
-        return ForecastRepository(localDataSource, remoteDataSource)
+    ): WeatherRepository {
+        return WeatherRepository(localDataSource, remoteDataSource)
     }
 
     @Provides

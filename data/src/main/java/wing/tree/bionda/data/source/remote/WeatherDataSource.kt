@@ -11,7 +11,7 @@ import wing.tree.bionda.data.service.MidFcstInfoService
 import wing.tree.bionda.data.service.VilageFcstInfoService
 import kotlin.math.pow
 
-class ForecastDataSource(
+class WeatherDataSource(
     private val midFcstInfoService: MidFcstInfoService,
     private val vilageFcstInfoService: VilageFcstInfoService
 ) {
@@ -42,6 +42,24 @@ class ForecastDataSource(
         tmFc: String
     ) = retry {
         midFcstInfoService.getMidLandFcst(
+            serviceKey = serviceKey,
+            numOfRows = numOfRows,
+            pageNo = pageNo,
+            dataType = dataType,
+            regId = regId,
+            tmFc = tmFc
+        )
+    }
+
+    suspend fun getMidTa(
+        serviceKey: String,
+        numOfRows: Int,
+        pageNo: Int,
+        dataType: String,
+        regId: String,
+        tmFc: String
+    ) = retry {
+        midFcstInfoService.getMidTa(
             serviceKey = serviceKey,
             numOfRows = numOfRows,
             pageNo = pageNo,

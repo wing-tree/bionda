@@ -8,8 +8,8 @@ import wing.tree.bionda.data.database.Database
 import wing.tree.bionda.data.service.MidFcstInfoService
 import wing.tree.bionda.data.service.VilageFcstInfoService
 import wing.tree.bionda.data.source.local.NoticeDataSource
-import wing.tree.bionda.data.source.local.ForecastDataSource as LocalDataSource
-import wing.tree.bionda.data.source.remote.ForecastDataSource as RemoteDataSource
+import wing.tree.bionda.data.source.local.WeatherDataSource as LocalDataSource
+import wing.tree.bionda.data.source.remote.WeatherDataSource as RemoteDataSource
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -18,7 +18,10 @@ object DataSourceModule {
     fun providesLocalDataSource(
         database: Database
     ): LocalDataSource {
-        return LocalDataSource(database.forecastDao())
+        return LocalDataSource(
+            midTaDao = database.midTaDao(),
+            vilageFcstDao = database.vilageFcstDao()
+        )
     }
 
     @Provides

@@ -12,9 +12,9 @@ import wing.tree.bionda.data.extension.not
 import wing.tree.bionda.data.extension.oneHundred
 import wing.tree.bionda.data.model.Category
 import wing.tree.bionda.data.model.CodeValue
+import wing.tree.bionda.data.model.VilageFcst
 import wing.tree.bionda.data.regular.koreaCalendar
 import wing.tree.bionda.mapper.DataModelMapper
-import wing.tree.bionda.data.model.forecast.Forecast as DataModel
 
 data class Forecast(
     val items: ImmutableList<Item>
@@ -51,9 +51,10 @@ data class Forecast(
         val wsd = codeValues[Category.WSD]
     }
 
-    companion object : DataModelMapper<DataModel, Forecast> {
+    // TODO, 매퍼 따로 파는게 나을지도?
+    companion object : DataModelMapper<VilageFcst.Local, Forecast> {
         override fun toPresentationModel(
-            dataModel: DataModel
+            dataModel: VilageFcst.Local
         ): Forecast {
             val items = dataModel.items.groupBy {
                 it.fcstDate to it.fcstTime

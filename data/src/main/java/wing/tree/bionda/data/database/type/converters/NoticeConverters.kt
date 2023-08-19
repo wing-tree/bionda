@@ -6,9 +6,8 @@ import kotlinx.collections.immutable.toImmutableList
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import wing.tree.bionda.data.model.Notice
-import wing.tree.bionda.data.model.forecast.Item
 
-class TypeConverters {
+class NoticeConverters {
     private val json = Json {
         allowStructuredMapKeys = true
     }
@@ -19,21 +18,9 @@ class TypeConverters {
     }
 
     @TypeConverter
-    fun itemsToString(items: ImmutableList<Item>): String {
-        return json.encodeToString(ListSerializer(Item.serializer()), items)
-    }
-
-    @TypeConverter
     fun stringToConditions(string: String): ImmutableList<Notice.Condition> {
         return json
             .decodeFromString(ListSerializer(Notice.Condition.serializer()), string)
-            .toImmutableList()
-    }
-
-    @TypeConverter
-    fun stringToItems(string: String): ImmutableList<Item> {
-        return json
-            .decodeFromString(ListSerializer(Item.serializer()), string)
             .toImmutableList()
     }
 }

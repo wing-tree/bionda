@@ -33,7 +33,7 @@ import wing.tree.bionda.data.model.Notice
 import wing.tree.bionda.data.model.Result
 import wing.tree.bionda.data.model.Result.Complete
 import wing.tree.bionda.data.provider.LocationProvider
-import wing.tree.bionda.data.repository.ForecastRepository
+import wing.tree.bionda.data.repository.WeatherRepository
 import wing.tree.bionda.data.repository.NoticeRepository
 import wing.tree.bionda.exception.PermissionsDeniedException
 import wing.tree.bionda.extension.checkSelfPermission
@@ -54,7 +54,7 @@ import kotlin.coroutines.resume
 class MainViewModel @Inject constructor(
     application: Application,
     private val alarmScheduler: AlarmScheduler,
-    private val forecastRepository: ForecastRepository,
+    private val weatherRepository: WeatherRepository,
     private val locationProvider: LocationProvider,
     private val noticeRepository: NoticeRepository
 ) : AndroidViewModel(application) {
@@ -66,7 +66,7 @@ class MainViewModel @Inject constructor(
             is Complete.Success -> it.data?.let { location ->
                 val (nx, ny) = location.toCoordinate()
                 val address = getAddress(location)
-                val forecast = forecastRepository.getVilageFcst(
+                val forecast = weatherRepository.getVilageFcst(
                     nx = nx,
                     ny = ny
                 )

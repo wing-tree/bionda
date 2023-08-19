@@ -22,7 +22,7 @@ import wing.tree.bionda.data.model.map
 import wing.tree.bionda.data.model.onFailure
 import wing.tree.bionda.data.model.onSuccess
 import wing.tree.bionda.data.provider.LocationProvider
-import wing.tree.bionda.data.repository.ForecastRepository
+import wing.tree.bionda.data.repository.WeatherRepository
 import wing.tree.bionda.data.repository.NoticeRepository
 import wing.tree.bionda.extension.toCoordinate
 import wing.tree.bionda.model.Forecast
@@ -41,7 +41,7 @@ class NoticeService : Service(), PermissionChecker {
     lateinit var alarmScheduler: AlarmScheduler
 
     @Inject
-    lateinit var forecastRepository: ForecastRepository
+    lateinit var weatherRepository: WeatherRepository
 
     @Inject
     lateinit var locationProvider: LocationProvider
@@ -87,7 +87,7 @@ class NoticeService : Service(), PermissionChecker {
                 when (val location = locationProvider.getLocation()) {
                     is Complete.Success -> {
                         location.data?.toCoordinate()?.let { (nx, ny) ->
-                            forecastRepository.getVilageFcst(
+                            weatherRepository.getVilageFcst(
                                 nx = nx,
                                 ny = ny
                             ).map {

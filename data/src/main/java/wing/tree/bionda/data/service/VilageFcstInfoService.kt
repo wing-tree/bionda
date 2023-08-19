@@ -2,7 +2,7 @@ package wing.tree.bionda.data.service
 
 import retrofit2.http.GET
 import retrofit2.http.Query
-import wing.tree.bionda.data.model.forecast.remote.Forecast
+import wing.tree.bionda.data.model.VilageFcst
 
 interface VilageFcstInfoService {
     @GET("getVilageFcst")
@@ -15,5 +15,5 @@ interface VilageFcstInfoService {
         @Query("base_time") baseTime: String,
         @Query("nx") nx: Int,
         @Query("ny") ny: Int
-    ): Forecast
+    ): VilageFcst.Remote
 }
