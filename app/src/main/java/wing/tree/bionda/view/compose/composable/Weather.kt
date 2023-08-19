@@ -27,7 +27,7 @@ import wing.tree.bionda.data.extension.`is`
 import wing.tree.bionda.data.extension.isNotNull
 import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.zero
-import wing.tree.bionda.model.Address
+import wing.tree.bionda.data.model.Address
 import wing.tree.bionda.model.Forecast
 import wing.tree.bionda.model.WindowSizeClass
 import wing.tree.bionda.view.state.WeatherState

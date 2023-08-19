@@ -3,8 +3,8 @@ package wing.tree.bionda.view.state
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
+import wing.tree.bionda.data.model.Address
 import wing.tree.bionda.data.model.Alarm
-import wing.tree.bionda.model.Address
 import wing.tree.bionda.model.Forecast
 
 data class MainState(

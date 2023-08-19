@@ -1,4 +1,4 @@
-package wing.tree.bionda.model
+package wing.tree.bionda.data.model
 
 import wing.tree.bionda.data.extension.isNotNull
 

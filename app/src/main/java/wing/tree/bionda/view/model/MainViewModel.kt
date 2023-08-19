@@ -24,12 +24,12 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
-import wing.tree.bionda.data.extension.eight
 import wing.tree.bionda.data.extension.fiveSecondsInMilliseconds
 import wing.tree.bionda.data.extension.ifTrue
-import wing.tree.bionda.data.extension.isNotNull
 import wing.tree.bionda.data.extension.long
 import wing.tree.bionda.data.extension.negativeOne
+import wing.tree.bionda.data.extension.ten
+import wing.tree.bionda.data.model.Address
 import wing.tree.bionda.data.model.Alarm
 import wing.tree.bionda.data.model.Result
 import wing.tree.bionda.data.model.Result.Complete
@@ -39,7 +39,6 @@ import wing.tree.bionda.data.repository.WeatherRepository
 import wing.tree.bionda.exception.PermissionsDeniedException
 import wing.tree.bionda.extension.checkSelfPermission
 import wing.tree.bionda.extension.toCoordinate
-import wing.tree.bionda.model.Address
 import wing.tree.bionda.model.Forecast
 import wing.tree.bionda.permissions.locationPermissions
 import wing.tree.bionda.scheduler.AlarmScheduler
@@ -153,7 +152,7 @@ class MainViewModel @Inject constructor(
 
     private suspend fun getAddress(location: Location) = suspendCancellableCoroutine { cancellableContinuation ->
         val geocoder = Geocoder(getApplication(), Locale.KOREA)
-        val maxResults = Int.eight
+        val maxResults = Int.ten
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             geocoder.getFromLocation(location.latitude, location.longitude, maxResults) { geocode ->
