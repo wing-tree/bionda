@@ -3,14 +3,19 @@ package wing.tree.bionda.view.compose.composable
 import android.icu.text.SimpleDateFormat
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,11 +24,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.MaterialTheme.typography
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -33,25 +44,144 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import wing.tree.bionda.R
 import wing.tree.bionda.data.extension.empty
 import wing.tree.bionda.data.extension.one
-import wing.tree.bionda.data.model.Notice
+import wing.tree.bionda.data.model.Alarm
 import wing.tree.bionda.data.regular.koreaCalendar
 import wing.tree.bionda.extension.zero
-import wing.tree.bionda.view.state.NoticeState
+import wing.tree.bionda.model.WindowSizeClass
+import wing.tree.bionda.view.state.AlarmState
+import wing.tree.bionda.view.state.AlarmState.Action
 import java.util.Locale
 
 private val simpleDateFormat = SimpleDateFormat("a h:mm", Locale.KOREA)
 
 @Composable
-fun Notice(
-    state: NoticeState,
+fun Alarm(
+    state: AlarmState,
     inSelectionMode: Boolean,
-    onAction: (NoticeState.Action) -> Unit,
+    onAction: (Action) -> Unit,
+    windowSizeClass : WindowSizeClass,
+    modifier: Modifier = Modifier
+) {
+    Box(modifier = modifier) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            RequestPermissions(
+                requestPermissions = state.requestPermissions,
+                onAction = {
+                    onAction(it)
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .animateContentSize()
+            )
+
+            Alarms(
+                state = state,
+                inSelectionMode = inSelectionMode,
+                onAction = {
+                    onAction(it)
+                },
+                modifier = Modifier
+                    .weight(Float.one)
+                    .padding(windowSizeClass.marginValues)
+            )
+        }
+
+        SelectionMode(
+            inSelectionMode = inSelectionMode,
+            onAction = onAction,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
+    }
+}
+
+@Composable
+private fun SelectionMode(
+    inSelectionMode: Boolean,
+    onAction: (Action.SelectionMode) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    AnimatedVisibility(
+        visible = inSelectionMode,
+        modifier = modifier,
+        enter = slideInVertically {
+            it
+        },
+        exit = slideOutVertically {
+            it
+        }
+    ) {
+        Surface(
+            color = TabRowDefaults.containerColor,
+            contentColor = TabRowDefaults.contentColor
+        ) {
+            Row {
+                Tab(
+                    selected = false,
+                    onClick = {
+                        onAction(Action.SelectionMode.ALARM_ON)
+                    },
+                    modifier = Modifier.weight(Float.one),
+                    text = {
+                        Text(text = stringResource(id = R.string.alarm_on))
+                    },
+                    icon = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.baseline_alarm_on_24),
+                            contentDescription = null
+                        )
+                    }
+                )
+
+                Tab(
+                    selected = false,
+                    onClick = {
+                        onAction(Action.SelectionMode.ALARM_OFF)
+                    },
+                    modifier = Modifier.weight(Float.one),
+                    text = {
+                        Text(text = stringResource(id = R.string.alarm_off))
+                    },
+                    icon = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.baseline_alarm_off_24),
+                            contentDescription = null
+                        )
+                    }
+                )
+
+                Tab(
+                    selected = false,
+                    onClick = {
+                        onAction(Action.SelectionMode.DELETE_ALL)
+                    },
+                    modifier = Modifier.weight(Float.one),
+                    text = {
+                        Text(text = stringResource(id = R.string.delete))
+                    },
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = null
+                        )
+                    }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun Alarms(
+    state: AlarmState,
+    inSelectionMode: Boolean,
+    onAction: (Action) -> Unit,
     modifier: Modifier = Modifier
 ) {
     AnimatedContent(
@@ -66,15 +196,15 @@ fun Notice(
         }
     ) {
         when (it) {
-            NoticeState.Loading -> Loading(modifier = Modifier.fillMaxSize())
-            is NoticeState.Content -> Content(
+            is AlarmState.Loading -> Loading(modifier = Modifier.fillMaxSize())
+            is AlarmState.Content -> Content(
                 content = it,
                 inSelectionMode = inSelectionMode,
                 onAction = onAction,
                 modifier = Modifier.fillMaxSize()
             )
 
-            is NoticeState.Error -> {}
+            is AlarmState.Error -> {}
         }
     }
 }
@@ -82,9 +212,9 @@ fun Notice(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun Content(
-    content: NoticeState.Content,
+    content: AlarmState.Content,
     inSelectionMode: Boolean,
-    onAction: (NoticeState.Action) -> Unit,
+    onAction: (Action) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -99,9 +229,9 @@ private fun Content(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(
-            items = content.notices,
-            key = { notice ->
-                notice.id
+            items = content.alarms,
+            key = { alarm ->
+                alarm.id
             }
         ) { item ->
             Item(
@@ -120,10 +250,10 @@ private fun Content(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun Item(
-    item: Notice,
+    item: Alarm,
     inSelectionMode: Boolean,
     selected: Boolean,
-    onAction: (NoticeState.Action) -> Unit,
+    onAction: (Action) -> Unit,
     modifier: Modifier = Modifier
 ) {
     ElevatedCard(modifier = modifier) {
@@ -134,13 +264,12 @@ private fun Item(
                 .fillMaxWidth()
                 .combinedClickable(
                     onClick = {
-                        onAction(NoticeState.Action.Click(item))
+                        onAction(Action.Alarms.Click(item))
                     },
                     onLongClick = {
-                        onAction(NoticeState.Action.LongClick(item))
+                        onAction(Action.Alarms.LongClick(item))
                     }
-                )
-                .padding(
+                ).padding(
                     start = 16.dp,
                     top = 12.dp,
                     end = 24.dp,
@@ -156,7 +285,7 @@ private fun Item(
                 Checkbox(
                     checked = selected,
                     onCheckedChange = {
-                        onAction(NoticeState.Action.SelectedChange(item, it))
+                        onAction(Action.Alarms.SelectedChange(item, it))
                     },
                     modifier = Modifier
                         .padding(end = 16.dp)
@@ -167,11 +296,11 @@ private fun Item(
             Text(
                 text = text,
                 modifier = Modifier.weight(Float.one),
-                style = typography.titleMedium
+                style = MaterialTheme.typography.titleMedium
             )
 
             Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                Notice.Condition.values().forEach {
+                Alarm.Condition.values().forEach {
                     val alpha = if (it in item.conditions) {
                         1.0F
                     } else {
@@ -180,8 +309,8 @@ private fun Item(
 
                     Text(
                         text = when (it) {
-                            Notice.Condition.RAIN -> stringResource(id = R.string.rain)
-                            Notice.Condition.SNOW -> stringResource(id = R.string.snow)
+                            Alarm.Condition.RAIN -> stringResource(id = R.string.rain)
+                            Alarm.Condition.SNOW -> stringResource(id = R.string.snow)
                         },
                         modifier = Modifier
                             .clickable(
@@ -190,10 +319,9 @@ private fun Item(
                                 },
                                 indication = rememberRipple(bounded = false)
                             ) {
-                                onAction(NoticeState.Action.ConditionClick(item, it))
-                            }
-                            .alpha(alpha),
-                        style = typography.labelMedium
+                                onAction(Action.Alarms.ConditionClick(item, it))
+                            }.alpha(alpha),
+                        style = MaterialTheme.typography.labelMedium
                     )
                 }
             }
@@ -204,7 +332,7 @@ private fun Item(
                 checked = on,
                 onCheckedChange = {
                     on = it
-                    onAction(NoticeState.Action.CheckChange(item, on))
+                    onAction(Action.Alarms.CheckChange(item, on))
                 }
             )
         }

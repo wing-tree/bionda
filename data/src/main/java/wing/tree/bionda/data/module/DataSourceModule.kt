@@ -7,13 +7,20 @@ import dagger.hilt.components.SingletonComponent
 import wing.tree.bionda.data.database.Database
 import wing.tree.bionda.data.service.MidFcstInfoService
 import wing.tree.bionda.data.service.VilageFcstInfoService
-import wing.tree.bionda.data.source.local.NoticeDataSource
+import wing.tree.bionda.data.source.local.AlarmDataSource
 import wing.tree.bionda.data.source.local.WeatherDataSource as LocalDataSource
 import wing.tree.bionda.data.source.remote.WeatherDataSource as RemoteDataSource
 
 @Module
 @InstallIn(SingletonComponent::class)
 object DataSourceModule {
+    @Provides
+    fun providesAlarmDataSource(
+        database: Database
+    ): AlarmDataSource {
+        return AlarmDataSource(database.alarmDao())
+    }
+
     @Provides
     fun providesLocalDataSource(
         database: Database
@@ -23,13 +30,6 @@ object DataSourceModule {
             midTaDao = database.midTaDao(),
             vilageFcstDao = database.vilageFcstDao()
         )
-    }
-
-    @Provides
-    fun providesNoticeDataSource(
-        database: Database
-    ): NoticeDataSource {
-        return NoticeDataSource(database.noticeDao())
     }
 
     @Provides

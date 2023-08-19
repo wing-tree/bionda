@@ -17,49 +17,47 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.ripple.LocalRippleTheme
+import androidx.compose.material.ripple.RippleAlpha
+import androidx.compose.material.ripple.RippleTheme
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.material.timepicker.MaterialTimePicker
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.collections.immutable.persistentListOf
 import wing.tree.bionda.R
 import wing.tree.bionda.data.constant.SCHEME_PACKAGE
 import wing.tree.bionda.data.extension.containsAny
@@ -69,7 +67,6 @@ import wing.tree.bionda.data.extension.`is`
 import wing.tree.bionda.data.extension.minute
 import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.toggle
-import wing.tree.bionda.data.extension.two
 import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.data.regular.koreaCalendar
 import wing.tree.bionda.data.regular.noOperations
@@ -82,12 +79,10 @@ import wing.tree.bionda.permissions.PermissionChecker
 import wing.tree.bionda.permissions.RequestMultiplePermissions
 import wing.tree.bionda.permissions.locationPermissions
 import wing.tree.bionda.theme.BiondaTheme
-import wing.tree.bionda.view.compose.composable.Forecast
-import wing.tree.bionda.view.compose.composable.Notice
-import wing.tree.bionda.view.compose.composable.RequestPermissions
+import wing.tree.bionda.view.compose.composable.Alarm
+import wing.tree.bionda.view.compose.composable.Weather
 import wing.tree.bionda.view.model.MainViewModel
-import wing.tree.bionda.view.state.MainState.Action
-import wing.tree.bionda.view.state.NoticeState
+import wing.tree.bionda.view.state.AlarmState.Action
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
@@ -145,7 +140,7 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
                 val inSelectionMode = state.inSelectionMode
                 val windowSizeClass = rememberWindowSizeClass()
 
-                var selectedTabIndex by remember {
+                var selectedSegmentedButtonIndex by remember {
                     mutableIntStateOf(Int.zero)
                 }
 
@@ -193,37 +188,15 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
                             .padding(innerPadding)
                     ) {
                         SingleChoiceSegmentedButtonRow(
+                            selectedSegmentedButtonIndex = selectedSegmentedButtonIndex,
+                            onClick = {
+                                selectedSegmentedButtonIndex = it
+                            },
                             modifier = Modifier.padding(windowSizeClass.marginValues)
-                        ) {
-                            SegmentedButton(
-                                selected = Int.zero `is` selectedTabIndex,
-                                onClick = {
-                                    selectedTabIndex = Int.zero
-                                },
-                                shape = SegmentedButtonDefaults.shape(
-                                    position = Int.zero,
-                                    count = Int.two
-                                )
-                            ) {
-                                Text(stringResource(id = R.string.weather))
-                            }
-
-                            SegmentedButton(
-                                selected = Int.one `is` selectedTabIndex,
-                                onClick = {
-                                    selectedTabIndex = Int.one
-                                },
-                                shape = SegmentedButtonDefaults.shape(
-                                    position = Int.one,
-                                    count = Int.two
-                                )
-                            ) {
-                                Text(stringResource(id = R.string.alarm))
-                            }
-                        }
+                        )
 
                         AnimatedContent(
-                            targetState = selectedTabIndex,
+                            targetState = selectedSegmentedButtonIndex,
                             modifier = Modifier.weight(Float.one),
                             transitionSpec = {
                                 val slideDirection = if (targetState `is` Int.zero) {
@@ -238,95 +211,20 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
                             label = String.empty
                         ) { targetState ->
                             when (targetState) {
-                                Int.zero -> Forecast(
-                                    state = state.forecastState,
+                                Int.zero -> Weather(
+                                    state = state.weatherState,
                                     windowSizeClass = windowSizeClass,
                                     modifier = Modifier.fillMaxSize()
                                 )
 
-                                Int.one -> Box(modifier = Modifier.fillMaxSize()) {
-                                    Column(modifier = Modifier.fillMaxSize()) {
-                                        RequestPermissions(
-                                            state = state.requestPermissionsState,
-                                            onClick = {
-                                                onRequestPermissionsClick(it)
-                                            },
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .animateContentSize()
-                                        )
-
-                                        Notice(
-                                            state = state.noticeState,
-                                            inSelectionMode = inSelectionMode,
-                                            onAction = {
-                                                val notice = it.notice
-
-                                                when (it) {
-                                                    is NoticeState.Action.Click -> {
-                                                        if (inSelectionMode) {
-                                                            viewModel.selected.toggle(notice.id)
-                                                        } else {
-                                                            showMaterialTimePicker(
-                                                                notice.hour,
-                                                                notice.minute
-                                                            ) { hour, minute ->
-                                                                viewModel.update(
-                                                                    notice.copy(
-                                                                        hour = hour,
-                                                                        minute = minute
-                                                                    )
-                                                                )
-                                                            }
-                                                        }
-                                                    }
-
-                                                    is NoticeState.Action.LongClick -> {
-                                                        if (inSelectionMode.not()) {
-                                                            viewModel.selected.toggle(notice.id)
-
-                                                            viewModel.inSelectionMode.value = true
-                                                        }
-                                                    }
-
-                                                    is NoticeState.Action.CheckChange -> {
-                                                        viewModel.update(notice.copy(on = it.checked))
-                                                    }
-
-                                                    is NoticeState.Action.SelectedChange -> {
-                                                        with(viewModel.selected) {
-                                                            if (it.selected) {
-                                                                add(notice.id)
-                                                            } else {
-                                                                remove(notice.id)
-                                                            }
-                                                        }
-                                                    }
-
-                                                    is NoticeState.Action.ConditionClick -> {
-                                                        viewModel.update(
-                                                            with(notice) {
-                                                                copy(
-                                                                    conditions = conditions.toggle(
-                                                                        it.condition
-                                                                    )
-                                                                )
-                                                            }
-                                                        )
-                                                    }
-                                                }
-                                            },
-                                            modifier = Modifier
-                                                .weight(Float.one)
-                                                .padding(windowSizeClass.marginValues)
-                                        )
-                                    }
-
-                                    SelectionMode(
-                                        inSelectionMode = state.inSelectionMode,
-                                        modifier = Modifier.align(Alignment.BottomCenter)
-                                    )
-                                }
+                                Int.one -> Alarm(
+                                    state = state.alarmState,
+                                    inSelectionMode = inSelectionMode,
+                                    onAction = {
+                                        onAction(it, inSelectionMode)
+                                    },
+                                    windowSizeClass = windowSizeClass
+                                )
                             }
                         }
                     }
@@ -355,77 +253,71 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
         }
     }
 
-    @Composable
-    private fun SelectionMode(
-        inSelectionMode: Boolean,
-        modifier: Modifier = Modifier
+    private fun onAction(action: Action, inSelectionMode: Boolean) {
+        when (action) {
+            is Action.Alarms -> onAlarms(action, inSelectionMode)
+            is Action.RequestPermissions -> onRequestPermissions(action)
+            is Action.SelectionMode -> onSelectionMode(action)
+        }
+    }
+
+    private fun onAlarms(
+        action: Action.Alarms,
+        inSelectionMode: Boolean
     ) {
-        AnimatedVisibility(
-            visible = inSelectionMode,
-            modifier = modifier,
-            enter = slideInVertically {
-                it
-            },
-            exit = slideOutVertically {
-                it
-            }
-        ) {
-            Surface(
-                color = TabRowDefaults.containerColor,
-                contentColor = TabRowDefaults.contentColor
-            ) {
-                Row {
-                    Tab(
-                        selected = false,
-                        onClick = {
-                            viewModel.alarmOn()
-                        },
-                        modifier = Modifier.weight(Float.one),
-                        text = {
-                            Text(text = stringResource(id = R.string.alarm_on))
-                        },
-                        icon = {
-                            Icon(
-                                painter = painterResource(id = R.drawable.baseline_alarm_on_24),
-                                contentDescription = null
-                            )
-                        }
-                    )
+        val alarm = action.alarm
 
-                    Tab(
-                        selected = false,
-                        onClick = {
-                            viewModel.alarmOff()
-                        },
-                        modifier = Modifier.weight(Float.one),
-                        text = {
-                            Text(text = stringResource(id = R.string.alarm_off))
-                        },
-                        icon = {
-                            Icon(
-                                painter = painterResource(id = R.drawable.baseline_alarm_off_24),
-                                contentDescription = null
+        when (action) {
+            is Action.Alarms.Click -> {
+                if (inSelectionMode) {
+                    viewModel.selected.toggle(alarm.id)
+                } else {
+                    showMaterialTimePicker(
+                        alarm.hour,
+                        alarm.minute
+                    ) { hour, minute ->
+                        viewModel.update(
+                            alarm.copy(
+                                hour = hour,
+                                minute = minute
                             )
-                        }
-                    )
-
-                    Tab(
-                        selected = false,
-                        onClick = {
-                            viewModel.deleteAll()
-                        },
-                        modifier = Modifier.weight(Float.one),
-                        text = {
-                            Text(text = stringResource(id = R.string.delete))
-                        },
-                        icon = {
-                            Icon(
-                                imageVector = Icons.Default.Delete,
-                                contentDescription = null
-                            )
-                        }
-                    )
+                        )
+                    }
                 }
+            }
+
+            is Action.Alarms.LongClick -> {
+                if (inSelectionMode.not()) {
+                    viewModel.selected.toggle(alarm.id)
+
+                    viewModel.inSelectionMode.value = true
+                }
+            }
+
+            is Action.Alarms.CheckChange -> {
+                viewModel.update(alarm.copy(on = action.checked))
+            }
+
+            is Action.Alarms.SelectedChange -> {
+                with(viewModel.selected) {
+                    if (action.selected) {
+                        add(alarm.id)
+                    } else {
+                        remove(alarm.id)
+                    }
+                }
+            }
+
+            is Action.Alarms.ConditionClick -> {
+                viewModel.update(
+                    with(alarm) {
+                        copy(
+                            conditions = conditions.toggle(
+                                action.condition
+                            )
+                        )
+                    }
+                )
             }
         }
     }
@@ -438,6 +330,58 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
             minute = koreaCalendar.minute
         ) { hour, minute ->
             viewModel.add(hour, minute)
+        }
+    }
+
+    private fun onRequestPermissions(action: Action.RequestPermissions) {
+        when (action) {
+            Action.RequestPermissions.ACCESS_BACKGROUND_LOCATION -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    if (checkSelfSinglePermission(ACCESS_BACKGROUND_LOCATION)) {
+                        viewModel.notifyPermissionGranted(ACCESS_BACKGROUND_LOCATION)
+                    } else {
+                        requestAccessBackgroundLocationPermission()
+                    }
+                }
+            }
+
+            Action.RequestPermissions.POST_NOTIFICATIONS -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    if (checkSelfSinglePermission(POST_NOTIFICATIONS)) {
+                        viewModel.notifyPermissionGranted(POST_NOTIFICATIONS)
+                    } else {
+                        val intent =
+                            Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                                .apply {
+                                    data = Uri.fromParts(
+                                        SCHEME_PACKAGE,
+                                        packageName,
+                                        null
+                                    )
+                                }
+
+                        startActivity(intent)
+                    }
+                }
+            }
+
+            Action.RequestPermissions.SCHEDULE_EXACT_ALARM -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    if (alarmManager?.canScheduleExactAlarms() `is` false) {
+                        startActivity(Intent(ACTION_REQUEST_SCHEDULE_EXACT_ALARM))
+                    } else {
+                        viewModel.notifyPermissionGranted(SCHEDULE_EXACT_ALARM)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun onSelectionMode(action: Action.SelectionMode) {
+        when (action) {
+            Action.SelectionMode.ALARM_OFF -> viewModel.alarmOff()
+            Action.SelectionMode.ALARM_ON -> viewModel.alarmOn()
+            Action.SelectionMode.DELETE_ALL -> viewModel.deleteAll()
         }
     }
 
@@ -462,46 +406,61 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
             it.show(supportFragmentManager, it.tag)
         }
     }
+}
 
-    private fun onRequestPermissionsClick(action: Action) {
-        when (action) {
-            Action.ACCESS_BACKGROUND_LOCATION -> {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    if (checkSelfSinglePermission(ACCESS_BACKGROUND_LOCATION)) {
-                        viewModel.notifyPermissionGranted(ACCESS_BACKGROUND_LOCATION)
-                    } else {
-                        requestAccessBackgroundLocationPermission()
-                    }
-                }
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SingleChoiceSegmentedButtonRow(
+    selectedSegmentedButtonIndex: Int,
+    onClick: (Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val items = persistentListOf(
+        R.string.weather,
+        R.string.alarm
+    )
+
+    SingleChoiceSegmentedButtonRow(
+        modifier = modifier.semantics(false) {
+            SemanticsProperties.SelectableGroup
+        }
+    ) {
+        val colors = SegmentedButtonDefaults.colors(
+            activeContainerColor = Color.Transparent,
+            activeContentColor = colorScheme.primary,
+            activeBorderColor = Color.Transparent,
+            inactiveContainerColor = Color.Transparent,
+            inactiveBorderColor = Color.Transparent
+        )
+
+        val rippleTheme = remember {
+            object : RippleTheme {
+                @Composable
+                override fun defaultColor(): Color = Color.Red
+
+                @Composable
+                override fun rippleAlpha(): RippleAlpha = RippleAlpha(
+                    draggedAlpha = Float.zero,
+                    focusedAlpha = Float.zero,
+                    hoveredAlpha = Float.zero,
+                    pressedAlpha = Float.zero
+                )
+
             }
+        }
 
-            Action.POST_NOTIFICATIONS -> {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    if (checkSelfSinglePermission(POST_NOTIFICATIONS)) {
-                        viewModel.notifyPermissionGranted(POST_NOTIFICATIONS)
-                    } else {
-                        val intent =
-                            Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                                .apply {
-                                    data = Uri.fromParts(
-                                        SCHEME_PACKAGE,
-                                        packageName,
-                                        null
-                                    )
-                                }
-
-                        startActivity(intent)
-                    }
-                }
-            }
-
-            Action.SCHEDULE_EXACT_ALARM -> {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    if (alarmManager?.canScheduleExactAlarms() `is` false) {
-                        startActivity(Intent(ACTION_REQUEST_SCHEDULE_EXACT_ALARM))
-                    } else {
-                        viewModel.notifyPermissionGranted(SCHEDULE_EXACT_ALARM)
-                    }
+        CompositionLocalProvider(
+            LocalRippleTheme provides rippleTheme
+        ) {
+            items.forEachIndexed { index, item ->
+                SegmentedButton(
+                    selected = index `is` selectedSegmentedButtonIndex,
+                    onClick = {
+                        onClick(index)
+                    },
+                    colors = colors
+                ) {
+                    Text(stringResource(id = item))
                 }
             }
         }

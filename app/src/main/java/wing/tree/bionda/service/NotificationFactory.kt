@@ -17,18 +17,19 @@ object NotificationFactory {
         val channelId: String
 
         data class AccessBackgroundLocation(override val channelId: String) : Type
-        data class Location(override val channelId: String) : Type
-        data class Notice(
+        data class Alarm(
             override val channelId: String,
             val contentText: String,
             val requestCode: Int
         ) : Type
+
+        data class Location(override val channelId: String) : Type
     }
 
     fun create(context: Context, type: Type): Notification = when (type) {
+        is Type.Alarm -> type.create(context)
         is Type.AccessBackgroundLocation -> type.create(context)
         is Type.Location -> type.create(context)
-        is Type.Notice -> type.create(context)
     }
 
     private fun Type.AccessBackgroundLocation.create(context: Context): Notification {
@@ -60,16 +61,7 @@ object NotificationFactory {
             .build()
     }
 
-    private fun Type.Location.create(context: Context): Notification {
-        return NotificationCompat.Builder(context, channelId)
-            .setShowWhen(true)
-            .setSmallIcon(R.drawable.ic_launcher_background)
-            .setContentTitle("위치 정보 가져오는 중.")
-            .setContentText("정확한 위치를 가져옵니다.")
-            .build()
-    }
-
-    private fun Type.Notice.create(context: Context): Notification {
+    private fun Type.Alarm.create(context: Context): Notification {
         val contentTitle = context.getString(R.string.take_an_umbrella)
         val style = NotificationCompat.BigTextStyle().bigText(contentText)
 
@@ -90,6 +82,15 @@ object NotificationFactory {
             .setFullScreenIntent(pendingIntent, true)
             .setAutoCancel(true)
             .setStyle(style)
+            .build()
+    }
+
+    private fun Type.Location.create(context: Context): Notification {
+        return NotificationCompat.Builder(context, channelId)
+            .setShowWhen(true)
+            .setSmallIcon(R.drawable.ic_launcher_background)
+            .setContentTitle("위치 정보 가져오는 중.")
+            .setContentText("정확한 위치를 가져옵니다.")
             .build()
     }
 }

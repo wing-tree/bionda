@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "d547b6b7f818d5b220b66fe6a752c898",
+    "identityHash": "2a332bd807adac8643262e623dcf96dc",
     "entities": [
       {
         "tableName": "mid_land_fcst",
@@ -71,7 +71,7 @@
         "foreignKeys": []
       },
       {
-        "tableName": "notice",
+        "tableName": "alarm",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `hour` INTEGER NOT NULL, `minute` INTEGER NOT NULL, `on` INTEGER NOT NULL, `conditions` TEXT NOT NULL)",
         "fields": [
           {
@@ -165,7 +165,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd547b6b7f818d5b220b66fe6a752c898')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2a332bd807adac8643262e623dcf96dc')"
     ]
   }
 }

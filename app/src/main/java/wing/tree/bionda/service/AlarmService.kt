@@ -14,16 +14,16 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import wing.tree.bionda.data.constant.EXTRA_NOTICE_ID
+import wing.tree.bionda.data.constant.EXTRA_ALARM_ID
 import wing.tree.bionda.data.extension.negativeOne
-import wing.tree.bionda.data.model.Notice
+import wing.tree.bionda.data.model.Alarm
 import wing.tree.bionda.data.model.Result.Complete
 import wing.tree.bionda.data.model.map
 import wing.tree.bionda.data.model.onFailure
 import wing.tree.bionda.data.model.onSuccess
 import wing.tree.bionda.data.provider.LocationProvider
+import wing.tree.bionda.data.repository.AlarmRepository
 import wing.tree.bionda.data.repository.WeatherRepository
-import wing.tree.bionda.data.repository.NoticeRepository
 import wing.tree.bionda.extension.toCoordinate
 import wing.tree.bionda.model.Forecast
 import wing.tree.bionda.permissions.PermissionChecker
@@ -36,21 +36,21 @@ import wing.tree.bionda.template.ContentTextTemplate
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class NoticeService : Service(), PermissionChecker {
+class AlarmService : Service(), PermissionChecker {
     @Inject
-    lateinit var alarmScheduler: AlarmScheduler
+    lateinit var alarmRepository: AlarmRepository
 
     @Inject
-    lateinit var weatherRepository: WeatherRepository
+    lateinit var alarmScheduler: AlarmScheduler
 
     @Inject
     lateinit var locationProvider: LocationProvider
 
     @Inject
-    lateinit var noticeRepository: NoticeRepository
+    lateinit var notificationChannelProvider: NotificationChannelProvider
 
     @Inject
-    lateinit var notificationChannelProvider: NotificationChannelProvider
+    lateinit var weatherRepository: WeatherRepository
 
     private val context = this
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
@@ -70,19 +70,19 @@ class NoticeService : Service(), PermissionChecker {
         val context = this
 
         coroutineScope.launch {
-            val noticeId = intent.getLongExtra(EXTRA_NOTICE_ID, Long.negativeOne)
-            val notice = noticeRepository.get(noticeId) ?: return@launch
+            val alarmId = intent.getLongExtra(EXTRA_ALARM_ID, Long.negativeOne)
+            val alarm = alarmRepository.get(alarmId) ?: return@launch
 
-            if (notice.off) {
-                alarmScheduler.cancel(notice)
+            if (alarm.off) {
+                alarmScheduler.cancel(alarm)
 
                 return@launch
             }
 
-            alarmScheduler.schedule(notice)
+            alarmScheduler.schedule(alarm)
 
             if (checkSelfMultiplePermissions(permissions)) {
-                startForeground(notice.notificationId)
+                startForeground(alarm.notificationId)
 
                 when (val location = locationProvider.getLocation()) {
                     is Complete.Success -> {
@@ -95,7 +95,7 @@ class NoticeService : Service(), PermissionChecker {
                             }.onSuccess { forecast ->
                                 stopForeground(STOP_FOREGROUND_REMOVE)
 
-                                notice.postNotification(forecast)
+                                alarm.postNotification(forecast)
 
                                 stopSelf()
                             }.onFailure {
@@ -112,7 +112,7 @@ class NoticeService : Service(), PermissionChecker {
 
                                 stopForeground(STOP_FOREGROUND_REMOVE)
 
-                                notification.post(notice.notificationId)
+                                notification.post(alarm.notificationId)
                             }
 
                             stopSelf()
@@ -158,10 +158,10 @@ class NoticeService : Service(), PermissionChecker {
         }
     }
 
-    private fun Notice.postNotification(forecast: Forecast) {
+    private fun Alarm.postNotification(forecast: Forecast) {
         val channelId = createNotificationChannel(FORECAST)
         val ptyOrSky = ContentTextTemplate.PtyOrSky(context)
-        val type = Type.Notice(channelId, ptyOrSky(forecast), requestCode)
+        val type = Type.Alarm(channelId, ptyOrSky(forecast), requestCode)
         val notification = NotificationFactory.create(context, type)
 
         notification.post(notificationId)

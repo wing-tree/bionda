@@ -47,7 +47,7 @@
         </receiver>
 
         <service
-            android:name=".service.NoticeService"
+            android:name=".service.AlarmService"
             android:foregroundServiceType="location">
         </service>
     </application>

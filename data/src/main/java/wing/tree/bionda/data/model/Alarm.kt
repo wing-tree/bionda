@@ -10,8 +10,8 @@ import kotlinx.serialization.Serializable
 import wing.tree.bionda.data.extension.int
 import wing.tree.bionda.data.extension.zero
 
-@Entity(tableName = "notice")
-data class Notice(
+@Entity(tableName = "alarm")
+data class Alarm(
     @PrimaryKey(autoGenerate = true)
     val id: Long = Long.zero,
     val hour: Int,

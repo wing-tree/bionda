@@ -14,28 +14,26 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import kotlinx.collections.immutable.ImmutableSet
 import wing.tree.bionda.permissions.permissionRational
-import wing.tree.bionda.view.state.MainState.Action
-import wing.tree.bionda.view.state.RequestPermissionsState
+import wing.tree.bionda.view.state.AlarmState.Action.RequestPermissions
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RequestPermissions(
-    state: RequestPermissionsState,
-    onClick: (Action) -> Unit,
+    requestPermissions: ImmutableSet<String>,
+    onAction: (RequestPermissions) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val permissions = state.permissions
-
     Column(modifier = modifier.padding(16.dp)) {
-        permissions.forEach { permission ->
+        requestPermissions.forEach { permission ->
             permissionRational[permission]?.let { stringRes ->
                 OutlinedCard(
                     onClick = {
                         when (permission) {
-                            ACCESS_BACKGROUND_LOCATION -> onClick(Action.ACCESS_BACKGROUND_LOCATION)
-                            POST_NOTIFICATIONS -> onClick(Action.POST_NOTIFICATIONS)
-                            SCHEDULE_EXACT_ALARM -> onClick(Action.SCHEDULE_EXACT_ALARM)
+                            ACCESS_BACKGROUND_LOCATION -> onAction(RequestPermissions.ACCESS_BACKGROUND_LOCATION)
+                            POST_NOTIFICATIONS -> onAction(RequestPermissions.POST_NOTIFICATIONS)
+                            SCHEDULE_EXACT_ALARM -> onAction(RequestPermissions.SCHEDULE_EXACT_ALARM)
                         }
                     }
                 ) {

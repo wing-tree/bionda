@@ -6,11 +6,11 @@ import android.content.Intent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import wing.tree.bionda.data.constant.EXTRA_NOTICE_ID
+import wing.tree.bionda.data.constant.EXTRA_ALARM_ID
 import wing.tree.bionda.data.extension.negativeOne
 import wing.tree.bionda.permissions.PermissionChecker
 import wing.tree.bionda.permissions.locationPermissions
-import wing.tree.bionda.service.NoticeService
+import wing.tree.bionda.service.AlarmService
 
 class AlarmReceiver : BroadcastReceiver(), PermissionChecker {
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
@@ -21,12 +21,12 @@ class AlarmReceiver : BroadcastReceiver(), PermissionChecker {
         intent ?: return
 
         coroutineScope.launch {
-            val noticeId = intent.getLongExtra(EXTRA_NOTICE_ID, Long.negativeOne)
+            val alarmId = intent.getLongExtra(EXTRA_ALARM_ID, Long.negativeOne)
 
             if (context.checkSelfMultiplePermissions(permissions)) {
                 context.startForegroundService(
-                    Intent(context, NoticeService::class.java).apply {
-                        putExtra(EXTRA_NOTICE_ID, noticeId)
+                    Intent(context, AlarmService::class.java).apply {
+                        putExtra(EXTRA_ALARM_ID, alarmId)
                     }
                 )
             }

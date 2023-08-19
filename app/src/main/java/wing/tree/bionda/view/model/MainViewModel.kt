@@ -11,7 +11,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
-import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.toImmutableSet
+import kotlinx.collections.immutable.toPersistentSet
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -29,12 +30,12 @@ import wing.tree.bionda.data.extension.ifTrue
 import wing.tree.bionda.data.extension.isNotNull
 import wing.tree.bionda.data.extension.long
 import wing.tree.bionda.data.extension.negativeOne
-import wing.tree.bionda.data.model.Notice
+import wing.tree.bionda.data.model.Alarm
 import wing.tree.bionda.data.model.Result
 import wing.tree.bionda.data.model.Result.Complete
 import wing.tree.bionda.data.provider.LocationProvider
+import wing.tree.bionda.data.repository.AlarmRepository
 import wing.tree.bionda.data.repository.WeatherRepository
-import wing.tree.bionda.data.repository.NoticeRepository
 import wing.tree.bionda.exception.PermissionsDeniedException
 import wing.tree.bionda.extension.checkSelfPermission
 import wing.tree.bionda.extension.toCoordinate
@@ -42,10 +43,9 @@ import wing.tree.bionda.model.Address
 import wing.tree.bionda.model.Forecast
 import wing.tree.bionda.permissions.locationPermissions
 import wing.tree.bionda.scheduler.AlarmScheduler
-import wing.tree.bionda.view.state.ForecastState
+import wing.tree.bionda.view.state.AlarmState
 import wing.tree.bionda.view.state.MainState
-import wing.tree.bionda.view.state.NoticeState
-import wing.tree.bionda.view.state.RequestPermissionsState
+import wing.tree.bionda.view.state.WeatherState
 import java.util.Locale
 import javax.inject.Inject
 import kotlin.coroutines.resume
@@ -53,16 +53,17 @@ import kotlin.coroutines.resume
 @HiltViewModel
 class MainViewModel @Inject constructor(
     application: Application,
+    private val alarmRepository: AlarmRepository,
     private val alarmScheduler: AlarmScheduler,
     private val weatherRepository: WeatherRepository,
-    private val locationProvider: LocationProvider,
-    private val noticeRepository: NoticeRepository
+    private val locationProvider: LocationProvider
 ) : AndroidViewModel(application) {
     private val location = MutableStateFlow<Result<Location?>>(Result.Loading)
+    private val requestPermissions = MutableStateFlow<ImmutableSet<String>>(persistentSetOf())
     private val stopTimeoutMillis = Long.fiveSecondsInMilliseconds
-    private val forecastState = location.map {
+    private val weatherState = location.map {
         when (it) {
-            Result.Loading -> ForecastState.Loading
+            Result.Loading -> WeatherState.Loading
             is Complete.Success -> it.data?.let { location ->
                 val (nx, ny) = location.toCoordinate()
                 val address = getAddress(location)
@@ -72,25 +73,24 @@ class MainViewModel @Inject constructor(
                 )
 
                 when (forecast) {
-                    Result.Loading -> ForecastState.Loading
+                    Result.Loading -> WeatherState.Loading
                     is Complete -> when (forecast) {
-                        is Complete.Success -> ForecastState.Content(
+                        is Complete.Success -> WeatherState.Content(
                             address = address,
                             forecast = Forecast.toPresentationModel(forecast.data)
                         )
 
-                        is Complete.Failure -> ForecastState.Error(forecast.throwable)
+                        is Complete.Failure -> WeatherState.Error(forecast.throwable)
                     }
                 }
-            }
-                ?: ForecastState.Error(NullPointerException("Location is Null")) // TODO error define.
+            } ?: WeatherState.Error(NullPointerException("Location is Null")) // TODO error define.
 
-            is Complete.Failure -> ForecastState.Error(it.throwable)
+            is Complete.Failure -> WeatherState.Error(it.throwable)
         }
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(stopTimeoutMillis),
-        initialValue = ForecastState.initialValue
+        initialValue = WeatherState.initialValue
     )
 
     val inSelectionMode = MutableStateFlow(false)
@@ -116,40 +116,39 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private val noticeState = combine(
-        noticeRepository.load(),
+    private val alarmState = combine(
+        requestPermissions,
+        alarmRepository.load(),
         selected
-    ) { notice, selected ->
-        when (notice) {
-            is Complete.Success -> {
-                NoticeState.Content(
-                    notices = notice.data,
-                    selected = selected
-                )
-            }
+    ) { requestPermissions, alarm, selected ->
+        when (alarm) {
+            is Complete.Success -> AlarmState.Content(
+                requestPermissions = requestPermissions,
+                alarms = alarm.data,
+                selected = selected
+            )
 
-            is Complete.Failure -> NoticeState.Error(notice.throwable)
+            is Complete.Failure -> AlarmState.Error(
+                requestPermissions = requestPermissions,
+                throwable = alarm.throwable
+            )
         }
     }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(stopTimeoutMillis),
-            initialValue = NoticeState.initialValue
+            initialValue = AlarmState.initialValue
         )
 
-    private val requestPermissionsState = MutableStateFlow(RequestPermissionsState.initialValue)
-
     val state: StateFlow<MainState> = combine(
-        forecastState,
+        alarmState,
         inSelectionMode,
-        noticeState,
-        requestPermissionsState
-    ) { forecastState, inSelectionMode, noticeState, requestPermissionsState ->
+        weatherState
+    ) { alarmState, inSelectionMode, weatherState ->
         MainState(
-            forecastState = forecastState,
+            alarmState = alarmState,
             inSelectionMode = inSelectionMode,
-            noticeState = noticeState,
-            requestPermissionsState = requestPermissionsState
+            weatherState = weatherState
         )
     }.stateIn(
         scope = viewModelScope,
@@ -192,50 +191,50 @@ class MainViewModel @Inject constructor(
 
     fun add(hour: Int, minute: Int) {
         viewModelScope.launch {
-            val notice = Notice(hour = hour, minute = minute)
-            val id = noticeRepository.add(notice)
+            val alarm = Alarm(hour = hour, minute = minute)
+            val id = alarmRepository.add(alarm)
 
             if (id > Long.negativeOne) {
-                alarmScheduler.schedule(notice.copy(id = id))
+                alarmScheduler.schedule(alarm.copy(id = id))
             }
         }
     }
 
     fun alarmOff() {
         viewModelScope.launch {
-            noticeState.selected().map {
+            alarmState.selected().map {
                 it.copy(on = false)
             }
                 .let {
-                    it.forEach { notice ->
-                        alarmScheduler.cancel(notice)
+                    it.forEach { alarm ->
+                        alarmScheduler.cancel(alarm)
                     }
 
-                    noticeRepository.updateAll(it)
+                    alarmRepository.updateAll(it)
                 }
         }
     }
 
     fun alarmOn() {
         viewModelScope.launch {
-            noticeState.selected().map {
+            alarmState.selected().map {
                 it.copy(on = true)
             }
                 .let {
-                    it.forEach { notice ->
-                        alarmScheduler.schedule(notice)
+                    it.forEach { alarm ->
+                        alarmScheduler.schedule(alarm)
                     }
 
-                    noticeRepository.updateAll(it)
+                    alarmRepository.updateAll(it)
                 }
         }
     }
 
     fun deleteAll() {
         viewModelScope.launch {
-            noticeRepository.deleteAll(noticeState.selected())
+            alarmRepository.deleteAll(alarmState.selected())
 
-            noticeState.selected().forEach {
+            alarmState.selected().forEach {
                 alarmScheduler.cancel(it)
             }
 
@@ -261,15 +260,12 @@ class MainViewModel @Inject constructor(
             )
         }
 
-        requestPermissionsState.update {
-            val immutableList = buildSet {
+        requestPermissions.update {
+            buildSet {
                 addAll(permissions)
-                addAll(it.permissions)
+                addAll(it)
                 removeAll(locationPermissions)
-            }
-                .toImmutableList()
-
-            it.copy(permissions = immutableList)
+            }.toImmutableSet()
         }
     }
 
@@ -280,45 +276,36 @@ class MainViewModel @Inject constructor(
             )
         }
 
-        requestPermissionsState.update {
-            val immutableList = buildSet {
+        requestPermissions.update {
+            buildSet {
                 add(permission)
-                addAll(it.permissions)
+                addAll(it)
                 removeAll(locationPermissions)
-            }
-                .toImmutableList()
-
-            it.copy(permissions = immutableList)
+            }.toImmutableSet()
         }
     }
 
     fun notifyPermissionGranted(permission: String) {
-        requestPermissionsState.update {
-            val immutableList = it.permissions
-                .toMutableList()
-                .apply {
-                    remove(permission)
-                }.toImmutableList()
-
-            it.copy(permissions = immutableList)
+        requestPermissions.update {
+            it.toPersistentSet().remove(permission)
         }
     }
 
-    fun update(notice: Notice) {
+    fun update(alarm: Alarm) {
         viewModelScope.launch {
-            noticeRepository.update(notice)
+            alarmRepository.update(alarm)
 
-            if (notice.on) {
-                alarmScheduler.schedule(notice)
+            if (alarm.on) {
+                alarmScheduler.schedule(alarm)
             } else {
-                alarmScheduler.cancel(notice)
+                alarmScheduler.cancel(alarm)
             }
         }
     }
 
-    private fun StateFlow<NoticeState>.selected(): List<Notice> = with(value) {
-        if (this is NoticeState.Content) {
-            notices.filter {
+    private fun StateFlow<AlarmState>.selected(): List<Alarm> = with(value) {
+        if (this is AlarmState.Content) {
+            alarms.filter {
                 it.id in selected
             }
         } else {

@@ -6,12 +6,12 @@ import android.content.Context
 import android.content.Intent
 import android.icu.util.Calendar
 import android.os.Build
-import wing.tree.bionda.data.constant.EXTRA_NOTICE_ID
+import wing.tree.bionda.data.constant.EXTRA_ALARM_ID
 import wing.tree.bionda.data.extension.date
 import wing.tree.bionda.data.extension.hourOfDay
 import wing.tree.bionda.data.extension.minute
 import wing.tree.bionda.data.extension.one
-import wing.tree.bionda.data.model.Notice
+import wing.tree.bionda.data.model.Alarm
 import wing.tree.bionda.data.regular.koreaCalendar
 import wing.tree.bionda.receiver.AlarmReceiver
 
@@ -20,14 +20,14 @@ class AlarmScheduler(private val context: Context) {
         context.getSystemService(AlarmManager::class.java)
     }
 
-    fun schedule(notice: Notice) {
+    fun schedule(alarm: Alarm) {
         val pendingIntent = Intent(context, AlarmReceiver::class.java).apply {
-            putExtra(EXTRA_NOTICE_ID, notice.id)
+            putExtra(EXTRA_ALARM_ID, alarm.id)
         }
             .let {
                 PendingIntent.getBroadcast(
                     context,
-                    notice.requestCode,
+                    alarm.requestCode,
                     it,
                     PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
                 )
@@ -37,8 +37,8 @@ class AlarmScheduler(private val context: Context) {
             clear(Calendar.SECOND)
             clear(Calendar.MILLISECOND)
 
-            hourOfDay = notice.hour
-            minute = notice.minute
+            hourOfDay = alarm.hour
+            minute = alarm.minute
 
             if (timeInMillis < System.currentTimeMillis()) {
                 date += Int.one
@@ -69,10 +69,10 @@ class AlarmScheduler(private val context: Context) {
         }
     }
 
-    fun cancel(notice: Notice) {
+    fun cancel(alarm: Alarm) {
         val pendingIntent = PendingIntent.getBroadcast(
             context,
-            notice.requestCode,
+            alarm.requestCode,
             Intent(context, AlarmReceiver::class.java),
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )

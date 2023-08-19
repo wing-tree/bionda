@@ -30,11 +30,11 @@ import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.model.Address
 import wing.tree.bionda.model.Forecast
 import wing.tree.bionda.model.WindowSizeClass
-import wing.tree.bionda.view.state.ForecastState
+import wing.tree.bionda.view.state.WeatherState
 
 @Composable
-fun Forecast(
-    state: ForecastState,
+fun Weather(
+    state: WeatherState,
     windowSizeClass: WindowSizeClass,
     modifier: Modifier = Modifier
 ) {
@@ -50,16 +50,16 @@ fun Forecast(
         }
     ) {
         when (it) {
-            ForecastState.Loading -> Loading(modifier = Modifier)
+            WeatherState.Loading -> Loading(modifier = Modifier)
 
-            is ForecastState.Content -> Content(
+            is WeatherState.Content -> Content(
                 address = it.address,
                 forecast = it.forecast,
                 windowSizeClass = windowSizeClass,
                 modifier = Modifier.fillMaxWidth()
             )
 
-            is ForecastState.Error -> {
+            is WeatherState.Error -> {
                 Column {
                     Text(text = "${it.throwable}")
                 }
