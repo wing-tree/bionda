@@ -67,20 +67,16 @@ class MainViewModel @Inject constructor(
             is Complete.Success -> it.data?.let { location ->
                 val (nx, ny) = location.toCoordinate()
                 val address = getAddress(location)
-                val forecast = weatherRepository.getVilageFcst(
-                    nx = nx,
-                    ny = ny
-                )
 
-                when (forecast) {
+                when (val weather = weatherRepository.getVilageFcst(nx = nx, ny = ny)) {
                     Result.Loading -> WeatherState.Loading
-                    is Complete -> when (forecast) {
+                    is Complete -> when (weather) {
                         is Complete.Success -> WeatherState.Content(
                             address = address,
-                            forecast = Forecast.toPresentationModel(forecast.data)
+                            forecast = Forecast.toPresentationModel(weather.data)
                         )
 
-                        is Complete.Failure -> WeatherState.Error(forecast.throwable)
+                        is Complete.Failure -> WeatherState.Error(weather.throwable)
                     }
                 }
             } ?: WeatherState.Error(NullPointerException("Location is Null")) // TODO error define.
@@ -162,18 +158,14 @@ class MainViewModel @Inject constructor(
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             geocoder.getFromLocation(location.latitude, location.longitude, maxResults) { geocode ->
                 cancellableContinuation.resume(
-                    Address.get(
-                        geocode = geocode.filterNotNull()
-                    )
+                    Address.get(geocode.filterNotNull())
                 )
             }
         } else {
             @Suppress("DEPRECATION")
             geocoder.getFromLocation(location.latitude, location.longitude, maxResults)?.let { geocode ->
                 cancellableContinuation.resume(
-                    Address.get(
-                        geocode.filterNotNull()
-                    )
+                    Address.get(geocode.filterNotNull())
                 )
             } ?: cancellableContinuation.resume(null)
         }
