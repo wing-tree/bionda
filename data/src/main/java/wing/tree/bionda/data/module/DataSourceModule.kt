@@ -1,8 +1,10 @@
 package wing.tree.bionda.data.module
 
+import android.content.Context
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import wing.tree.bionda.data.database.Database
 import wing.tree.bionda.data.service.MidFcstInfoService
@@ -23,9 +25,11 @@ object DataSourceModule {
 
     @Provides
     fun providesLocalDataSource(
+        @ApplicationContext context: Context,
         database: Database
     ): LocalDataSource {
         return LocalDataSource(
+            context = context,
             midLandFcstDao = database.midLandFcstDao(),
             midTaDao = database.midTaDao(),
             vilageFcstDao = database.vilageFcstDao()

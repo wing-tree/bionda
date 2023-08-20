@@ -48,7 +48,6 @@ class LocationProvider(private val context: Context)  {
                 getCurrentLocation(currentLocationRequest)
             }.ifFailure {
                 Timber.e(it)
-
                 getCurrentLocation(currentLocationRequest)
             }
 
@@ -60,19 +59,16 @@ class LocationProvider(private val context: Context)  {
                             getLastLocation(lastLocationRequest)
                         }.ifFailure {
                             Timber.e(it)
-
                             getLastLocation(lastLocationRequest)
                         }
                 }
             is Result.Complete.Failure -> {
                 Timber.e(currentLocation.throwable)
-
                 getLastLocation()
                     .ifNull {
                         getLastLocation(lastLocationRequest)
                     }.ifFailure {
                         Timber.e(it)
-
                         getLastLocation(lastLocationRequest)
                     }
             }
@@ -99,11 +95,9 @@ class LocationProvider(private val context: Context)  {
             settingsClient.checkLocationSettings(locationSettingsRequest)
                 .addOnCanceledListener {
                     it.resume(Result.Complete.Failure(OnCanceledException))
-                }
-                .addOnFailureListener { exception ->
+                }.addOnFailureListener { exception ->
                     it.resume(Result.Complete.Failure(exception))
-                }
-                .addOnSuccessListener { locationSettingsResponse ->
+                }.addOnSuccessListener { locationSettingsResponse ->
                     it.resume(Result.Complete.Success(locationSettingsResponse))
                 }
         }
@@ -118,11 +112,9 @@ class LocationProvider(private val context: Context)  {
             )
                 .addOnCanceledListener {
                     it.resume(Result.Complete.Failure(OnCanceledException))
-                }
-                .addOnFailureListener { exception ->
+                }.addOnFailureListener { exception ->
                     it.resume(Result.Complete.Failure(exception))
-                }
-                .addOnSuccessListener { location ->
+                }.addOnSuccessListener { location ->
                     it.resume(Result.Complete.Success(location))
                 }
         }
@@ -135,14 +127,11 @@ class LocationProvider(private val context: Context)  {
                 .getCurrentLocation(
                     currentLocationRequest,
                     null
-                )
-                .addOnCanceledListener {
+                ).addOnCanceledListener {
                     it.resume(Result.Complete.Failure(OnCanceledException))
-                }
-                .addOnFailureListener { exception ->
+                }.addOnFailureListener { exception ->
                     it.resume(Result.Complete.Failure(exception))
-                }
-                .addOnSuccessListener { location ->
+                }.addOnSuccessListener { location ->
                     it.resume(Result.Complete.Success(location))
                 }
         }
@@ -154,11 +143,9 @@ class LocationProvider(private val context: Context)  {
             fusedLocationProviderClient.lastLocation
                 .addOnCanceledListener {
                     it.resume(Result.Complete.Failure(OnCanceledException))
-                }
-                .addOnFailureListener { exception ->
+                }.addOnFailureListener { exception ->
                     it.resume(Result.Complete.Failure(exception))
-                }
-                .addOnSuccessListener { location ->
+                }.addOnSuccessListener { location ->
                     it.resume(Result.Complete.Success(location))
                 }
         }
@@ -170,11 +157,9 @@ class LocationProvider(private val context: Context)  {
             fusedLocationProviderClient.getLastLocation(lastLocationRequest)
                 .addOnCanceledListener {
                     it.resume(Result.Complete.Failure(OnCanceledException))
-                }
-                .addOnFailureListener { exception ->
+                }.addOnFailureListener { exception ->
                     it.resume(Result.Complete.Failure(exception))
-                }
-                .addOnSuccessListener { location ->
+                }.addOnSuccessListener { location ->
                     it.resume(Result.Complete.Success(location))
                 }
         }
