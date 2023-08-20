@@ -1,4 +1,4 @@
-package wing.tree.bionda.view.compose.composable
+package wing.tree.bionda.view.compose.composable.alarm
 
 import android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
 import android.Manifest.permission.POST_NOTIFICATIONS

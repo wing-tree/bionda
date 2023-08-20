@@ -1,4 +1,4 @@
-package wing.tree.bionda.view.compose.composable
+package wing.tree.bionda.view.compose.composable.weather
 
 import android.graphics.PointF
 import android.icu.text.SimpleDateFormat

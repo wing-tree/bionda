@@ -64,9 +64,9 @@ import wing.tree.bionda.permissions.PermissionChecker
 import wing.tree.bionda.permissions.RequestMultiplePermissions
 import wing.tree.bionda.permissions.locationPermissions
 import wing.tree.bionda.theme.BiondaTheme
-import wing.tree.bionda.view.compose.composable.Alarm
+import wing.tree.bionda.view.compose.composable.alarm.Alarm
 import wing.tree.bionda.view.compose.composable.SingleChoiceSegmentedButtonRow
-import wing.tree.bionda.view.compose.composable.Weather
+import wing.tree.bionda.view.compose.composable.weather.Weather
 import wing.tree.bionda.view.model.MainViewModel
 import wing.tree.bionda.view.state.AlarmState.Action
 

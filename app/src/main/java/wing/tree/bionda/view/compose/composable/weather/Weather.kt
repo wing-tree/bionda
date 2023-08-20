@@ -1,4 +1,4 @@
-package wing.tree.bionda.view.compose.composable
+package wing.tree.bionda.view.compose.composable.weather
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth

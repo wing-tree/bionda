@@ -1,4 +1,4 @@
-package wing.tree.bionda.view.compose.composable
+package wing.tree.bionda.view.compose.composable.weather
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
@@ -30,6 +30,9 @@ import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.data.model.Address
 import wing.tree.bionda.model.Forecast
 import wing.tree.bionda.model.WindowSizeClass
+import wing.tree.bionda.view.compose.composable.core.Loading
+import wing.tree.bionda.view.compose.composable.core.TextClock
+import wing.tree.bionda.view.compose.composable.core.VerticalSpacer
 import wing.tree.bionda.view.state.VilageFcstState
 
 @Composable

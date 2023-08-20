@@ -1,4 +1,4 @@
-package wing.tree.bionda.view.compose.composable
+package wing.tree.bionda.view.compose.composable.weather
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn

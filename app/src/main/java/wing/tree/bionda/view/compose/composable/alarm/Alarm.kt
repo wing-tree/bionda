@@ -1,4 +1,4 @@
-package wing.tree.bionda.view.compose.composable
+package wing.tree.bionda.view.compose.composable.alarm
 
 import android.icu.text.SimpleDateFormat
 import androidx.compose.animation.AnimatedContent
@@ -55,6 +55,8 @@ import wing.tree.bionda.data.model.Alarm
 import wing.tree.bionda.data.regular.koreaCalendar
 import wing.tree.bionda.extension.zero
 import wing.tree.bionda.model.WindowSizeClass
+import wing.tree.bionda.view.compose.composable.core.HorizontalSpacer
+import wing.tree.bionda.view.compose.composable.core.Loading
 import wing.tree.bionda.view.state.AlarmState
 import wing.tree.bionda.view.state.AlarmState.Action
 import java.util.Locale
