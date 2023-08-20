@@ -5,6 +5,9 @@ import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 import wing.tree.bionda.data.model.Address
 import wing.tree.bionda.data.model.Alarm
+import wing.tree.bionda.data.model.MidLandFcst
+import wing.tree.bionda.data.model.MidTa
+import wing.tree.bionda.data.model.Result
 import wing.tree.bionda.model.Forecast
 
 data class MainState(
@@ -60,14 +63,40 @@ sealed interface AlarmState {
     }
 }
 
-sealed interface WeatherState {
-    object Loading : WeatherState
+data class WeatherState(
+    val midLandFcstTaState: MidLandFcstTaState,
+    val vilageFcstState: VilageFcstState
+) {
+    companion object {
+        val initialValue = WeatherState(
+            midLandFcstTaState = MidLandFcstTaState.initialValue,
+            vilageFcstState = VilageFcstState.initialValue
+        )
+    }
+}
+
+sealed interface MidLandFcstTaState {
+    object Loading : MidLandFcstTaState
+    data class Content(
+        val midLandFcst: Result.Complete<MidLandFcst.Local>,
+        val midTa: Result.Complete<MidTa.Local>
+    ) : MidLandFcstTaState
+
+    data class Error(val throwable: Throwable) : MidLandFcstTaState
+
+    companion object {
+        val initialValue = Loading
+    }
+}
+
+sealed interface VilageFcstState {
+    object Loading : VilageFcstState
     data class Content(
         val address: Address?,
         val forecast: Forecast
-    ) : WeatherState
+    ) : VilageFcstState
 
-    data class Error(val throwable: Throwable) : WeatherState
+    data class Error(val throwable: Throwable) : VilageFcstState
 
     companion object {
         val initialValue = Loading

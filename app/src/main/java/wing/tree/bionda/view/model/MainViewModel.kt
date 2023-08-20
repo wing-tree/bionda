@@ -31,8 +31,10 @@ import wing.tree.bionda.data.extension.negativeOne
 import wing.tree.bionda.data.extension.ten
 import wing.tree.bionda.data.model.Address
 import wing.tree.bionda.data.model.Alarm
+import wing.tree.bionda.data.model.MidLandFcstTa
 import wing.tree.bionda.data.model.Result
 import wing.tree.bionda.data.model.Result.Complete
+import wing.tree.bionda.data.model.VilageFcst
 import wing.tree.bionda.data.provider.LocationProvider
 import wing.tree.bionda.data.repository.AlarmRepository
 import wing.tree.bionda.data.repository.WeatherRepository
@@ -44,6 +46,8 @@ import wing.tree.bionda.permissions.locationPermissions
 import wing.tree.bionda.scheduler.AlarmScheduler
 import wing.tree.bionda.view.state.AlarmState
 import wing.tree.bionda.view.state.MainState
+import wing.tree.bionda.view.state.MidLandFcstTaState
+import wing.tree.bionda.view.state.VilageFcstState
 import wing.tree.bionda.view.state.WeatherState
 import java.util.Locale
 import javax.inject.Inject
@@ -60,32 +64,41 @@ class MainViewModel @Inject constructor(
     private val location = MutableStateFlow<Result<Location?>>(Result.Loading)
     private val requestPermissions = MutableStateFlow<ImmutableSet<String>>(persistentSetOf())
     private val stopTimeoutMillis = Long.fiveSecondsInMilliseconds
-    private val weatherState = location.map {
+    private val midLandFcstTaState = location.map {
         when (it) {
-            Result.Loading -> WeatherState.Loading
+            Result.Loading -> MidLandFcstTaState.Loading
             is Complete.Success -> it.data?.let { location ->
-                val (nx, ny) = location.toCoordinate()
-                val address = getAddress(location)
+                weatherRepository
+                    .getMidLandFcstTa(location)
+                    .asState()
+            } ?: MidLandFcstTaState.Error(NullPointerException("Location is Null")) // TODO error define.
 
-                when (val weather = weatherRepository.getVilageFcst(nx = nx, ny = ny)) {
-                    Result.Loading -> WeatherState.Loading
-                    is Complete -> when (weather) {
-                        is Complete.Success -> WeatherState.Content(
-                            address = address,
-                            forecast = Forecast.toPresentationModel(weather.data)
-                        )
-
-                        is Complete.Failure -> WeatherState.Error(weather.throwable)
-                    }
-                }
-            } ?: WeatherState.Error(NullPointerException("Location is Null")) // TODO error define.
-
-            is Complete.Failure -> WeatherState.Error(it.throwable)
+            is Complete.Failure -> MidLandFcstTaState.Error(it.throwable)
         }
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(stopTimeoutMillis),
-        initialValue = WeatherState.initialValue
+        initialValue = MidLandFcstTaState.initialValue
+    )
+
+    private val vilageFcstState = location.map {
+        when (it) {
+            Result.Loading -> VilageFcstState.Loading
+            is Complete.Success -> it.data?.let { location ->
+                val (nx, ny) = location.toCoordinate()
+                val address = getAddress(location)
+
+                weatherRepository
+                    .getVilageFcst(nx = nx, ny = ny)
+                    .asState(address)
+            } ?: VilageFcstState.Error(NullPointerException("Location is Null")) // TODO error define.
+
+            is Complete.Failure -> VilageFcstState.Error(it.throwable)
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(stopTimeoutMillis),
+        initialValue = VilageFcstState.initialValue
     )
 
     val inSelectionMode = MutableStateFlow(false)
@@ -132,6 +145,20 @@ class MainViewModel @Inject constructor(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(stopTimeoutMillis),
         initialValue = AlarmState.initialValue
+    )
+
+    private val weatherState = combine(
+        midLandFcstTaState,
+        vilageFcstState
+    ) { midLandFcstTaState, vilageFcstState ->
+        WeatherState(
+            midLandFcstTaState = midLandFcstTaState,
+            vilageFcstState = vilageFcstState
+        )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(stopTimeoutMillis),
+        initialValue = WeatherState.initialValue
     )
 
     val state: StateFlow<MainState> = combine(
@@ -226,12 +253,11 @@ class MainViewModel @Inject constructor(
     fun load() {
         locationPermissions.any {
             checkSelfPermission(it)
-        }
-            .ifTrue {
-                viewModelScope.launch {
-                    location.value = locationProvider.getLocation()
-                }
+        }.ifTrue {
+            viewModelScope.launch {
+                location.value = locationProvider.getLocation()
             }
+        }
     }
 
     fun notifyPermissionsDenied(permissions: Collection<String>) {
@@ -282,6 +308,24 @@ class MainViewModel @Inject constructor(
                 alarmScheduler.cancel(alarm)
             }
         }
+    }
+
+    private fun Complete<MidLandFcstTa>.asState(): MidLandFcstTaState = when (this) {
+        is Complete.Success -> MidLandFcstTaState.Content(
+            midLandFcst = data.midLandFcst,
+            midTa = data.midTa
+        )
+
+        is Complete.Failure -> MidLandFcstTaState.Error(throwable)
+    }
+
+    private fun Complete<VilageFcst.Local>.asState(address: Address?): VilageFcstState = when (this) {
+        is Complete.Success -> VilageFcstState.Content(
+            address = address,
+            forecast = Forecast.toPresentationModel(data)
+        )
+
+        is Complete.Failure -> VilageFcstState.Error(throwable)
     }
 
     private fun StateFlow<AlarmState>.selected(): List<Alarm> = with(value) {

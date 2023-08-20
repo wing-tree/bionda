@@ -1,11 +1,16 @@
 package wing.tree.bionda.data.repository
 
+import android.location.Location
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.withContext
 import wing.tree.bionda.data.BuildConfig
 import wing.tree.bionda.data.extension.isNull
 import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.model.MidLandFcst
+import wing.tree.bionda.data.model.MidLandFcstTa
 import wing.tree.bionda.data.model.MidTa
-import wing.tree.bionda.data.model.Result
 import wing.tree.bionda.data.model.Result.Complete
 import wing.tree.bionda.data.model.VilageFcst
 import wing.tree.bionda.data.model.calendar.BaseCalendar
@@ -17,11 +22,11 @@ class WeatherRepository(
     private val localDataSource: LocalDataSource,
     private val remoteDataSource: RemoteDataSource
 ) {
-    suspend fun getMidLandFcst(regId: String): Result<MidLandFcst.Local> {
-        val tmFcCalendar = TmFcCalendar()
-        val tmFc = tmFcCalendar.tmFc
+    private val ioDispatcher = Dispatchers.IO
 
+    private suspend fun getMidLandFcst(regId: String, tmFcCalendar: TmFcCalendar): Complete<MidLandFcst.Local> {
         return try {
+            val tmFc = tmFcCalendar.tmFc
             val local = localDataSource.loadMidLandFcst(
                 regId = regId,
                 tmFc = tmFc
@@ -55,11 +60,9 @@ class WeatherRepository(
         }
     }
 
-    suspend fun getMidTa(regId: String): Result<MidTa.Local> {
-        val tmFcCalendar = TmFcCalendar()
-        val tmFc = tmFcCalendar.tmFc
-
+    private suspend fun getMidTa(regId: String, tmFcCalendar: TmFcCalendar): Complete<MidTa.Local> {
         return try {
+            val tmFc = tmFcCalendar.tmFc
             val local = localDataSource.loadMidTa(
                 regId = regId,
                 tmFc = tmFc
@@ -93,15 +96,41 @@ class WeatherRepository(
         }
     }
 
+    suspend fun getMidLandFcstTa(location: Location): Complete<MidLandFcstTa> = coroutineScope {
+        val regId = withContext(ioDispatcher) {
+            localDataSource.getRegId(location) ?: DEFAULT_REG_ID
+        }
+
+        val tmFcCalendar = TmFcCalendar()
+        val midLandFcst = async {
+            getMidLandFcst(regId = regId, tmFcCalendar = tmFcCalendar)
+        }
+
+        val midTa = async {
+            getMidTa(regId = regId, tmFcCalendar = tmFcCalendar)
+        }
+
+        try {
+            val midLandFcstTa = MidLandFcstTa(
+                midLandFcst.await(),
+                midTa.await()
+            )
+
+            Complete.Success(midLandFcstTa)
+        } catch (throwable: Throwable) {
+            Complete.Failure(throwable)
+        }
+    }
+
     suspend fun getVilageFcst(
         nx: Int,
         ny: Int
-    ): Result<VilageFcst.Local> {
+    ): Complete<VilageFcst.Local> {
         return try {
             val baseCalendar = BaseCalendar()
             val baseDate = baseCalendar.baseDate
             val baseTime = baseCalendar.baseTime
-            val vilageFcst = localDataSource.load(
+            val vilageFcst = localDataSource.loadVilageFcst(
                 baseDate = baseDate,
                 baseTime = baseTime,
                 nx = nx,
@@ -117,7 +146,7 @@ class WeatherRepository(
                 ny = ny
             ).let { remote ->
                 val previous = baseCalendar.previous().let {
-                    localDataSource.load(
+                    localDataSource.loadVilageFcst(
                         baseDate = it.baseDate,
                         baseTime = it.baseDate,
                         nx = nx,
@@ -142,6 +171,7 @@ class WeatherRepository(
     }
 
     companion object {
-        const val DATA_TYPE = "JSON"
+        private const val DATA_TYPE = "JSON"
+        private const val DEFAULT_REG_ID = "11B10101"
     }
 }

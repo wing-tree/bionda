@@ -5,7 +5,7 @@ import androidx.room.Ignore
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.serialization.Serializable
-import wing.tree.bionda.data.extension.zero
+import wing.tree.bionda.data.extension.negativeOne
 
 sealed interface MidTa {
     val item: Item
@@ -98,12 +98,12 @@ sealed interface MidTa {
 
         @Ignore
         val ta3 = Ta(
-            min = item.taMin3 ?: Int.zero,
-            minLow = item.taMin3Low ?: Int.zero,
-            minHigh = item.taMin3High ?: Int.zero,
-            max = item.taMax3 ?: Int.zero,
-            maxLow = item.taMax3Low ?: Int.zero,
-            maxHigh = item.taMax3High ?: Int.zero,
+            min = item.taMin3 ?: Int.negativeOne,
+            minLow = item.taMin3Low ?: Int.negativeOne,
+            minHigh = item.taMin3High ?: Int.negativeOne,
+            max = item.taMax3 ?: Int.negativeOne,
+            maxLow = item.taMax3Low ?: Int.negativeOne,
+            maxHigh = item.taMax3High ?: Int.negativeOne,
             n = 3
         )
 
