@@ -86,7 +86,7 @@ class AlarmService : Service(), PermissionChecker {
 
                 when (val location = locationProvider.getLocation()) {
                     is Complete.Success -> {
-                        location.data?.toCoordinate()?.let { (nx, ny) ->
+                        location.value?.toCoordinate()?.let { (nx, ny) ->
                             weatherRepository.getVilageFcst(
                                 nx = nx,
                                 ny = ny

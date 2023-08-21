@@ -12,7 +12,7 @@ import kotlin.contracts.contract
 sealed class Result<out R> {
     object Loading : Result<Nothing>()
     sealed class Complete<out R> : Result<R>() {
-        data class Success<out T>(val data: T) : Complete<T>()
+        data class Success<out T>(val value: T) : Complete<T>()
         data class Failure(val throwable: Throwable) : Complete<Nothing>()
     }
 
@@ -25,7 +25,7 @@ inline fun <R, T> Result<T>.map(transform: (T) -> R): Result<R> {
     return when (this) {
         Loading -> Loading
         is Complete -> when (this) {
-            is Complete.Success -> Complete.Success(transform(data))
+            is Complete.Success -> Complete.Success(transform(value))
             is Complete.Failure -> Complete.Failure(throwable)
         }
     }
@@ -38,7 +38,7 @@ inline fun <T> Result<T>.onSuccess(action: (value: T) -> Unit): Result<T> {
     }
 
     if (this is Complete.Success) {
-        action(data)
+        action(value)
     }
 
     return this
@@ -86,7 +86,7 @@ inline fun <T> Complete<T>.ifNull(defaultValue: () -> Complete<T>): Complete<T> 
     }
 
     if (this is Complete.Success) {
-        if (data.isNull()) {
+        if (value.isNull()) {
             return defaultValue()
         }
     }
@@ -98,6 +98,7 @@ inline fun <T> Complete<T>.ifNull(defaultValue: () -> Complete<T>): Complete<T> 
 fun <T> Complete<T>.isSuccess(): Boolean {
     contract {
         returns(true) implies (this@isSuccess is Complete.Success<T>)
+        returns(false) implies (this@isSuccess is Complete.Failure)
     }
 
     return this is Complete.Success<T>

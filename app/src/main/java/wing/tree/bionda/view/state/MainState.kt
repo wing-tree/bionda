@@ -5,9 +5,7 @@ import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 import wing.tree.bionda.data.model.Address
 import wing.tree.bionda.data.model.Alarm
-import wing.tree.bionda.data.model.MidLandFcst
-import wing.tree.bionda.data.model.MidTa
-import wing.tree.bionda.data.model.Result
+import wing.tree.bionda.data.model.MidLandFcstTa
 import wing.tree.bionda.model.Forecast
 
 data class MainState(
@@ -77,10 +75,7 @@ data class WeatherState(
 
 sealed interface MidLandFcstTaState {
     object Loading : MidLandFcstTaState
-    data class Content(
-        val midLandFcst: Result.Complete<MidLandFcst.Local>,
-        val midTa: Result.Complete<MidTa.Local>
-    ) : MidLandFcstTaState
+    data class Content(val midLandFcstTa: MidLandFcstTa) : MidLandFcstTaState
 
     data class Error(val throwable: Throwable) : MidLandFcstTaState
 

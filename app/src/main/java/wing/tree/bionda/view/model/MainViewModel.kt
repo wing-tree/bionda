@@ -67,7 +67,7 @@ class MainViewModel @Inject constructor(
     private val midLandFcstTaState = location.map {
         when (it) {
             Result.Loading -> MidLandFcstTaState.Loading
-            is Complete.Success -> it.data?.let { location ->
+            is Complete.Success -> it.value?.let { location ->
                 weatherRepository
                     .getMidLandFcstTa(location)
                     .asState()
@@ -84,7 +84,7 @@ class MainViewModel @Inject constructor(
     private val vilageFcstState = location.map {
         when (it) {
             Result.Loading -> VilageFcstState.Loading
-            is Complete.Success -> it.data?.let { location ->
+            is Complete.Success -> it.value?.let { location ->
                 val (nx, ny) = location.toCoordinate()
                 val address = getAddress(location)
 
@@ -132,7 +132,7 @@ class MainViewModel @Inject constructor(
         when (alarm) {
             is Complete.Success -> AlarmState.Content(
                 requestPermissions = requestPermissions,
-                alarms = alarm.data,
+                alarms = alarm.value,
                 selected = selected
             )
 
@@ -311,18 +311,14 @@ class MainViewModel @Inject constructor(
     }
 
     private fun Complete<MidLandFcstTa>.asState(): MidLandFcstTaState = when (this) {
-        is Complete.Success -> MidLandFcstTaState.Content(
-            midLandFcst = data.midLandFcst,
-            midTa = data.midTa
-        )
-
+        is Complete.Success -> MidLandFcstTaState.Content(midLandFcstTa = value)
         is Complete.Failure -> MidLandFcstTaState.Error(throwable)
     }
 
     private fun Complete<VilageFcst.Local>.asState(address: Address?): VilageFcstState = when (this) {
         is Complete.Success -> VilageFcstState.Content(
             address = address,
-            forecast = Forecast.toPresentationModel(data)
+            forecast = Forecast.toPresentationModel(value)
         )
 
         is Complete.Failure -> VilageFcstState.Error(throwable)

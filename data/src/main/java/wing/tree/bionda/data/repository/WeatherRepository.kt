@@ -10,6 +10,7 @@ import wing.tree.bionda.data.extension.isNull
 import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.model.MidLandFcst
 import wing.tree.bionda.data.model.MidLandFcstTa
+import wing.tree.bionda.data.model.MidLandFcstTa.Companion.MidLandFcstTa
 import wing.tree.bionda.data.model.MidTa
 import wing.tree.bionda.data.model.Result.Complete
 import wing.tree.bionda.data.model.VilageFcst
