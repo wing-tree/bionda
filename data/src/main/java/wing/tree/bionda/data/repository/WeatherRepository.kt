@@ -98,25 +98,33 @@ class WeatherRepository(
     }
 
     suspend fun getMidLandFcstTa(location: Location): Complete<MidLandFcstTa> = coroutineScope {
-        val fcstZoneCd = withContext(ioDispatcher) {
-            localDataSource.getFcstZoneCd(location)
-        }
-
-        val regId = fcstZoneCd?.regId ?: DEFAULT_REG_ID
-        val regUp = fcstZoneCd?.regUp ?: DEFAULT_REG_UP
-        val tmFcCalendar = TmFcCalendar()
-        val midLandFcst = async {
-            getMidLandFcst(regId = regUp, tmFcCalendar = tmFcCalendar)
-        }
-
-        val midTa = async {
-            getMidTa(regId = regId, tmFcCalendar = tmFcCalendar)
-        }
-
         try {
+            val fcstZoneCd = withContext(ioDispatcher) {
+                localDataSource.getFcstZoneCd(location)
+            }
+
+            val regId = fcstZoneCd?.regId ?: DEFAULT_REG_ID
+            val regUp = fcstZoneCd?.regUp ?: DEFAULT_REG_UP
+            val tmFcCalendar = TmFcCalendar()
+            val midLandFcst = async {
+                getMidLandFcst(regId = regUp, tmFcCalendar = tmFcCalendar)
+            }
+
+            val midTa = async {
+                getMidTa(regId = regId, tmFcCalendar = tmFcCalendar)
+            }
+
             val midLandFcstTa = MidLandFcstTa(
-                midLandFcst.await(),
-                midTa.await()
+                midLandFcst = try {
+                    midLandFcst.await()
+                } catch (throwable: Throwable) {
+                    Complete.Failure(throwable)
+                },
+                midTa = try {
+                    midTa.await()
+                } catch (throwable: Throwable) {
+                    Complete.Failure(throwable)
+                }
             )
 
             Complete.Success(midLandFcstTa)

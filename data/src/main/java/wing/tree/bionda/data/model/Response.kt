@@ -1,16 +1,31 @@
 package wing.tree.bionda.data.model
 
 import kotlinx.serialization.Serializable
+import wing.tree.bionda.data.exception.OpenApiError
+import wing.tree.bionda.data.extension.empty
+import wing.tree.bionda.data.extension.not
+import wing.tree.bionda.data.extension.zero
 
 @Serializable
 data class Response<T>(
     val header: Header,
-    val body: Body<T>
-)
+    val body: Body<T> = Body.nothing()
+) {
+    private val isUnsuccessful: Boolean get() = header.resultCode not OpenApiError.ERROR_CODE_00
+
+    fun validateResultCode() {
+        if (isUnsuccessful) {
+            throw OpenApiError(
+                errorCode = header.resultCode,
+                errorMsg = header.resultMsg
+            )
+        }
+    }
+}
 
 @Serializable
 data class Header(
-    val resultCode: Int,
+    val resultCode: String,
     val resultMsg: String
 )
 
@@ -21,9 +36,19 @@ data class Body<T>(
     val numOfRows: Int,
     val pageNo: Int,
     val totalCount: Int
-)
+) {
+    companion object {
+        fun <T> nothing() = Body<T>(
+            dataType = String.empty,
+            items = Items(),
+            numOfRows = Int.zero,
+            pageNo = Int.zero,
+            totalCount = Int.zero
+        )
+    }
+}
 
 @Serializable
 data class Items<T>(
-    val item: List<T>
+    val item: List<T> = emptyList()
 )
