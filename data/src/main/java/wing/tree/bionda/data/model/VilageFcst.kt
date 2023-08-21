@@ -9,6 +9,7 @@ import wing.tree.bionda.data.extension.string
 import wing.tree.bionda.data.extension.two
 import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.data.regular.koreaCalendar
+import wing.tree.bionda.data.validator.ResponseValidator
 
 sealed interface VilageFcst {
     val items: List<Item>
@@ -65,6 +66,10 @@ sealed interface VilageFcst {
     data class Remote(
         val response: Response<Item>
     ) : VilageFcst {
+        init {
+            ResponseValidator.validate(response)
+        }
+
         override val items: List<Item> get() = response.body.items.item
         override val nx: Int = items.firstOrNull()?.nx ?: Int.zero
         override val ny: Int = items.firstOrNull()?.ny ?: Int.zero

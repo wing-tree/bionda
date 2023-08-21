@@ -6,6 +6,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.serialization.Serializable
 import wing.tree.bionda.data.extension.negativeOne
+import wing.tree.bionda.data.validator.ResponseValidator
 
 sealed interface MidTa {
     val item: Item
@@ -192,6 +193,10 @@ sealed interface MidTa {
 
     @Serializable
     data class Remote(val response: Response<Item>) : MidTa {
+        init {
+            ResponseValidator.validate(response)
+        }
+
         override val item: Item = response.body.items.item.first()
 
         fun toLocal(tmFc: String) = Local(

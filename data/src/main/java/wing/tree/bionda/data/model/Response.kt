@@ -11,16 +11,7 @@ data class Response<T>(
     val header: Header,
     val body: Body<T> = Body.nothing()
 ) {
-    private val isUnsuccessful: Boolean get() = header.resultCode not OpenApiError.ERROR_CODE_00
-
-    fun validateResultCode() {
-        if (isUnsuccessful) {
-            throw OpenApiError(
-                errorCode = header.resultCode,
-                errorMsg = header.resultMsg
-            )
-        }
-    }
+    val isUnsuccessful: Boolean get() = header.resultCode not OpenApiError.ERROR_CODE_00
 }
 
 @Serializable

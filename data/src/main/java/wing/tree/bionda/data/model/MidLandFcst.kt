@@ -5,6 +5,7 @@ import androidx.room.Ignore
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.serialization.Serializable
+import wing.tree.bionda.data.validator.ResponseValidator
 
 sealed interface MidLandFcst {
     val item: Item
@@ -167,6 +168,10 @@ sealed interface MidLandFcst {
     data class Remote(
         val response: Response<Item>
     ) : MidLandFcst {
+        init {
+            ResponseValidator.validate(response)
+        }
+
         override val item: Item = response.body.items.item.first()
 
         fun toLocal(tmFc: String) = Local(
