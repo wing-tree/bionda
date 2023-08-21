@@ -98,13 +98,15 @@ class WeatherRepository(
     }
 
     suspend fun getMidLandFcstTa(location: Location): Complete<MidLandFcstTa> = coroutineScope {
-        val regId = withContext(ioDispatcher) {
-            localDataSource.getRegId(location) ?: DEFAULT_REG_ID
+        val fcstZoneCd = withContext(ioDispatcher) {
+            localDataSource.getFcstZoneCd(location)
         }
 
+        val regId = fcstZoneCd?.regId ?: DEFAULT_REG_ID
+        val regUp = fcstZoneCd?.regUp ?: DEFAULT_REG_UP
         val tmFcCalendar = TmFcCalendar()
         val midLandFcst = async {
-            getMidLandFcst(regId = regId, tmFcCalendar = tmFcCalendar)
+            getMidLandFcst(regId = regUp, tmFcCalendar = tmFcCalendar)
         }
 
         val midTa = async {
@@ -174,5 +176,6 @@ class WeatherRepository(
     companion object {
         private const val DATA_TYPE = "JSON"
         private const val DEFAULT_REG_ID = "11B10101"
+        private const val DEFAULT_REG_UP = "11B00000"
     }
 }

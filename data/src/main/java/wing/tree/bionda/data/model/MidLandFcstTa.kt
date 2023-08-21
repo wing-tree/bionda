@@ -1,18 +1,25 @@
 package wing.tree.bionda.data.model
 
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import wing.tree.bionda.data.model.Result.Complete
-import wing.tree.bionda.data.model.MidLandFcst as LandFcst
-import wing.tree.bionda.data.model.MidTa as Ta
+import wing.tree.bionda.data.model.MidLandFcst.Local as LandFcst
+import wing.tree.bionda.data.model.MidTa.Local as Ta
 
 sealed interface MidLandFcstTa {
     data class BothSuccess(
-        val midLandFcst: LandFcst.Local,
-        val midTa: Ta.Local
-    ) : MidLandFcstTa
+        val midLandFcst: LandFcst,
+        val midTa: Ta
+    ) : MidLandFcstTa {
+        val items: ImmutableList<Pair<LandFcst.Item, Ta.Ta>> = midLandFcst.items
+            .sortedBy(LandFcst.Item::n)
+            .zip(midTa.tas.sortedBy(Ta.Ta::n))
+            .toImmutableList()
+    }
 
     sealed interface OneOfSuccess : MidLandFcstTa {
-        data class MidLandFcst(val midLandFcst: LandFcst.Local) : OneOfSuccess
-        data class MidTa(val midTa: Ta.Local) : OneOfSuccess
+        data class MidLandFcst(val midLandFcst: LandFcst) : OneOfSuccess
+        data class MidTa(val midTa: Ta) : OneOfSuccess
     }
 
     data class BothFailure(
@@ -22,8 +29,8 @@ sealed interface MidLandFcstTa {
 
     companion object {
         fun MidLandFcstTa(
-            midLandFcst: Complete<LandFcst.Local>,
-            midTa: Complete<Ta.Local>
+            midLandFcst: Complete<LandFcst>,
+            midTa: Complete<Ta>
         ): MidLandFcstTa {
             return when {
                 midLandFcst.isSuccess() && midTa.isSuccess() -> BothSuccess(

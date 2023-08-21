@@ -49,11 +49,10 @@ class WeatherDataSource(
 
     private val supervisorScope = CoroutineScope(Dispatchers.IO.plus(SupervisorJob()))
 
-    fun getRegId(location: Location): String? {
+    fun getFcstZoneCd(location: Location): FcstZoneCd.Item? {
         return fcstZoneCd.items.minByOrNull {
             location.haversine(LatLon(lat = it.lat, lon = it.lon))
         }
-            ?.regId
     }
 
     fun cache(midLandFcst: MidLandFcst) {

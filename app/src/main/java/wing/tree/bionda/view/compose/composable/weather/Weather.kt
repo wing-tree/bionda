@@ -1,6 +1,7 @@
 package wing.tree.bionda.view.compose.composable.weather
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -18,6 +19,11 @@ fun Weather(
             state = state.vilageFcstState,
             windowSizeClass = windowSizeClass,
             modifier = Modifier.fillMaxWidth()
+        )
+
+        MidLandFcstTa(
+            state = state.midLandFcstTaState,
+            modifier = Modifier.fillMaxSize()
         )
     }
 }
