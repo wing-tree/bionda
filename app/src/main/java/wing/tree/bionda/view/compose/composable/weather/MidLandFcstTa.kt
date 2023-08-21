@@ -17,13 +17,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import wing.tree.bionda.data.extension.empty
 import wing.tree.bionda.data.extension.isNull
-import wing.tree.bionda.data.model.MidLandFcst.Local as MidLandFcst
 import wing.tree.bionda.data.model.MidLandFcstTa.BothFailure
 import wing.tree.bionda.data.model.MidLandFcstTa.BothSuccess
 import wing.tree.bionda.data.model.MidLandFcstTa.OneOfSuccess
-import wing.tree.bionda.data.model.MidTa.Local as MidTa
 import wing.tree.bionda.view.compose.composable.core.Loading
 import wing.tree.bionda.view.state.MidLandFcstTaState
+import wing.tree.bionda.data.model.MidLandFcst.Local as MidLandFcst
+import wing.tree.bionda.data.model.MidTa.Local as MidTa
 
 @Composable
 fun MidLandFcstTa(
@@ -82,14 +82,16 @@ private fun BothSuccess(
 
 @Composable
 private fun Item(
-    item: Pair<MidLandFcst.Item, MidTa.Ta>,
+    item: Pair<MidLandFcst.LandFcst, MidTa.Ta>,
     modifier: Modifier = Modifier
 ) {
+    val (landFcst, ta) = item
+
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Item(item = item.first)
+        LandFcst(landFcst = landFcst)
     }
 }
 
@@ -110,52 +112,47 @@ private fun BothFailure(
 }
 
 @Composable
-private fun Item(
-    item: MidLandFcst.Item,
+private fun LandFcst(
+    landFcst: MidLandFcst.LandFcst,
     modifier: Modifier = Modifier
 ) {
-    val rnStAm = item.rnStAm
-    val rnStPm = item.rnStPm
-    val rnSt = item.rnSt
-    val wfAm = item.wfAm
-    val wfPm = item.wfPm
-    val wf = item.wf
-
-    Column {
-        Row(
-            modifier = modifier,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            wfAm?.let {
-                Text(text = it)
-            }
-
-            wfPm?.let {
-                Text(text = it)
-            }
-
-            if (wfAm.isNull()) {
-                wf?.let {
+    with(landFcst) {
+        Column {
+            Row(
+                modifier = modifier,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                wfAm?.let {
                     Text(text = it)
                 }
-            }
-        }
 
-        Row(
-            modifier = modifier,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            rnStAm?.let {
-                Text(text = "$it")
-            }
+                wfPm?.let {
+                    Text(text = it)
+                }
 
-            rnStPm?.let {
-                Text(text = "$it")
+                if (wfAm.isNull()) {
+                    wf?.let {
+                        Text(text = it)
+                    }
+                }
             }
 
-            if (rnStAm.isNull()) {
-                rnSt?.let {
+            Row(
+                modifier = modifier,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                rnStAm?.let {
                     Text(text = "$it")
+                }
+
+                rnStPm?.let {
+                    Text(text = "$it")
+                }
+
+                if (rnStAm.isNull()) {
+                    rnSt?.let {
+                        Text(text = "$it")
+                    }
                 }
             }
         }

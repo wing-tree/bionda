@@ -11,8 +11,8 @@ sealed interface MidLandFcstTa {
         val midLandFcst: LandFcst,
         val midTa: Ta
     ) : MidLandFcstTa {
-        val items: ImmutableList<Pair<LandFcst.Item, Ta.Ta>> = midLandFcst.items
-            .sortedBy(LandFcst.Item::n)
+        val items: ImmutableList<Pair<MidLandFcst.Local.LandFcst, Ta.Ta>> = midLandFcst.landFcsts
+            .sortedBy(LandFcst.LandFcst::n)
             .zip(midTa.tas.sortedBy(Ta.Ta::n))
             .toImmutableList()
     }

@@ -43,7 +43,7 @@ sealed interface MidLandFcst {
 
     @Entity("mid_land_fcst", primaryKeys = ["regId", "tmFc"])
     data class Local(
-        override val item: MidLandFcst.Item,
+        override val item: Item,
         val regId: String = item.regId,
         val tmFc: String
     ) : MidLandFcst {
@@ -60,7 +60,7 @@ sealed interface MidLandFcst {
             }
         }
 
-        data class Item(
+        data class LandFcst(
             val n: Int,
             val rnStAm: Int?,
             val rnStPm: Int?,
@@ -71,7 +71,7 @@ sealed interface MidLandFcst {
         )
 
         @Ignore
-        val item3 = Item(
+        val landFcst3 = LandFcst(
             n = 3,
             rnStAm = item.rnSt3Am,
             rnStPm = item.rnSt3Pm,
@@ -82,7 +82,7 @@ sealed interface MidLandFcst {
         )
 
         @Ignore
-        val item4 = Item(
+        val landFcst4 = LandFcst(
             n = 4,
             rnStAm = item.rnSt4Am,
             rnStPm = item.rnSt4Pm,
@@ -93,7 +93,7 @@ sealed interface MidLandFcst {
         )
 
         @Ignore
-        val item5 = Item(
+        val landFcst5 = LandFcst(
             n = 5,
             rnStAm = item.rnSt5Am,
             rnStPm = item.rnSt5Pm,
@@ -104,7 +104,7 @@ sealed interface MidLandFcst {
         )
 
         @Ignore
-        val item6 = Item(
+        val landFcst6 = LandFcst(
             n = 6,
             rnStAm = item.rnSt6Am,
             rnStPm = item.rnSt6Pm,
@@ -115,7 +115,7 @@ sealed interface MidLandFcst {
         )
 
         @Ignore
-        val item7 = Item(
+        val landFcst7 = LandFcst(
             n = 7,
             rnStAm = item.rnSt7Am,
             rnStPm = item.rnSt7Pm,
@@ -126,7 +126,7 @@ sealed interface MidLandFcst {
         )
 
         @Ignore
-        val item8 = Item(
+        val landFcst8 = LandFcst(
             n = 8,
             rnStAm = null,
             rnStPm = null,
@@ -137,7 +137,7 @@ sealed interface MidLandFcst {
         )
 
         @Ignore
-        val item9 = Item(
+        val landFcst9 = LandFcst(
             n = 9,
             rnStAm = null,
             rnStPm = null,
@@ -148,7 +148,7 @@ sealed interface MidLandFcst {
         )
 
         @Ignore
-        val item10 = Item(
+        val landFcst10 = LandFcst(
             n = 10,
             rnStAm = null,
             rnStPm = null,
@@ -159,8 +159,8 @@ sealed interface MidLandFcst {
         )
 
         @Ignore
-        val items: ImmutableList<Item> = persistentListOf(
-            item3, item4, item5, item6, item7, item8, item9, item10
+        val landFcsts: ImmutableList<LandFcst> = persistentListOf(
+            landFcst3, landFcst4, landFcst5, landFcst6, landFcst7, landFcst8, landFcst9, landFcst10
         )
     }
 
