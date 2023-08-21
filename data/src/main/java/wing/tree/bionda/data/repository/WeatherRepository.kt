@@ -4,7 +4,6 @@ import android.location.Location
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.withContext
 import wing.tree.bionda.data.BuildConfig
 import wing.tree.bionda.data.extension.isNull
 import wing.tree.bionda.data.extension.one
@@ -12,6 +11,7 @@ import wing.tree.bionda.data.model.MidLandFcst
 import wing.tree.bionda.data.model.MidLandFcstTa
 import wing.tree.bionda.data.model.MidLandFcstTa.Companion.MidLandFcstTa
 import wing.tree.bionda.data.model.MidTa
+import wing.tree.bionda.data.model.RegId
 import wing.tree.bionda.data.model.Result.Complete
 import wing.tree.bionda.data.model.VilageFcst
 import wing.tree.bionda.data.model.calendar.BaseCalendar
@@ -99,18 +99,16 @@ class WeatherRepository(
 
     suspend fun getMidLandFcstTa(location: Location): Complete<MidLandFcstTa> = coroutineScope {
         try {
-            val fcstZoneCd = withContext(ioDispatcher) {
-                localDataSource.getFcstZoneCd(location)
-            }
-
-            val regId = fcstZoneCd?.regId ?: DEFAULT_REG_ID
-            val regUp = fcstZoneCd?.regUp ?: DEFAULT_REG_UP
             val tmFcCalendar = TmFcCalendar()
-            val midLandFcst = async {
-                getMidLandFcst(regId = regUp, tmFcCalendar = tmFcCalendar)
+            val midLandFcst = async(ioDispatcher) {
+                val regId = localDataSource.getRegId(location, RegId.MidLandFcst)
+
+                getMidLandFcst(regId = regId, tmFcCalendar = tmFcCalendar)
             }
 
-            val midTa = async {
+            val midTa = async(ioDispatcher) {
+                val regId = localDataSource.getRegId(location, RegId.MidTa)
+
                 getMidTa(regId = regId, tmFcCalendar = tmFcCalendar)
             }
 
@@ -183,7 +181,5 @@ class WeatherRepository(
 
     companion object {
         private const val DATA_TYPE = "JSON"
-        private const val DEFAULT_REG_ID = "11B10101"
-        private const val DEFAULT_REG_UP = "11B00000"
     }
 }

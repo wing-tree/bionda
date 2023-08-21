@@ -11,11 +11,13 @@ import wing.tree.bionda.data.database.dao.MidLandFcstDao
 import wing.tree.bionda.data.database.dao.MidTaDao
 import wing.tree.bionda.data.database.dao.VilageFcstDao
 import wing.tree.bionda.data.extension.double
+import wing.tree.bionda.data.extension.`is`
 import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.radians
 import wing.tree.bionda.data.extension.two
 import wing.tree.bionda.data.model.FcstZoneCd
 import wing.tree.bionda.data.model.LatLon
+import wing.tree.bionda.data.model.RegId
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.pow
@@ -49,9 +51,23 @@ class WeatherDataSource(
 
     private val supervisorScope = CoroutineScope(Dispatchers.IO.plus(SupervisorJob()))
 
-    fun getFcstZoneCd(location: Location): FcstZoneCd.Item? {
-        return fcstZoneCd.items.minByOrNull {
+    fun getRegId(location: Location, regId: RegId): String {
+        val item = fcstZoneCd.items.minByOrNull {
             location.haversine(LatLon(lat = it.lat, lon = it.lon))
+        } ?: return regId.default
+
+        return getRegId(item, regId)
+    }
+
+    private fun getRegId(item: FcstZoneCd.Item, regId: RegId): String {
+        return if (item.regId in regId) {
+            item.regId
+        } else {
+            fcstZoneCd.items.find {
+                it.regId `is` item.regUp
+            }?.let {
+                getRegId(it, regId)
+            } ?: regId.default
         }
     }
 
