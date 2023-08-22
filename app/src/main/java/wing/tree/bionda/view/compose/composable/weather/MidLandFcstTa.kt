@@ -91,6 +91,8 @@ private fun BothSuccess(
         maxTa to minTa
     }
 
+    Text(text = bothSuccess.tmFc)
+
     LazyRow(modifier = modifier) {
         items(items) {
             val (landFcst, ta) = it
