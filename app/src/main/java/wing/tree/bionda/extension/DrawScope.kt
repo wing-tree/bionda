@@ -108,9 +108,12 @@ fun DrawScope.drawTmp(
         }
     }
 
+    val width = textPaint.measureText(String.degree)
+    val x = pointF.x.plus(width.half)
+
     nativeCanvas.drawText(
         text,
-        pointF.x,
+        x,
         pointF.y.plus(offset.y),
         textPaint
     )
