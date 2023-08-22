@@ -29,7 +29,6 @@ import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.data.model.Address
 import wing.tree.bionda.model.Forecast
-import wing.tree.bionda.model.WindowSizeClass
 import wing.tree.bionda.view.compose.composable.core.Loading
 import wing.tree.bionda.view.compose.composable.core.TextClock
 import wing.tree.bionda.view.compose.composable.core.VerticalSpacer
@@ -38,7 +37,6 @@ import wing.tree.bionda.view.state.VilageFcstState
 @Composable
 fun VilageFcst(
     state: VilageFcstState,
-    windowSizeClass: WindowSizeClass,
     modifier: Modifier = Modifier
 ) {
     AnimatedContent(
@@ -57,7 +55,6 @@ fun VilageFcst(
             is VilageFcstState.Content -> Content(
                 address = it.address,
                 forecast = it.forecast,
-                windowSizeClass = windowSizeClass,
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -72,7 +69,6 @@ fun VilageFcst(
 private fun Content(
     address: Address?,
     forecast: Forecast,
-    windowSizeClass: WindowSizeClass,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -96,7 +92,6 @@ private fun Content(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(180.dp) // todo, style에서 계산 필요. or requireHeight 등도 확인.
-                .padding(windowSizeClass.marginValues)
         ) {
             Chart(
                 items = forecast.items,
