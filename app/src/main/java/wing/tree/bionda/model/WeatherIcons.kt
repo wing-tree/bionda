@@ -22,10 +22,7 @@ sealed interface WeatherIcons {
                 "1" to R.drawable.wi_day_rain,
                 "2" to R.drawable.wi_day_rain_mix,
                 "3" to R.drawable.wi_day_snow,
-                "4" to R.drawable.wi_day_showers,
-                "5" to R.drawable.wi_day_sprinkle,
-                "6" to R.drawable.wi_day_sleet,
-                "7" to R.drawable.wi_day_snow_wind
+                "4" to R.drawable.wi_day_showers
             )
     }
 
@@ -43,10 +40,7 @@ sealed interface WeatherIcons {
                 "1" to R.drawable.wi_night_alt_rain,
                 "2" to R.drawable.wi_night_alt_rain_mix,
                 "3" to R.drawable.wi_night_alt_snow,
-                "4" to R.drawable.wi_night_alt_showers,
-                "5" to R.drawable.wi_night_alt_sprinkle,
-                "6" to R.drawable.wi_night_alt_sleet,
-                "7" to R.drawable.wi_night_alt_snow_wind
+                "4" to R.drawable.wi_night_alt_showers
             )
     }
 }
