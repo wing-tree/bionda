@@ -74,6 +74,7 @@ inline fun <T> Complete<T>.ifFailure(defaultValue: (throwable: Throwable) -> Com
 fun <T> Complete<T>.isFailure(): Boolean {
     contract {
         returns(true) implies (this@isFailure is Complete.Failure)
+        returns(false) implies (this@isFailure is Complete.Success<T>)
     }
 
     return this is Complete.Failure
