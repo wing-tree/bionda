@@ -4,11 +4,13 @@ import androidx.room.Entity
 import androidx.room.Ignore
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.serialization.Serializable
 import wing.tree.bionda.data.constant.COMMA
 import wing.tree.bionda.data.constant.SPACE
 import wing.tree.bionda.data.exception.OpenApiError
 import wing.tree.bionda.data.exception.second
+import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.data.validator.ResponseValidator
 
 sealed interface MidLandFcst {
@@ -166,6 +168,14 @@ sealed interface MidLandFcst {
         val landFcst: ImmutableList<LandFcst> = persistentListOf(
             landFcst3, landFcst4, landFcst5, landFcst6, landFcst7, landFcst8, landFcst9, landFcst10
         )
+
+        fun advancedDayBy(n: Int) = if (n > Int.zero) {
+            landFcst.map {
+                it.copy(n = it.n.minus(n))
+            }.toImmutableList()
+        } else {
+            landFcst
+        }
     }
 
     @Serializable

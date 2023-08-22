@@ -4,12 +4,14 @@ import androidx.room.Entity
 import androidx.room.Ignore
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.serialization.Serializable
 import wing.tree.bionda.data.constant.COMMA
 import wing.tree.bionda.data.constant.SPACE
 import wing.tree.bionda.data.exception.OpenApiError
 import wing.tree.bionda.data.exception.second
 import wing.tree.bionda.data.extension.negativeOne
+import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.data.validator.ResponseValidator
 
 sealed interface MidTa {
@@ -202,6 +204,14 @@ sealed interface MidTa {
         @Ignore
         val minTa = ta.minBy {
             it.min
+        }
+
+        fun advancedDayBy(n: Int): ImmutableList<Ta> = if (n > Int.zero) {
+            ta.map {
+                it.copy(n = it.n.minus(n))
+            }.toImmutableList()
+        } else {
+            ta
         }
     }
 

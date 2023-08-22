@@ -104,15 +104,13 @@ private fun BothSuccess(
     modifier: Modifier = Modifier
 ) {
     val items = with(bothSuccess) {
-        koreaCalendar()
+        val n = koreaCalendar()
             .julianDay
             .minus(tmFcCalendar.julianDay)
-            .let {
-                items.drop(it)
-            }
+
+        advancedDayBy(n)
     }
 
-    bothSuccess.items
     val (maxTa, minTa) = with(bothSuccess.midTa) {
         maxTa to minTa
     }
@@ -154,7 +152,7 @@ private fun OneOfSuccess(
                         .julianDay
                         .minus(tmFcCalendar.julianDay)
 
-                    midLandFcst.landFcst.drop(n)
+                    midLandFcst.advancedDayBy(n)
                 }
 
                 LazyRow(
@@ -163,7 +161,10 @@ private fun OneOfSuccess(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     items(items) {
-                        LandFcst(landFcst = it)
+                        Column {
+                            TmFc(n = it.n)
+                            LandFcst(landFcst = it)
+                        }
                     }
                 }
             }
@@ -174,7 +175,7 @@ private fun OneOfSuccess(
                         .julianDay
                         .minus(tmFcCalendar.julianDay)
 
-                    midTa.ta.drop(n)
+                    midTa.advancedDayBy(n)
                 }
 
                 val (maxTa, minTa) = with(oneOfSuccess.midTa) {
@@ -187,11 +188,14 @@ private fun OneOfSuccess(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     items(items) {
-                        Ta(
-                            ta = it,
-                            max = maxTa.max,
-                            min = minTa.min
-                        )
+                        Column {
+                            TmFc(n = it.n)
+                            Ta(
+                                ta = it,
+                                max = maxTa.max,
+                                min = minTa.min
+                            )
+                        }
                     }
                 }
             }
