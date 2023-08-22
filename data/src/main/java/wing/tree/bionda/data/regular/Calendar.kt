@@ -26,6 +26,8 @@ fun fcstCalendar(hourOfDay: Int): Calendar = koreaCalendar().apply {
     this.hourOfDay = hourOfDay
 }
 
+fun koreaCalendar(block: Calendar.() -> Unit) = koreaCalendar().apply(block)
+
 fun koreaCalendar(date: Date): Calendar = Calendar.getInstance(Locale.KOREA).apply {
     time = date
 }
