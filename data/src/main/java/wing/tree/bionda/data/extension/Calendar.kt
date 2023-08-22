@@ -4,9 +4,12 @@ import android.icu.util.Calendar
 import wing.tree.bionda.data.regular.calendarOf
 import wing.tree.bionda.data.top.level.baseDateFormat
 import wing.tree.bionda.data.top.level.baseTimeFormat
+import wing.tree.bionda.data.top.level.dtFcFormat
 
 val Calendar.baseDate: String get() = baseDateFormat.format(time)
 val Calendar.baseTime: String get() = baseTimeFormat.format(time)
+val Calendar.dtFc: String get() = dtFcFormat.format(time)
+val Calendar.dtFcAsInt: Int get() = dtFcFormat.format(time).int
 
 var Calendar.date: Int
     get() = get(Calendar.DATE)
