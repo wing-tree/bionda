@@ -29,6 +29,12 @@ var Calendar.hourOfDay: Int
         set(Calendar.HOUR_OF_DAY, value)
     }
 
+var Calendar.julianDay: Int
+    get() = get(Calendar.JULIAN_DAY)
+    set(value) {
+        set(Calendar.JULIAN_DAY, value)
+    }
+
 var Calendar.minute: Int
     get() = get(Calendar.MINUTE)
     set(value) {
