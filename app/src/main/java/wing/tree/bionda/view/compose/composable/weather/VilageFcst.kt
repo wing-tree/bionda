@@ -21,7 +21,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import wing.tree.bionda.data.extension.degree
 import wing.tree.bionda.data.extension.empty
 import wing.tree.bionda.data.extension.`is`
 import wing.tree.bionda.data.extension.isNotNull
@@ -29,6 +28,7 @@ import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.data.model.Address
 import wing.tree.bionda.model.Forecast
+import wing.tree.bionda.view.compose.composable.core.DegreeText
 import wing.tree.bionda.view.compose.composable.core.Loading
 import wing.tree.bionda.view.compose.composable.core.TextClock
 import wing.tree.bionda.view.compose.composable.core.VerticalSpacer
@@ -128,8 +128,8 @@ private fun Header(
         ) {
             currentItem?.let { item ->
                 item.tmp?.let {
-                    Text(
-                        text = "$it${String.degree}",
+                    DegreeText(
+                        text = it,
                         style = typography.headlineLarge
                     )
                 }
