@@ -193,8 +193,7 @@ sealed interface MidLandFcst {
                     add("resultMsg=${header.resultMsg}")
                     add("regId=${params.first()}")
                     add("tmFc=${params.second()}")
-                }
-                    .joinToString("$COMMA$SPACE")
+                }.joinToString("$COMMA$SPACE")
 
                 throw OpenApiError(
                     errorCode = errorCode,

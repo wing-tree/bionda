@@ -48,8 +48,7 @@ sealed class ContentTextTemplate {
                     koreaCalendar.predicate(it)
                 }.groupBy {
                     it.pty.value ?: it.sky.value
-                }
-                .toList()
+                }.toList()
                 .joinToString(separator = NEWLINE) { (value, items) ->
                     val amHours = mutableListOf<Int>()
                     val pmHours = mutableListOf<Int>()
@@ -87,14 +86,13 @@ sealed class ContentTextTemplate {
 
                         append("${getString(R.string.at)} $value$COMMA")
                     }
-                }
-                    .let {
-                        val subject = "${it.dropLast(Int.one).last()}"
-                        val subjectMarker = getSubjectMarker(subject)
-                        val replacement = "$subjectMarker 올 예정입니다."
+                }.let {
+                    val subject = "${it.dropLast(Int.one).last()}"
+                    val subjectMarker = getSubjectMarker(subject)
+                    val replacement = "$subjectMarker 올 예정입니다."
 
-                        it.replace(Regex("$COMMA$"), replacement)
-                    }
+                    it.replace(Regex("$COMMA$"), replacement)
+                }
         }
     }
 

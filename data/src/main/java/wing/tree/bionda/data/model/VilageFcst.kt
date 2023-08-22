@@ -87,8 +87,7 @@ sealed interface VilageFcst {
                     add("baseTime=${params.second()}")
                     add("nx=${params.third()}")
                     add("ny=${params.fourth()}")
-                }
-                    .joinToString("$COMMA$SPACE")
+                }.joinToString("$COMMA$SPACE")
 
                 throw OpenApiError(
                     errorCode = errorCode,
