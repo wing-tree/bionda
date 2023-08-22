@@ -18,8 +18,17 @@ sealed interface MidLandFcstTa {
     }
 
     sealed interface OneOfSuccess : MidLandFcstTa {
-        data class MidLandFcst(val midLandFcst: LandFcst) : OneOfSuccess
-        data class MidTa(val midTa: Ta) : OneOfSuccess
+        val error: Throwable
+
+        data class MidLandFcst(
+            override val error: Throwable,
+            val midLandFcst: LandFcst
+        ) : OneOfSuccess
+
+        data class MidTa(
+            override val error: Throwable,
+            val midTa: Ta
+        ) : OneOfSuccess
     }
 
     data class BothFailure(
@@ -33,17 +42,29 @@ sealed interface MidLandFcstTa {
             midTa: Complete<Ta>
         ): MidLandFcstTa {
             return when {
-                midLandFcst.isSuccess() && midTa.isSuccess() -> BothSuccess(
-                    midLandFcst.value,
-                    midTa.value
-                )
+                midLandFcst.isSuccess() -> when {
+                    midTa.isSuccess() -> BothSuccess(
+                        midLandFcst.value,
+                        midTa.value
+                    )
 
-                midLandFcst.isSuccess() -> OneOfSuccess.MidLandFcst(midLandFcst.value)
-                midTa.isSuccess() -> OneOfSuccess.MidTa(midTa.value)
-                else -> BothFailure(
-                    midLandFcst.throwable,
-                    midTa.throwable
-                )
+                    else -> OneOfSuccess.MidLandFcst(
+                        error = midTa.throwable,
+                        midLandFcst = midLandFcst.value
+                    )
+                }
+
+                else -> when {
+                    midTa.isSuccess() -> OneOfSuccess.MidTa(
+                        error = midLandFcst.throwable,
+                        midTa = midTa.value
+                    )
+
+                    else -> BothFailure(
+                        midLandFcst.throwable,
+                        midTa.throwable
+                    )
+                }
             }
         }
     }
