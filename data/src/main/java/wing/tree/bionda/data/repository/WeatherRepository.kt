@@ -39,7 +39,7 @@ class WeatherRepository(
                 regId = regId,
                 tmFc = tmFc
             ).let {
-                with(it.toLocal(tmFc = tmFc)) {
+                with(it.toLocal(regId = regId, tmFc = tmFc)) {
                     if (it.item.rnSt3Am.isNull()) {
                         val previous = localDataSource.loadMidLandFcst(
                             regId = regId,
@@ -75,7 +75,7 @@ class WeatherRepository(
                 regId = regId,
                 tmFc = tmFc
             ).let { remote ->
-                with(remote.toLocal(tmFc)) {
+                with(remote.toLocal(regId, tmFc)) {
                     if (item.taMin3.isNull()) {
                         val previous = localDataSource.loadMidTa(
                             regId = regId,
@@ -166,7 +166,9 @@ class WeatherRepository(
 
                 remote.toLocal(
                     baseDate = baseCalendar.baseDate,
-                    baseTime = baseCalendar.baseTime
+                    baseTime = baseCalendar.baseTime,
+                    nx = nx,
+                    ny = ny
                 )
                     .prepend(previous)
                     .also {

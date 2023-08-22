@@ -5,6 +5,10 @@ import androidx.room.Ignore
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.serialization.Serializable
+import wing.tree.bionda.data.constant.COMMA
+import wing.tree.bionda.data.constant.SPACE
+import wing.tree.bionda.data.exception.OpenApiError
+import wing.tree.bionda.data.exception.second
 import wing.tree.bionda.data.validator.ResponseValidator
 
 sealed interface MidLandFcst {
@@ -166,17 +170,36 @@ sealed interface MidLandFcst {
 
     @Serializable
     data class Remote(
-        val response: Response<Item>
-    ) : MidLandFcst {
-        init {
-            ResponseValidator.validate(response)
+        override val response: Response<Item>
+    ) : MidLandFcst, ResponseValidator {
+        override val item: Item get() = response.body.items.item.first()
+
+        override fun validate(vararg params: String) {
+            if (response.isUnsuccessful) {
+                val header = response.header
+                val errorCode = header.resultCode
+                val errorMsg = buildList {
+                    add("resultCode=${header.resultCode}")
+                    add("resultMsg=${header.resultMsg}")
+                    add("regId=${params.first()}")
+                    add("tmFc=${params.second()}")
+                }
+                    .joinToString("$COMMA$SPACE")
+
+                throw OpenApiError(
+                    errorCode = errorCode,
+                    errorMsg = errorMsg
+                )
+            }
         }
 
-        override val item: Item = response.body.items.item.first()
+        fun toLocal(regId: String, tmFc: String): Local {
+            validate(regId, tmFc)
 
-        fun toLocal(tmFc: String) = Local(
-            item = item,
-            tmFc = tmFc
-        )
+            return Local(
+                item = item,
+                tmFc = tmFc
+            )
+        }
     }
 }
