@@ -122,7 +122,8 @@ class WeatherRepository(
                     midTa.await()
                 } catch (throwable: Throwable) {
                     Complete.Failure(throwable)
-                }
+                },
+                tmFc = tmFcCalendar.tmFc
             )
 
             Complete.Success(midLandFcstTa)

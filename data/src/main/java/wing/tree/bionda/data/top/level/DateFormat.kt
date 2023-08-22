@@ -1,8 +1,11 @@
 package wing.tree.bionda.data.top.level
 
 import android.icu.text.SimpleDateFormat
+import wing.tree.bionda.data.constant.PATTERN_BASE_DATE
+import wing.tree.bionda.data.constant.PATTERN_BASE_TIME
+import wing.tree.bionda.data.constant.PATTERN_TM_FC
 import java.util.Locale
 
-val baseDateFormat = SimpleDateFormat("yyyyMMdd", Locale.KOREA)
-val baseTimeFormat = SimpleDateFormat("HHmm", Locale.KOREA)
-val tmFcFormat = SimpleDateFormat("yyyyMMddHHmm", Locale.KOREA)
+val baseDateFormat = SimpleDateFormat(PATTERN_BASE_DATE, Locale.KOREA)
+val baseTimeFormat = SimpleDateFormat(PATTERN_BASE_TIME, Locale.KOREA)
+val tmFcFormat = SimpleDateFormat(PATTERN_TM_FC, Locale.KOREA)
