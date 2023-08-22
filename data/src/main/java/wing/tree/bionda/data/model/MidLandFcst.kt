@@ -159,7 +159,7 @@ sealed interface MidLandFcst {
         )
 
         @Ignore
-        val landFcsts: ImmutableList<LandFcst> = persistentListOf(
+        val landFcst: ImmutableList<LandFcst> = persistentListOf(
             landFcst3, landFcst4, landFcst5, landFcst6, landFcst7, landFcst8, landFcst9, landFcst10
         )
     }

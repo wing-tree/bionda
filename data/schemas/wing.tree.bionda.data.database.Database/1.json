@@ -5,6 +5,50 @@
     "identityHash": "2a332bd807adac8643262e623dcf96dc",
     "entities": [
       {
+        "tableName": "alarm",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `hour` INTEGER NOT NULL, `minute` INTEGER NOT NULL, `on` INTEGER NOT NULL, `conditions` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hour",
+            "columnName": "hour",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "minute",
+            "columnName": "minute",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "on",
+            "columnName": "on",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "conditions",
+            "columnName": "conditions",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
         "tableName": "mid_land_fcst",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`item` TEXT NOT NULL, `regId` TEXT NOT NULL, `tmFc` TEXT NOT NULL, PRIMARY KEY(`regId`, `tmFc`))",
         "fields": [
@@ -65,50 +109,6 @@
           "columnNames": [
             "regId",
             "tmFc"
-          ]
-        },
-        "indices": [],
-        "foreignKeys": []
-      },
-      {
-        "tableName": "alarm",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `hour` INTEGER NOT NULL, `minute` INTEGER NOT NULL, `on` INTEGER NOT NULL, `conditions` TEXT NOT NULL)",
-        "fields": [
-          {
-            "fieldPath": "id",
-            "columnName": "id",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "hour",
-            "columnName": "hour",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "minute",
-            "columnName": "minute",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "on",
-            "columnName": "on",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "conditions",
-            "columnName": "conditions",
-            "affinity": "TEXT",
-            "notNull": true
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": true,
-          "columnNames": [
-            "id"
           ]
         },
         "indices": [],

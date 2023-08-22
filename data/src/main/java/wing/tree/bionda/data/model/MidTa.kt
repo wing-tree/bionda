@@ -186,9 +186,19 @@ sealed interface MidTa {
         )
 
         @Ignore
-        val tas: ImmutableList<Ta> = persistentListOf(
+        val ta: ImmutableList<Ta> = persistentListOf(
             ta3, ta4, ta5, ta6, ta7, ta8, ta9, ta10
         )
+
+        @Ignore
+        val maxTa = ta.maxBy {
+            it.max
+        }
+
+        @Ignore
+        val minTa = ta.minBy {
+            it.min
+        }
     }
 
     @Serializable
