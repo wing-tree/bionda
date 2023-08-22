@@ -17,8 +17,4 @@ value class TmFcCalendar(val value: Calendar = tmFcCalendar()) {
     }.let {
         TmFcCalendar(it)
     }
-
-    companion object {
-        val julianDay: Int get() = TmFcCalendar().julianDay
-    }
 }

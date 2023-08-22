@@ -123,7 +123,7 @@ class WeatherRepository(
                 } catch (throwable: Throwable) {
                     Complete.Failure(throwable)
                 },
-                tmFc = tmFcCalendar.tmFc
+                tmFcCalendar = tmFcCalendar
             )
 
             Complete.Success(midLandFcstTa)
