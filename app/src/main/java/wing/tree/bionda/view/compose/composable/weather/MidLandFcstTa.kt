@@ -145,7 +145,7 @@ private fun OneOfSuccess(
             }
         }
 
-        Text(text = oneOfSuccess.error.message ?: "${oneOfSuccess.error}")
+        Text(text = oneOfSuccess.throwable.message ?: "${oneOfSuccess.throwable}")
     }
 
 }
