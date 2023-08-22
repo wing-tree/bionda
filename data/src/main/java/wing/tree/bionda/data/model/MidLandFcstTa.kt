@@ -15,10 +15,18 @@ sealed interface MidLandFcstTa {
         val midLandFcst: LandFcst,
         val midTa: Ta
     ) : MidLandFcstTa {
-        val items: ImmutableList<Pair<LandFcst.LandFcst, Ta.Ta>> = midLandFcst.landFcst
+        data class Item(
+            val n: Int,
+            val landFcst: LandFcst.LandFcst,
+            val ta: Ta.Ta
+        )
+
+        val items: ImmutableList<Item> = midLandFcst.landFcst
             .sortedBy(LandFcst.LandFcst::n)
             .zip(midTa.ta.sortedBy(Ta.Ta::n))
-            .toImmutableList()
+            .map { (landFcst, ta) ->
+                Item(n = landFcst.n, landFcst = landFcst, ta = ta)
+            }.toImmutableList()
     }
 
     sealed interface OneOfSuccess : MidLandFcstTa {

@@ -1,5 +1,6 @@
 package wing.tree.bionda.view.compose.composable.weather
 
+import android.icu.text.DateFormatSymbols
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -24,19 +25,31 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import wing.tree.bionda.data.extension.date
+import wing.tree.bionda.data.extension.dayOfWeek
 import wing.tree.bionda.data.extension.empty
 import wing.tree.bionda.data.extension.float
 import wing.tree.bionda.data.extension.isNull
+import wing.tree.bionda.data.extension.julianDay
 import wing.tree.bionda.data.model.MidLandFcstTa.BothFailure
 import wing.tree.bionda.data.model.MidLandFcstTa.BothSuccess
 import wing.tree.bionda.data.model.MidLandFcstTa.OneOfSuccess
+import wing.tree.bionda.data.regular.koreaCalendar
+import wing.tree.bionda.data.top.level.dayOfMonthFormat
 import wing.tree.bionda.theme.SunOrange
 import wing.tree.bionda.theme.WaterBlue
 import wing.tree.bionda.view.compose.composable.core.Loading
 import wing.tree.bionda.view.compose.composable.core.VerticalSpacer
 import wing.tree.bionda.view.state.MidLandFcstTaState
+import java.util.Locale
 import wing.tree.bionda.data.model.MidLandFcst.Local as MidLandFcst
 import wing.tree.bionda.data.model.MidTa.Local as MidTa
+
+private val weekdays = DateFormatSymbols
+    .getInstance(Locale.KOREA)
+    .weekdays.filterNot {
+        it.isBlank()
+    }
 
 @Composable
 fun MidLandFcstTa(
@@ -60,6 +73,7 @@ fun MidLandFcstTa(
                 content = it,
                 modifier = Modifier.fillMaxSize()
             )
+
             is MidLandFcstTaState.Error -> Text("${it.throwable}")
         }
     }
@@ -71,12 +85,10 @@ private fun Content(
     modifier: Modifier = Modifier
 ) {
     ElevatedCard(modifier = modifier) {
-        with(content.midLandFcstTa) {
-            when(this) {
-                is BothSuccess -> BothSuccess(bothSuccess = this)
-                is OneOfSuccess -> OneOfSuccess(oneOfSuccess = this)
-                is BothFailure -> BothFailure(bothFailure = this)
-            }
+        when(val midLandFcstTa = content.midLandFcstTa) {
+            is BothSuccess -> BothSuccess(bothSuccess = midLandFcstTa)
+            is OneOfSuccess -> OneOfSuccess(oneOfSuccess = midLandFcstTa)
+            is BothFailure -> BothFailure(bothFailure = midLandFcstTa)
         }
     }
 }
@@ -86,21 +98,29 @@ private fun BothSuccess(
     bothSuccess: BothSuccess,
     modifier: Modifier = Modifier
 ) {
-    val items = bothSuccess.items
+    val items = with(bothSuccess) {
+        koreaCalendar()
+            .julianDay
+            .minus(tmFcCalendar.julianDay)
+            .let {
+                items.drop(it)
+            }
+    }
+
+    bothSuccess.items
     val (maxTa, minTa) = with(bothSuccess.midTa) {
         maxTa to minTa
     }
 
-    Text(text = bothSuccess.tmFc)
-
     LazyRow(modifier = modifier) {
-        items(items) {
-            val (landFcst, ta) = it
+        items(items) { item ->
+            val (n, landFcst, ta) = item
 
             Column(
                 modifier = modifier,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                TmFc(n = n)
                 LandFcst(landFcst = landFcst)
                 Ta(
                     ta = ta,
@@ -120,7 +140,13 @@ private fun OneOfSuccess(
     Column(modifier = modifier) {
         when(oneOfSuccess) {
             is OneOfSuccess.MidLandFcst -> {
-                val items = oneOfSuccess.midLandFcst.landFcst
+                val items = with(oneOfSuccess) {
+                    val n = koreaCalendar()
+                        .julianDay
+                        .minus(tmFcCalendar.julianDay)
+
+                    midLandFcst.landFcst.drop(n)
+                }
 
                 LazyRow(modifier = Modifier.fillMaxWidth()) {
                     items(items) {
@@ -130,7 +156,14 @@ private fun OneOfSuccess(
             }
 
             is OneOfSuccess.MidTa -> {
-                val items = oneOfSuccess.midTa.ta
+                val items = with(oneOfSuccess) {
+                    val n = koreaCalendar()
+                        .julianDay
+                        .minus(tmFcCalendar.julianDay)
+
+                    midTa.ta.drop(n)
+                }
+
                 val (maxTa, minTa) = with(oneOfSuccess.midTa) {
                     maxTa to minTa
                 }
@@ -149,7 +182,6 @@ private fun OneOfSuccess(
 
         Text(text = oneOfSuccess.throwable.message ?: "${oneOfSuccess.throwable}")
     }
-
 }
 
 @Composable
@@ -158,6 +190,26 @@ private fun BothFailure(
     modifier: Modifier = Modifier
 ) {
 
+}
+
+@Composable
+private fun TmFc(
+    n: Int,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        val (weekDay, dayOfMonth) = koreaCalendar {
+            date += n
+        }.let {
+            weekdays[it.dayOfWeek.dec()] to dayOfMonthFormat.format(it)
+        }
+
+        Text(text = weekDay)
+        Text(text = dayOfMonth)
+    }
 }
 
 @Composable
