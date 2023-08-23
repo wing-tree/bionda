@@ -25,7 +25,7 @@ fun RequestPermissions(
     onAction: (RequestPermissions) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier.padding(16.dp)) {
+    Column(modifier = modifier) {
         requestPermissions.forEach { permission ->
             permissionRational[permission]?.let { stringRes ->
                 OutlinedCard(

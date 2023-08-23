@@ -30,6 +30,7 @@ import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
@@ -72,7 +73,11 @@ fun Alarm(
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier) {
-        Column(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(windowSizeClass.marginValues)
+        ) {
             RequestPermissions(
                 requestPermissions = state.requestPermissions,
                 onAction = {
@@ -83,15 +88,29 @@ fun Alarm(
                     .animateContentSize()
             )
 
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                IconButton(
+                    onClick = {
+                        onAction(Action.Add)
+                    }
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.baseline_add_alarm_24),
+                        contentDescription = null
+                    )
+                }
+            }
+
             Alarms(
                 state = state,
                 inSelectionMode = inSelectionMode,
                 onAction = {
                     onAction(it)
                 },
-                modifier = Modifier
-                    .weight(Float.one)
-                    .padding(windowSizeClass.marginValues)
+                modifier = Modifier.weight(Float.one)
             )
         }
 
@@ -271,7 +290,8 @@ private fun Item(
                     onLongClick = {
                         onAction(Action.Alarms.LongClick(item))
                     }
-                ).padding(
+                )
+                .padding(
                     start = 16.dp,
                     top = 12.dp,
                     end = 24.dp,
@@ -322,7 +342,8 @@ private fun Item(
                                 indication = rememberRipple(bounded = false)
                             ) {
                                 onAction(Action.Alarms.ConditionClick(item, it))
-                            }.alpha(alpha),
+                            }
+                            .alpha(alpha),
                         style = MaterialTheme.typography.labelMedium
                     )
                 }

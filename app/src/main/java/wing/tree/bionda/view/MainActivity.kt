@@ -16,11 +16,8 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -29,7 +26,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.getValue
@@ -37,13 +33,11 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.material.timepicker.MaterialTimePicker
 import dagger.hilt.android.AndroidEntryPoint
-import wing.tree.bionda.R
 import wing.tree.bionda.data.constant.SCHEME_PACKAGE
 import wing.tree.bionda.data.extension.containsAny
 import wing.tree.bionda.data.extension.empty
@@ -148,24 +142,6 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
                                 )
                             }
                         )
-                    },
-                    floatingActionButton = {
-                        AnimatedVisibility(
-                            visible = inSelectionMode.not(),
-                            enter = scaleIn().plus(fadeIn()),
-                            exit = scaleOut().plus(fadeOut())
-                        ) {
-                            FloatingActionButton(
-                                onClick = {
-                                    onFloatingActionButtonClick()
-                                }
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.baseline_add_alarm_24),
-                                    contentDescription = null
-                                )
-                            }
-                        }
                     }
                 ) { innerPadding ->
                     Column(
@@ -241,9 +217,21 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
 
     private fun onAction(action: Action, inSelectionMode: Boolean) {
         when (action) {
+            Action.Add -> onAddAlarmClick()
             is Action.Alarms -> onAlarms(action, inSelectionMode)
             is Action.RequestPermissions -> onRequestPermissions(action)
             is Action.SelectionMode -> onSelectionMode(action)
+        }
+    }
+
+    private fun onAddAlarmClick() {
+        val koreaCalendar = koreaCalendar()
+
+        showMaterialTimePicker(
+            hour = koreaCalendar.hourOfDay,
+            minute = koreaCalendar.minute
+        ) { hour, minute ->
+            viewModel.add(hour, minute)
         }
     }
 
@@ -297,17 +285,6 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
                     }
                 )
             }
-        }
-    }
-
-    private fun onFloatingActionButtonClick() {
-        val koreaCalendar = koreaCalendar()
-
-        showMaterialTimePicker(
-            hour = koreaCalendar.hourOfDay,
-            minute = koreaCalendar.minute
-        ) { hour, minute ->
-            viewModel.add(hour, minute)
         }
     }
 

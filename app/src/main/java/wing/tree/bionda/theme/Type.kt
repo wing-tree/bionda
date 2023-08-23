@@ -8,11 +8,11 @@ import wing.tree.bionda.R
 
 private val fontFamily = FontFamily(
     Font(
-        resId = R.font.suite_regular,
+        resId = R.font.suite_medium,
         weight = FontWeight.Normal
     ),
     Font(
-        resId = R.font.suite_medium,
+        resId = R.font.suite_semibold,
         weight = FontWeight.Medium
     ),
     Font(
