@@ -115,6 +115,9 @@ private fun BothSuccess(
         maxTa to minTa
     }
 
+    // TODO: Remove
+    Text(text = bothSuccess.tmFcCalendar.tmFc)
+
     LazyRow(
         modifier = modifier,
         contentPadding = PaddingValues(horizontal = 16.dp),
