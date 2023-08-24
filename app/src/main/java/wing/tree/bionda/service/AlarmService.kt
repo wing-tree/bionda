@@ -25,6 +25,7 @@ import wing.tree.bionda.data.provider.LocationProvider
 import wing.tree.bionda.data.repository.AlarmRepository
 import wing.tree.bionda.data.repository.WeatherRepository
 import wing.tree.bionda.extension.toCoordinate
+import wing.tree.bionda.mapper.VilageFcstMapper
 import wing.tree.bionda.model.VilageFcst
 import wing.tree.bionda.permissions.PermissionChecker
 import wing.tree.bionda.permissions.locationPermissions
@@ -48,6 +49,9 @@ class AlarmService : Service(), PermissionChecker {
 
     @Inject
     lateinit var notificationChannelProvider: NotificationChannelProvider
+
+    @Inject
+    lateinit var vilageFcstMapper: VilageFcstMapper
 
     @Inject
     lateinit var weatherRepository: WeatherRepository
@@ -91,7 +95,7 @@ class AlarmService : Service(), PermissionChecker {
                                 nx = nx,
                                 ny = ny
                             ).map {
-                                VilageFcst.toPresentationModel(it)
+                                vilageFcstMapper.toPresentationModel(it)
                             }.onSuccess { forecast ->
                                 stopForeground(STOP_FOREGROUND_REMOVE)
 

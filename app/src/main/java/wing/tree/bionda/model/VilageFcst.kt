@@ -3,8 +3,6 @@ package wing.tree.bionda.model
 import androidx.compose.runtime.Stable
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
-import kotlinx.collections.immutable.toImmutableList
-import kotlinx.collections.immutable.toImmutableMap
 import wing.tree.bionda.data.extension.baseDate
 import wing.tree.bionda.data.extension.hourOfDay
 import wing.tree.bionda.data.extension.int
@@ -12,11 +10,9 @@ import wing.tree.bionda.data.extension.not
 import wing.tree.bionda.data.extension.oneHundred
 import wing.tree.bionda.data.model.weather.Category
 import wing.tree.bionda.data.model.weather.CodeValue
-import wing.tree.bionda.data.model.weather.VilageFcst
 import wing.tree.bionda.data.regular.koreaCalendar
-import wing.tree.bionda.mapper.DataModelMapper
 
-data class Forecast(
+data class VilageFcst(
     val items: ImmutableList<Item>
 ) {
     val currentItem: Item? get() = with(items) {
@@ -49,29 +45,5 @@ data class Forecast(
         val tmx = codeValues[Category.TMX]
         val weatherIcon = WeatherIcons.Daytime
         val wsd = codeValues[Category.WSD]
-    }
-
-    // TODO, 매퍼 따로 파는게 나을지도?
-    companion object : DataModelMapper<VilageFcst.Local, Forecast> {
-        override fun toPresentationModel(
-            dataModel: VilageFcst.Local
-        ): Forecast {
-            val items = dataModel.items.groupBy {
-                it.fcstDate to it.fcstTime
-            }.map { (key, value) ->
-                val (fcstDate, fcstTime) = key
-
-                Item(
-                    fcstDate = fcstDate,
-                    fcstTime = fcstTime,
-                    codeValues = value.associate {
-                        it.category to it.fcstValue
-                    }
-                        .toImmutableMap()
-                )
-            }
-
-            return Forecast(items = items.toImmutableList())
-        }
     }
 }

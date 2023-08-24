@@ -42,7 +42,7 @@ import wing.tree.bionda.data.repository.WeatherRepository
 import wing.tree.bionda.exception.PermissionsDeniedException
 import wing.tree.bionda.extension.checkSelfPermission
 import wing.tree.bionda.extension.toCoordinate
-import wing.tree.bionda.model.Forecast
+import wing.tree.bionda.mapper.VilageFcstMapper
 import wing.tree.bionda.permissions.locationPermissions
 import wing.tree.bionda.scheduler.AlarmScheduler
 import wing.tree.bionda.view.state.AlarmState
@@ -60,8 +60,9 @@ class MainViewModel @Inject constructor(
     application: Application,
     private val alarmRepository: AlarmRepository,
     private val alarmScheduler: AlarmScheduler,
-    private val weatherRepository: WeatherRepository,
-    private val locationProvider: LocationProvider
+    private val locationProvider: LocationProvider,
+    private val vilageFcstMapper: VilageFcstMapper,
+    private val weatherRepository: WeatherRepository
 ) : AndroidViewModel(application) {
     private val location = MutableStateFlow<Result<Location?>>(Result.Loading)
     private val requestPermissions = MutableStateFlow<ImmutableSet<String>>(persistentSetOf())
@@ -351,7 +352,7 @@ class MainViewModel @Inject constructor(
     private fun Complete<VilageFcst.Local>.asState(address: Address?): VilageFcstState = when (this) {
         is Complete.Success -> VilageFcstState.Content(
             address = address,
-            forecast = Forecast.toPresentationModel(value)
+            vilageFcst = vilageFcstMapper.toPresentationModel(value)
         )
 
         is Complete.Failure -> VilageFcstState.Error(throwable)
