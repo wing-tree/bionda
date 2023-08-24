@@ -69,6 +69,28 @@ class WeatherDataSource(
         )
     }
 
+    suspend fun getUltraSrtNcst(
+        serviceKey: String,
+        numOfRows: Int,
+        pageNo: Int,
+        dataType: String,
+        baseDate: String,
+        baseTime: String,
+        nx: Int,
+        ny: Int
+    ) = retry {
+        vilageFcstInfoService.getUltraSrtNcst(
+            serviceKey = serviceKey,
+            numOfRows = numOfRows,
+            pageNo = pageNo,
+            dataType = dataType,
+            baseDate = baseDate,
+            baseTime = baseTime,
+            nx = nx,
+            ny = ny
+        )
+    }
+
     suspend fun getVilageFcst(
         serviceKey: String,
         numOfRows: Int,
