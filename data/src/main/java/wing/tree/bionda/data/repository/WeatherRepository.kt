@@ -6,6 +6,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import wing.tree.bionda.data.extension.advanceHourOfDayBy
+import wing.tree.bionda.data.extension.awaitOrElse
 import wing.tree.bionda.data.extension.baseDate
 import wing.tree.bionda.data.extension.baseTime
 import wing.tree.bionda.data.extension.isNull
@@ -111,15 +112,11 @@ class WeatherRepository(
             }
 
             val midLandFcstTa = MidLandFcstTa(
-                midLandFcst = try {
-                    midLandFcst.await()
-                } catch (throwable: Throwable) {
-                    Complete.Failure(throwable)
+                midLandFcst = midLandFcst.awaitOrElse {
+                    Complete.Failure(it)
                 },
-                midTa = try {
-                    midTa.await()
-                } catch (throwable: Throwable) {
-                    Complete.Failure(throwable)
+                midTa = midTa.awaitOrElse {
+                    Complete.Failure(it)
                 },
                 tmFcCalendar = tmFcCalendar
             )
