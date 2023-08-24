@@ -1,6 +1,7 @@
 package wing.tree.bionda.data.extension
 
 import android.icu.util.Calendar
+import wing.tree.bionda.data.model.CalendarDecorator
 import wing.tree.bionda.data.regular.koreaCalendarOf
 import wing.tree.bionda.data.top.level.baseDateFormat
 import wing.tree.bionda.data.top.level.baseTimeFormat
@@ -54,33 +55,7 @@ fun Calendar.cloneAsCalendar(): Calendar = with(clone()) {
     }
 }
 
-fun Calendar.cloneAsApiAvailabilityCalendar() = cloneAsCalendar().apply {
-    hourOfDay = if (hourOfDay < 2) {
-        date -= Int.one; 23
-    } else {
-        with(hourOfDay.inc().div(3)) {
-            times(3).dec()
-        }
-    }
-
-    minute = Int.ten
-}
-
-fun Calendar.cloneAsBaseCalendar() = cloneAsCalendar().apply {
-    if (this < cloneAsApiAvailabilityCalendar()) {
-        hourOfDay -= 3
-    }
-
-    hourOfDay = if (hourOfDay < 2) {
-        date -= Int.one; 23
-    } else {
-        with(hourOfDay.inc().div(3)) {
-            times(3).dec()
-        }
-    }
-
-    minute = Int.zero
-}
+fun Calendar.cloneAsBaseCalendar(base: CalendarDecorator.Base) = base(cloneAsCalendar())
 
 fun Calendar.advanceHourOfDayBy(hourOfDay: Int) = apply {
     this.hourOfDay -= hourOfDay

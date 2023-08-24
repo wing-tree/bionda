@@ -7,12 +7,13 @@ import wing.tree.bionda.data.extension.hourOfDay
 import wing.tree.bionda.data.extension.minute
 import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.zero
+import wing.tree.bionda.data.model.CalendarDecorator
 import wing.tree.bionda.data.top.level.baseDateFormat
 import wing.tree.bionda.data.top.level.baseTimeFormat
 import java.util.Date
 import java.util.Locale
 
-fun baseCalendar(): Calendar = koreaCalendar().cloneAsBaseCalendar()
+fun baseCalendar(base: CalendarDecorator.Base): Calendar = koreaCalendar().cloneAsBaseCalendar(base)
 
 fun fcstCalendar(hourOfDay: Int): Calendar = koreaCalendar().apply {
     this.hourOfDay = hourOfDay

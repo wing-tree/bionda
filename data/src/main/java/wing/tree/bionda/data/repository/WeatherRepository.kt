@@ -11,6 +11,7 @@ import wing.tree.bionda.data.extension.baseTime
 import wing.tree.bionda.data.extension.isNull
 import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.tmFc
+import wing.tree.bionda.data.model.CalendarDecorator.Base
 import wing.tree.bionda.data.model.Result.Complete
 import wing.tree.bionda.data.model.weather.MidLandFcst
 import wing.tree.bionda.data.model.weather.MidLandFcstTa
@@ -134,7 +135,7 @@ class WeatherRepository(
         ny: Int
     ): Complete<VilageFcst.Local> {
         return try {
-            val baseCalendar = baseCalendar()
+            val baseCalendar = baseCalendar(Base.VilageFcst)
             val baseDate = baseCalendar.baseDate
             val baseTime = baseCalendar.baseTime
             val vilageFcst = localDataSource.loadVilageFcst(
