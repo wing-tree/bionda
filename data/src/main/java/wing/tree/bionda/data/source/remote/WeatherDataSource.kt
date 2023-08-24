@@ -2,11 +2,13 @@ package wing.tree.bionda.data.source.remote
 
 import kotlinx.coroutines.delay
 import timber.log.Timber
+import wing.tree.bionda.data.BuildConfig
 import wing.tree.bionda.data.extension.five
 import wing.tree.bionda.data.extension.hundreds
 import wing.tree.bionda.data.extension.long
 import wing.tree.bionda.data.extension.three
 import wing.tree.bionda.data.extension.two
+import wing.tree.bionda.data.model.DataType
 import wing.tree.bionda.data.service.MidFcstInfoService
 import wing.tree.bionda.data.service.VilageFcstInfoService
 import kotlin.math.pow
@@ -34,56 +36,50 @@ class WeatherDataSource(
     }
 
     suspend fun getMidLandFcst(
-        serviceKey: String,
         numOfRows: Int,
         pageNo: Int,
-        dataType: String,
         regId: String,
         tmFc: String
     ) = retry {
         midFcstInfoService.getMidLandFcst(
-            serviceKey = serviceKey,
+            serviceKey = BuildConfig.midFcstInfoServiceKey,
             numOfRows = numOfRows,
             pageNo = pageNo,
-            dataType = dataType,
+            dataType = DataType.JSON,
             regId = regId,
             tmFc = tmFc
         )
     }
 
     suspend fun getMidTa(
-        serviceKey: String,
         numOfRows: Int,
         pageNo: Int,
-        dataType: String,
         regId: String,
         tmFc: String
     ) = retry {
         midFcstInfoService.getMidTa(
-            serviceKey = serviceKey,
+            serviceKey = BuildConfig.midFcstInfoServiceKey,
             numOfRows = numOfRows,
             pageNo = pageNo,
-            dataType = dataType,
+            dataType = DataType.JSON,
             regId = regId,
             tmFc = tmFc
         )
     }
 
     suspend fun getUltraSrtNcst(
-        serviceKey: String,
         numOfRows: Int,
         pageNo: Int,
-        dataType: String,
         baseDate: String,
         baseTime: String,
         nx: Int,
         ny: Int
     ) = retry {
         vilageFcstInfoService.getUltraSrtNcst(
-            serviceKey = serviceKey,
+            serviceKey = BuildConfig.vilageFcstInfoServiceKey,
             numOfRows = numOfRows,
             pageNo = pageNo,
-            dataType = dataType,
+            dataType = DataType.JSON,
             baseDate = baseDate,
             baseTime = baseTime,
             nx = nx,
@@ -92,20 +88,18 @@ class WeatherDataSource(
     }
 
     suspend fun getVilageFcst(
-        serviceKey: String,
         numOfRows: Int,
         pageNo: Int,
-        dataType: String,
         baseDate: String,
         baseTime: String,
         nx: Int,
         ny: Int
     ) = retry {
         vilageFcstInfoService.getVilageFcst(
-            serviceKey = serviceKey,
+            serviceKey = BuildConfig.vilageFcstInfoServiceKey,
             numOfRows = numOfRows,
             pageNo = pageNo,
-            dataType = dataType,
+            dataType = DataType.JSON,
             baseDate = baseDate,
             baseTime = baseTime,
             nx = nx,

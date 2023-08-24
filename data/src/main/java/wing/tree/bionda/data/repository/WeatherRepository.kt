@@ -5,19 +5,18 @@ import android.location.Location
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
-import wing.tree.bionda.data.BuildConfig
 import wing.tree.bionda.data.extension.advanceHourOfDayBy
 import wing.tree.bionda.data.extension.baseDate
 import wing.tree.bionda.data.extension.baseTime
 import wing.tree.bionda.data.extension.isNull
 import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.tmFc
+import wing.tree.bionda.data.model.Result.Complete
 import wing.tree.bionda.data.model.weather.MidLandFcst
 import wing.tree.bionda.data.model.weather.MidLandFcstTa
 import wing.tree.bionda.data.model.weather.MidLandFcstTa.Companion.MidLandFcstTa
 import wing.tree.bionda.data.model.weather.MidTa
 import wing.tree.bionda.data.model.weather.RegId
-import wing.tree.bionda.data.model.Result.Complete
 import wing.tree.bionda.data.model.weather.VilageFcst
 import wing.tree.bionda.data.regular.baseCalendar
 import wing.tree.bionda.data.regular.tmFcCalendar
@@ -33,14 +32,9 @@ class WeatherRepository(
     private suspend fun getMidLandFcst(regId: String, tmFcCalendar: Calendar): Complete<MidLandFcst.Local> {
         return try {
             val tmFc = tmFcCalendar.tmFc
-            val local = localDataSource.loadMidLandFcst(
-                regId = regId,
-                tmFc = tmFc
-            ) ?: remoteDataSource.getMidLandFcst(
-                serviceKey = BuildConfig.midFcstInfoServiceKey,
+            val local = localDataSource.loadMidLandFcst(regId = regId, tmFc = tmFc) ?: remoteDataSource.getMidLandFcst(
                 numOfRows = Int.one,
                 pageNo = Int.one,
-                dataType = DATA_TYPE,
                 regId = regId,
                 tmFc = tmFc
             ).let {
@@ -73,10 +67,8 @@ class WeatherRepository(
                 regId = regId,
                 tmFc = tmFc
             ) ?: remoteDataSource.getMidTa(
-                serviceKey = BuildConfig.midFcstInfoServiceKey,
                 numOfRows = Int.one,
                 pageNo = Int.one,
-                dataType = DATA_TYPE,
                 regId = regId,
                 tmFc = tmFc
             ).let { remote ->
@@ -151,10 +143,8 @@ class WeatherRepository(
                 nx = nx,
                 ny = ny
             ) ?: remoteDataSource.getVilageFcst(
-                serviceKey = BuildConfig.vilageFcstInfoServiceKey,
                 numOfRows = 290,
                 pageNo = Int.one,
-                dataType = DATA_TYPE,
                 baseDate = baseDate,
                 baseTime = baseTime,
                 nx = nx,
@@ -185,9 +175,5 @@ class WeatherRepository(
         } catch (throwable: Throwable) {
             Complete.Failure(throwable)
         }
-    }
-
-    companion object {
-        private const val DATA_TYPE = "JSON"
     }
 }
