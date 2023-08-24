@@ -54,8 +54,7 @@ fun Calendar.cloneAsCalendar(): Calendar = with(clone()) {
 
 fun Calendar.cloneAsApiAvailabilityCalendar() = cloneAsCalendar().apply {
     hourOfDay = if (hourOfDay < 2) {
-        date -= Int.one
-        23
+        date -= Int.one; 23
     } else {
         with(hourOfDay.inc().div(3)) {
             times(3).dec()
@@ -71,8 +70,7 @@ fun Calendar.cloneAsBaseCalendar() = cloneAsCalendar().apply {
     }
 
     hourOfDay = if (hourOfDay < 2) {
-        date -= Int.one
-        23
+        date -= Int.one; 23
     } else {
         with(hourOfDay.inc().div(3)) {
             times(3).dec()
