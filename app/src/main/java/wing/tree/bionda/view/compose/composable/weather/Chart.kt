@@ -37,7 +37,7 @@ import java.util.Locale
 fun Chart(
     items: ImmutableList<Forecast.Item>,
     modifier: Modifier = Modifier,
-    style: ChartStyle = ChartStyle.default,
+    style: ChartStyle = ChartStyle.defaultValue,
 ) {
     val contentColor = LocalContentColor.current
     val context = LocalContext.current
