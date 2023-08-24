@@ -3,31 +3,13 @@ package wing.tree.bionda.model
 import androidx.compose.runtime.Stable
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
-import wing.tree.bionda.data.extension.baseDate
-import wing.tree.bionda.data.extension.hourOfDay
-import wing.tree.bionda.data.extension.int
-import wing.tree.bionda.data.extension.not
 import wing.tree.bionda.data.extension.oneHundred
 import wing.tree.bionda.data.model.weather.Category
 import wing.tree.bionda.data.model.weather.CodeValue
-import wing.tree.bionda.data.regular.koreaCalendar
 
 data class VilageFcst(
     val items: ImmutableList<Item>
 ) {
-    val currentItem: Item? get() = with(items) {
-        firstOrNull {
-            with(koreaCalendar()) {
-                when  {
-                    it.fcstDate not baseDate.int -> false
-                    it.fcstHour not hourOfDay -> false
-                    else -> true
-                }
-            }
-        }
-            ?: firstOrNull()
-    }
-
     @Stable
     data class Item(
         val fcstDate: Int,

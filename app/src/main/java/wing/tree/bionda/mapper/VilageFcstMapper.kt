@@ -6,9 +6,7 @@ import wing.tree.bionda.data.model.weather.VilageFcst.Local as DataModel
 import wing.tree.bionda.model.VilageFcst as PresentationModel
 
 class VilageFcstMapper : DataModelMapper<DataModel, PresentationModel> {
-    override fun toPresentationModel(
-        dataModel: DataModel
-    ): PresentationModel {
+    override fun toPresentationModel(dataModel: DataModel): PresentationModel {
         val items = dataModel.items.groupBy {
             it.fcstDate to it.fcstTime
         }.map { (key, value) ->

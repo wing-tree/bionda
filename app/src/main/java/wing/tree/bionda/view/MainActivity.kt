@@ -28,7 +28,6 @@ import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -59,8 +58,10 @@ import wing.tree.bionda.permissions.PermissionChecker
 import wing.tree.bionda.permissions.RequestMultiplePermissions
 import wing.tree.bionda.permissions.locationPermissions
 import wing.tree.bionda.theme.BiondaTheme
-import wing.tree.bionda.view.compose.composable.alarm.Alarm
 import wing.tree.bionda.view.compose.composable.SingleChoiceSegmentedButtonRow
+import wing.tree.bionda.view.compose.composable.alarm.Alarm
+import wing.tree.bionda.view.compose.composable.core.VerticalSpacer
+import wing.tree.bionda.view.compose.composable.weather.Header
 import wing.tree.bionda.view.compose.composable.weather.Weather
 import wing.tree.bionda.view.model.MainViewModel
 import wing.tree.bionda.view.state.AlarmState.Action
@@ -150,9 +151,10 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
                             .fillMaxSize()
                             .padding(innerPadding)
                     ) {
-                        // TODO remove.
-                        Text(text = state.headerState.toString().take(30))
-                        
+                        Header(state = state.headerState)
+
+                        VerticalSpacer(height = 16.dp)
+
                         SingleChoiceSegmentedButtonRow(
                             selectedSegmentedButtonIndex = selectedSegmentedButtonIndex,
                             onClick = {
