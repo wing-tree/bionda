@@ -9,21 +9,26 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import wing.tree.bionda.data.extension.date
 import wing.tree.bionda.data.extension.dayOfWeek
@@ -36,8 +41,10 @@ import wing.tree.bionda.data.model.weather.MidLandFcstTa.BothSuccess
 import wing.tree.bionda.data.model.weather.MidLandFcstTa.OneOfSuccess
 import wing.tree.bionda.data.regular.koreaCalendar
 import wing.tree.bionda.data.top.level.dayOfMonthFormat
+import wing.tree.bionda.model.WeatherIcons
 import wing.tree.bionda.theme.SunOrange
 import wing.tree.bionda.theme.WaterBlue
+import wing.tree.bionda.view.compose.composable.core.DegreeText
 import wing.tree.bionda.view.compose.composable.core.Loading
 import wing.tree.bionda.view.compose.composable.core.VerticalSpacer
 import wing.tree.bionda.view.state.MidLandFcstTaState
@@ -69,11 +76,7 @@ fun MidLandFcstTa(
     ) {
         when(it) {
             MidLandFcstTaState.Loading -> Loading(modifier = Modifier)
-            is MidLandFcstTaState.Content -> Content(
-                content = it,
-                modifier = Modifier.fillMaxSize()
-            )
-
+            is MidLandFcstTaState.Content -> Content(content = it)
             is MidLandFcstTaState.Error -> Text("${it.throwable}")
         }
     }
@@ -85,10 +88,12 @@ private fun Content(
     modifier: Modifier = Modifier
 ) {
     ElevatedCard(modifier = modifier) {
-        when(val midLandFcstTa = content.midLandFcstTa) {
-            is BothSuccess -> BothSuccess(bothSuccess = midLandFcstTa)
-            is OneOfSuccess -> OneOfSuccess(oneOfSuccess = midLandFcstTa)
-            is BothFailure -> BothFailure(bothFailure = midLandFcstTa)
+        Column(modifier = Modifier.padding(vertical = 12.dp)) {
+            when(val midLandFcstTa = content.midLandFcstTa) {
+                is BothSuccess -> BothSuccess(bothSuccess = midLandFcstTa)
+                is OneOfSuccess -> OneOfSuccess(oneOfSuccess = midLandFcstTa)
+                is BothFailure -> BothFailure(bothFailure = midLandFcstTa)
+            }
         }
     }
 }
@@ -99,20 +104,25 @@ private fun BothSuccess(
     modifier: Modifier = Modifier
 ) {
     val items = with(bothSuccess) {
-        koreaCalendar()
+        val n = koreaCalendar()
             .julianDay
             .minus(tmFcCalendar.julianDay)
-            .let {
-                items.drop(it)
-            }
+
+        advancedDayBy(n)
     }
 
-    bothSuccess.items
     val (maxTa, minTa) = with(bothSuccess.midTa) {
         maxTa to minTa
     }
 
-    LazyRow(modifier = modifier) {
+    // TODO: Remove
+    Text(text = bothSuccess.tmFcCalendar.tmFc)
+
+    LazyRow(
+        modifier = modifier,
+        contentPadding = PaddingValues(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
         items(items) { item ->
             val (n, landFcst, ta) = item
 
@@ -145,12 +155,19 @@ private fun OneOfSuccess(
                         .julianDay
                         .minus(tmFcCalendar.julianDay)
 
-                    midLandFcst.landFcst.drop(n)
+                    midLandFcst.advancedDayBy(n)
                 }
 
-                LazyRow(modifier = Modifier.fillMaxWidth()) {
+                LazyRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentPadding = PaddingValues(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
                     items(items) {
-                        LandFcst(landFcst = it)
+                        Column {
+                            TmFc(n = it.n)
+                            LandFcst(landFcst = it)
+                        }
                     }
                 }
             }
@@ -161,20 +178,27 @@ private fun OneOfSuccess(
                         .julianDay
                         .minus(tmFcCalendar.julianDay)
 
-                    midTa.ta.drop(n)
+                    midTa.advancedDayBy(n)
                 }
 
                 val (maxTa, minTa) = with(oneOfSuccess.midTa) {
                     maxTa to minTa
                 }
 
-                LazyRow(modifier = Modifier.fillMaxWidth()) {
+                LazyRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentPadding = PaddingValues(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
                     items(items) {
-                        Ta(
-                            ta = it,
-                            max = maxTa.max,
-                            min = minTa.min
-                        )
+                        Column {
+                            TmFc(n = it.n)
+                            Ta(
+                                ta = it,
+                                max = maxTa.max,
+                                min = minTa.min
+                            )
+                        }
                     }
                 }
             }
@@ -189,7 +213,12 @@ private fun BothFailure(
     bothFailure: BothFailure,
     modifier: Modifier = Modifier
 ) {
-
+    Column(modifier = modifier) {
+        with(bothFailure) {
+            Text(text = midLandFcst.message ?: "$midLandFcst")
+            Text(text = midTa.message ?: "$midTa")
+        }
+    }
 }
 
 @Composable
@@ -226,17 +255,33 @@ private fun LandFcst(
                 modifier = modifier,
                 horizontalArrangement = Arrangement.Center
             ) {
-                wfAm?.let {
-                    Text(text = it)
+                val weatherIcons = remember {
+                    WeatherIcons.Daytime
                 }
 
-                wfPm?.let {
-                    Text(text = it)
+                weatherIcons.wf[wfAm]?.let {
+                    Icon(
+                        painter = painterResource(id = it),
+                        contentDescription = null,
+                        modifier = Modifier.size(25.dp)
+                    )
+                }
+
+                weatherIcons.wf[wfPm]?.let {
+                    Icon(
+                        painter = painterResource(id = it),
+                        contentDescription = null,
+                        modifier = Modifier.size(25.dp)
+                    )
                 }
 
                 if (wfAm.isNull()) {
-                    wf?.let {
-                        Text(text = it)
+                    weatherIcons.wf[wf]?.let {
+                        Icon(
+                            painter = painterResource(id = it),
+                            contentDescription = null,
+                            modifier = Modifier.size(25.dp)
+                        )
                     }
                 }
             }
@@ -281,7 +326,7 @@ private fun Ta(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         VerticalSpacer(height = topOffset)
-        Text(text = ta.max.toString())
+        DegreeText(text = "${ta.max}")
         Box(
             modifier = Modifier
                 .width(4.dp)
@@ -294,6 +339,6 @@ private fun Ta(
                 )
         )
 
-        Text(text = ta.min.toString())
+        DegreeText(text = "${ta.min}")
     }
 }

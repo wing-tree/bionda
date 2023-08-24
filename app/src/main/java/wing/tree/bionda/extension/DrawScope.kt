@@ -28,7 +28,7 @@ import wing.tree.bionda.data.extension.`is`
 import wing.tree.bionda.data.extension.isZero
 import wing.tree.bionda.data.extension.quarter
 import wing.tree.bionda.data.extension.zero
-import wing.tree.bionda.model.ChartStyle
+import wing.tree.bionda.model.style.ChartStyle
 import wing.tree.bionda.model.Forecast
 
 val DrawScope.nativeCanvas: Canvas get() = drawContext.canvas.nativeCanvas
@@ -108,9 +108,12 @@ fun DrawScope.drawTmp(
         }
     }
 
+    val width = textPaint.measureText(String.degree)
+    val x = pointF.x.plus(width.half)
+
     nativeCanvas.drawText(
         text,
-        pointF.x,
+        x,
         pointF.y.plus(offset.y),
         textPaint
     )

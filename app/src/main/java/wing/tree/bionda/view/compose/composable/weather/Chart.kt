@@ -28,7 +28,7 @@ import wing.tree.bionda.extension.drawTmpChart
 import wing.tree.bionda.extension.drawWeatherIcon
 import wing.tree.bionda.extension.drawWsd
 import wing.tree.bionda.extension.toTmpOffsets
-import wing.tree.bionda.model.ChartStyle
+import wing.tree.bionda.model.style.ChartStyle
 import wing.tree.bionda.model.Forecast
 import java.lang.Float.min
 import java.util.Locale
@@ -37,7 +37,7 @@ import java.util.Locale
 fun Chart(
     items: ImmutableList<Forecast.Item>,
     modifier: Modifier = Modifier,
-    style: ChartStyle = ChartStyle.default,
+    style: ChartStyle = ChartStyle.defaultValue,
 ) {
     val contentColor = LocalContentColor.current
     val context = LocalContext.current

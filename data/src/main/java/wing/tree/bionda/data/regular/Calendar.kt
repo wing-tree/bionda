@@ -14,14 +14,6 @@ import java.util.Locale
 
 fun baseCalendar(): Calendar = koreaCalendar().cloneAsBaseCalendar()
 
-fun calendarOf(
-    timeInMillis: Long? = null
-): Calendar = Calendar.getInstance().apply {
-    timeInMillis?.let {
-        this.timeInMillis = it
-    }
-}
-
 fun fcstCalendar(hourOfDay: Int): Calendar = koreaCalendar().apply {
     this.hourOfDay = hourOfDay
 }
@@ -51,6 +43,14 @@ fun koreaCalendar(baseDate: String, baseTime: String): Calendar = koreaCalendar(
     with(koreaCalendar(baseTimeFormat.parse(baseTime))) {
         it.hourOfDay = hourOfDay
         it.minute = minute
+    }
+}
+
+fun koreaCalendarOf(
+    timeInMillis: Long? = null
+): Calendar = Calendar.getInstance().apply {
+    timeInMillis?.let {
+        this.timeInMillis = it
     }
 }
 

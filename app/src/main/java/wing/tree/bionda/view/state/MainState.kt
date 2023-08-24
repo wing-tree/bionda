@@ -45,6 +45,8 @@ sealed interface AlarmState {
             DELETE_ALL
         }
 
+        object Add : Action
+
         sealed interface Alarms : Action {
             val alarm: Alarm
 

@@ -1,17 +1,9 @@
 package wing.tree.bionda.data.validator
 
-import wing.tree.bionda.data.exception.OpenApiError
-import wing.tree.bionda.data.model.weather.Response
+import wing.tree.bionda.data.model.Response
 
-object ResponseValidator {
-    fun validate(response: Response<*>) {
-        if (response.isUnsuccessful) {
-            val header = response.header
+interface ResponseValidator {
+    val response: Response<*>
 
-            throw OpenApiError(
-                errorCode = header.resultCode,
-                errorMsg = header.resultMsg
-            )
-        }
-    }
+    fun validate(vararg params: String)
 }

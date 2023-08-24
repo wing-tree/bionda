@@ -1,4 +1,4 @@
-package wing.tree.bionda.model
+package wing.tree.bionda.model.style
 
 import android.text.TextPaint
 import androidx.compose.material3.MaterialTheme.typography
@@ -87,7 +87,7 @@ data class ChartStyle(
     }
 
     companion object {
-        val default = ChartStyle(
+        val defaultValue = ChartStyle(
             segment = Segment(width = 64.dp),
             fcstHour = FcstHour,
             pcp = Pcp,

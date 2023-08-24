@@ -2,6 +2,7 @@ package wing.tree.bionda.data.model.weather
 
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
+import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.data.model.Result.Complete
 import wing.tree.bionda.data.model.calendar.TmFcCalendar
 import wing.tree.bionda.data.model.isSuccess
@@ -28,6 +29,20 @@ sealed interface MidLandFcstTa {
             .map { (landFcst, ta) ->
                 Item(n = landFcst.n, landFcst = landFcst, ta = ta)
             }.toImmutableList()
+
+        fun advancedDayBy(n: Int) = if (n > Int.zero) {
+            items.map { item ->
+                with(item.n.minus(n)) {
+                    item.copy(
+                        n = this,
+                        landFcst = item.landFcst.copy(n = this),
+                        ta = item.ta.copy(n = this)
+                    )
+                }
+            }.toImmutableList()
+        } else {
+            items
+        }
     }
 
     sealed interface OneOfSuccess : MidLandFcstTa {
