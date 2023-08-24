@@ -15,17 +15,17 @@ import wing.tree.bionda.data.extension.`is`
 import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.radians
 import wing.tree.bionda.data.extension.two
-import wing.tree.bionda.data.model.FcstZoneCd
+import wing.tree.bionda.data.model.weather.FcstZoneCd
 import wing.tree.bionda.data.model.LatLon
-import wing.tree.bionda.data.model.RegId
+import wing.tree.bionda.data.model.weather.RegId
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.pow
 import kotlin.math.sin
 import kotlin.math.sqrt
-import wing.tree.bionda.data.model.MidLandFcst.Local as MidLandFcst
-import wing.tree.bionda.data.model.MidTa.Local as MidTa
-import wing.tree.bionda.data.model.VilageFcst.Local as VilageFcst
+import wing.tree.bionda.data.model.weather.MidLandFcst.Local as MidLandFcst
+import wing.tree.bionda.data.model.weather.MidTa.Local as MidTa
+import wing.tree.bionda.data.model.weather.VilageFcst.Local as VilageFcst
 
 class WeatherDataSource(
     private val context: Context,

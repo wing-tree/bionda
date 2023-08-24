@@ -31,10 +31,10 @@ import wing.tree.bionda.data.extension.negativeOne
 import wing.tree.bionda.data.extension.ten
 import wing.tree.bionda.data.model.Address
 import wing.tree.bionda.data.model.Alarm
-import wing.tree.bionda.data.model.MidLandFcstTa
+import wing.tree.bionda.data.model.weather.MidLandFcstTa
 import wing.tree.bionda.data.model.Result
 import wing.tree.bionda.data.model.Result.Complete
-import wing.tree.bionda.data.model.VilageFcst
+import wing.tree.bionda.data.model.weather.VilageFcst
 import wing.tree.bionda.data.provider.LocationProvider
 import wing.tree.bionda.data.repository.AlarmRepository
 import wing.tree.bionda.data.repository.WeatherRepository

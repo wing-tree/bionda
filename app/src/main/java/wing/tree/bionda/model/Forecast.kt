@@ -10,9 +10,9 @@ import wing.tree.bionda.data.extension.hourOfDay
 import wing.tree.bionda.data.extension.int
 import wing.tree.bionda.data.extension.not
 import wing.tree.bionda.data.extension.oneHundred
-import wing.tree.bionda.data.model.Category
-import wing.tree.bionda.data.model.CodeValue
-import wing.tree.bionda.data.model.VilageFcst
+import wing.tree.bionda.data.model.weather.Category
+import wing.tree.bionda.data.model.weather.CodeValue
+import wing.tree.bionda.data.model.weather.VilageFcst
 import wing.tree.bionda.data.regular.koreaCalendar
 import wing.tree.bionda.mapper.DataModelMapper
 

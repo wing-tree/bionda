@@ -1,11 +1,12 @@
-package wing.tree.bionda.data.model
+package wing.tree.bionda.data.model.weather
 
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import wing.tree.bionda.data.model.Result.Complete
 import wing.tree.bionda.data.model.calendar.TmFcCalendar
-import wing.tree.bionda.data.model.MidLandFcst.Local as LandFcst
-import wing.tree.bionda.data.model.MidTa.Local as Ta
+import wing.tree.bionda.data.model.isSuccess
+import wing.tree.bionda.data.model.weather.MidLandFcst.Local as LandFcst
+import wing.tree.bionda.data.model.weather.MidTa.Local as Ta
 
 sealed interface MidLandFcstTa {
     val tmFcCalendar: TmFcCalendar

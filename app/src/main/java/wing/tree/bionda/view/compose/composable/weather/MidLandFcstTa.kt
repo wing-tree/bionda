@@ -31,9 +31,9 @@ import wing.tree.bionda.data.extension.empty
 import wing.tree.bionda.data.extension.float
 import wing.tree.bionda.data.extension.isNull
 import wing.tree.bionda.data.extension.julianDay
-import wing.tree.bionda.data.model.MidLandFcstTa.BothFailure
-import wing.tree.bionda.data.model.MidLandFcstTa.BothSuccess
-import wing.tree.bionda.data.model.MidLandFcstTa.OneOfSuccess
+import wing.tree.bionda.data.model.weather.MidLandFcstTa.BothFailure
+import wing.tree.bionda.data.model.weather.MidLandFcstTa.BothSuccess
+import wing.tree.bionda.data.model.weather.MidLandFcstTa.OneOfSuccess
 import wing.tree.bionda.data.regular.koreaCalendar
 import wing.tree.bionda.data.top.level.dayOfMonthFormat
 import wing.tree.bionda.theme.SunOrange
@@ -42,8 +42,8 @@ import wing.tree.bionda.view.compose.composable.core.Loading
 import wing.tree.bionda.view.compose.composable.core.VerticalSpacer
 import wing.tree.bionda.view.state.MidLandFcstTaState
 import java.util.Locale
-import wing.tree.bionda.data.model.MidLandFcst.Local as MidLandFcst
-import wing.tree.bionda.data.model.MidTa.Local as MidTa
+import wing.tree.bionda.data.model.weather.MidLandFcst.Local as MidLandFcst
+import wing.tree.bionda.data.model.weather.MidTa.Local as MidTa
 
 private val weekdays = DateFormatSymbols
     .getInstance(Locale.KOREA)

@@ -12,9 +12,9 @@ import wing.tree.bionda.data.database.type.converters.MidLandFcstConverters
 import wing.tree.bionda.data.database.type.converters.MidTaConverters
 import wing.tree.bionda.data.database.type.converters.VilageFcstConverters
 import wing.tree.bionda.data.model.Alarm
-import wing.tree.bionda.data.model.MidLandFcst.Local as MidLandFcst
-import wing.tree.bionda.data.model.MidTa.Local as MidTa
-import wing.tree.bionda.data.model.VilageFcst.Local as VilageFcst
+import wing.tree.bionda.data.model.weather.MidLandFcst.Local as MidLandFcst
+import wing.tree.bionda.data.model.weather.MidTa.Local as MidTa
+import wing.tree.bionda.data.model.weather.VilageFcst.Local as VilageFcst
 
 @androidx.room.Database(
     entities = [Alarm::class, MidLandFcst::class, MidTa::class, VilageFcst::class],

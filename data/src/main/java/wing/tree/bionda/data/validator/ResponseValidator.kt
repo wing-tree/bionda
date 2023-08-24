@@ -1,7 +1,7 @@
 package wing.tree.bionda.data.validator
 
 import wing.tree.bionda.data.exception.OpenApiError
-import wing.tree.bionda.data.model.Response
+import wing.tree.bionda.data.model.weather.Response
 
 object ResponseValidator {
     fun validate(response: Response<*>) {

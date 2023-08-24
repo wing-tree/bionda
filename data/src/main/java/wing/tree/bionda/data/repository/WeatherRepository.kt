@@ -7,13 +7,13 @@ import kotlinx.coroutines.coroutineScope
 import wing.tree.bionda.data.BuildConfig
 import wing.tree.bionda.data.extension.isNull
 import wing.tree.bionda.data.extension.one
-import wing.tree.bionda.data.model.MidLandFcst
-import wing.tree.bionda.data.model.MidLandFcstTa
-import wing.tree.bionda.data.model.MidLandFcstTa.Companion.MidLandFcstTa
-import wing.tree.bionda.data.model.MidTa
-import wing.tree.bionda.data.model.RegId
+import wing.tree.bionda.data.model.weather.MidLandFcst
+import wing.tree.bionda.data.model.weather.MidLandFcstTa
+import wing.tree.bionda.data.model.weather.MidLandFcstTa.Companion.MidLandFcstTa
+import wing.tree.bionda.data.model.weather.MidTa
+import wing.tree.bionda.data.model.weather.RegId
 import wing.tree.bionda.data.model.Result.Complete
-import wing.tree.bionda.data.model.VilageFcst
+import wing.tree.bionda.data.model.weather.VilageFcst
 import wing.tree.bionda.data.model.calendar.BaseCalendar
 import wing.tree.bionda.data.model.calendar.TmFcCalendar
 import wing.tree.bionda.data.source.local.WeatherDataSource as LocalDataSource

@@ -5,7 +5,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
-import wing.tree.bionda.data.model.VilageFcst.Item
+import wing.tree.bionda.data.model.weather.VilageFcst.Item
 
 class VilageFcstConverters {
     private val json = Json {

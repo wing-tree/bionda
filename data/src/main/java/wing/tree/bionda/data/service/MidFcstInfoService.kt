@@ -2,8 +2,8 @@ package wing.tree.bionda.data.service
 
 import retrofit2.http.GET
 import retrofit2.http.Query
-import wing.tree.bionda.data.model.MidLandFcst
-import wing.tree.bionda.data.model.MidTa
+import wing.tree.bionda.data.model.weather.MidLandFcst
+import wing.tree.bionda.data.model.weather.MidTa
 
 interface MidFcstInfoService {
     @GET("getMidLandFcst")
