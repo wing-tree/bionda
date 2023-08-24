@@ -1,12 +1,17 @@
 package wing.tree.bionda.data.repository
 
+import android.icu.util.Calendar
 import android.location.Location
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import wing.tree.bionda.data.BuildConfig
+import wing.tree.bionda.data.extension.advanceHourOfDayBy
+import wing.tree.bionda.data.extension.baseDate
+import wing.tree.bionda.data.extension.baseTime
 import wing.tree.bionda.data.extension.isNull
 import wing.tree.bionda.data.extension.one
+import wing.tree.bionda.data.extension.tmFc
 import wing.tree.bionda.data.model.weather.MidLandFcst
 import wing.tree.bionda.data.model.weather.MidLandFcstTa
 import wing.tree.bionda.data.model.weather.MidLandFcstTa.Companion.MidLandFcstTa
@@ -14,8 +19,8 @@ import wing.tree.bionda.data.model.weather.MidTa
 import wing.tree.bionda.data.model.weather.RegId
 import wing.tree.bionda.data.model.Result.Complete
 import wing.tree.bionda.data.model.weather.VilageFcst
-import wing.tree.bionda.data.model.calendar.BaseCalendar
-import wing.tree.bionda.data.model.calendar.TmFcCalendar
+import wing.tree.bionda.data.regular.baseCalendar
+import wing.tree.bionda.data.regular.tmFcCalendar
 import wing.tree.bionda.data.source.local.WeatherDataSource as LocalDataSource
 import wing.tree.bionda.data.source.remote.WeatherDataSource as RemoteDataSource
 
@@ -25,7 +30,7 @@ class WeatherRepository(
 ) {
     private val ioDispatcher = Dispatchers.IO
 
-    private suspend fun getMidLandFcst(regId: String, tmFcCalendar: TmFcCalendar): Complete<MidLandFcst.Local> {
+    private suspend fun getMidLandFcst(regId: String, tmFcCalendar: Calendar): Complete<MidLandFcst.Local> {
         return try {
             val tmFc = tmFcCalendar.tmFc
             val local = localDataSource.loadMidLandFcst(
@@ -43,7 +48,7 @@ class WeatherRepository(
                     if (it.item.rnSt3Am.isNull()) {
                         val previous = localDataSource.loadMidLandFcst(
                             regId = regId,
-                            tmFc = tmFcCalendar.previous().tmFc
+                            tmFc = tmFcCalendar.advanceHourOfDayBy(12).tmFc
                         )
 
                         prepend(previous)
@@ -61,7 +66,7 @@ class WeatherRepository(
         }
     }
 
-    private suspend fun getMidTa(regId: String, tmFcCalendar: TmFcCalendar): Complete<MidTa.Local> {
+    private suspend fun getMidTa(regId: String, tmFcCalendar: Calendar): Complete<MidTa.Local> {
         return try {
             val tmFc = tmFcCalendar.tmFc
             val local = localDataSource.loadMidTa(
@@ -79,7 +84,7 @@ class WeatherRepository(
                     if (item.taMin3.isNull()) {
                         val previous = localDataSource.loadMidTa(
                             regId = regId,
-                            tmFc = tmFcCalendar.previous().tmFc
+                            tmFc = tmFcCalendar.advanceHourOfDayBy(12).tmFc
                         )
 
                         prepend(previous)
@@ -99,7 +104,7 @@ class WeatherRepository(
 
     suspend fun getMidLandFcstTa(location: Location): Complete<MidLandFcstTa> = coroutineScope {
         try {
-            val tmFcCalendar = TmFcCalendar()
+            val tmFcCalendar = tmFcCalendar()
             val midLandFcst = async(ioDispatcher) {
                 val regId = localDataSource.getRegId(location, RegId.MidLandFcst)
 
@@ -137,7 +142,7 @@ class WeatherRepository(
         ny: Int
     ): Complete<VilageFcst.Local> {
         return try {
-            val baseCalendar = BaseCalendar()
+            val baseCalendar = baseCalendar()
             val baseDate = baseCalendar.baseDate
             val baseTime = baseCalendar.baseTime
             val vilageFcst = localDataSource.loadVilageFcst(
@@ -155,7 +160,7 @@ class WeatherRepository(
                 nx = nx,
                 ny = ny
             ).let { remote ->
-                val previous = baseCalendar.previous().let {
+                val previous = baseCalendar.advanceHourOfDayBy(3).let {
                     localDataSource.loadVilageFcst(
                         baseDate = it.baseDate,
                         baseTime = it.baseDate,

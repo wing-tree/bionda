@@ -4,9 +4,11 @@ import android.icu.util.Calendar
 import wing.tree.bionda.data.regular.koreaCalendarOf
 import wing.tree.bionda.data.top.level.baseDateFormat
 import wing.tree.bionda.data.top.level.baseTimeFormat
+import wing.tree.bionda.data.top.level.tmFcFormat
 
 val Calendar.baseDate: String get() = baseDateFormat.format(time)
 val Calendar.baseTime: String get() = baseTimeFormat.format(time)
+val Calendar.tmFc: String get() = tmFcFormat.format(time)
 
 var Calendar.date: Int
     get() = get(Calendar.DATE)
@@ -78,4 +80,8 @@ fun Calendar.cloneAsBaseCalendar() = cloneAsCalendar().apply {
     }
 
     minute = Int.zero
+}
+
+fun Calendar.advanceHourOfDayBy(hourOfDay: Int) = apply {
+    this.hourOfDay -= hourOfDay
 }

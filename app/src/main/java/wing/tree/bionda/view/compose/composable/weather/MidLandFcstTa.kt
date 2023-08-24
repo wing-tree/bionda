@@ -36,6 +36,7 @@ import wing.tree.bionda.data.extension.empty
 import wing.tree.bionda.data.extension.float
 import wing.tree.bionda.data.extension.isNull
 import wing.tree.bionda.data.extension.julianDay
+import wing.tree.bionda.data.extension.tmFc
 import wing.tree.bionda.data.model.weather.MidLandFcstTa.BothFailure
 import wing.tree.bionda.data.model.weather.MidLandFcstTa.BothSuccess
 import wing.tree.bionda.data.model.weather.MidLandFcstTa.OneOfSuccess

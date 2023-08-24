@@ -1,19 +1,19 @@
 package wing.tree.bionda.data.model.weather
 
+import android.icu.util.Calendar
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.data.model.Result.Complete
-import wing.tree.bionda.data.model.calendar.TmFcCalendar
 import wing.tree.bionda.data.model.isSuccess
 import wing.tree.bionda.data.model.weather.MidLandFcst.Local as LandFcst
 import wing.tree.bionda.data.model.weather.MidTa.Local as Ta
 
 sealed interface MidLandFcstTa {
-    val tmFcCalendar: TmFcCalendar
+    val tmFcCalendar: Calendar
 
     data class BothSuccess(
-        override val tmFcCalendar: TmFcCalendar,
+        override val tmFcCalendar: Calendar,
         val midLandFcst: LandFcst,
         val midTa: Ta
     ) : MidLandFcstTa {
@@ -49,20 +49,20 @@ sealed interface MidLandFcstTa {
         val throwable: Throwable
 
         data class MidLandFcst(
-            override val tmFcCalendar: TmFcCalendar,
+            override val tmFcCalendar: Calendar,
             override val throwable: Throwable,
             val midLandFcst: LandFcst
         ) : OneOfSuccess
 
         data class MidTa(
-            override val tmFcCalendar: TmFcCalendar,
+            override val tmFcCalendar: Calendar,
             override val throwable: Throwable,
             val midTa: Ta
         ) : OneOfSuccess
     }
 
     data class BothFailure(
-        override val tmFcCalendar: TmFcCalendar,
+        override val tmFcCalendar: Calendar,
         val midLandFcst: Throwable,
         val midTa: Throwable
     ) : MidLandFcstTa
@@ -71,7 +71,7 @@ sealed interface MidLandFcstTa {
         fun MidLandFcstTa(
             midLandFcst: Complete<LandFcst>,
             midTa: Complete<Ta>,
-            tmFcCalendar: TmFcCalendar
+            tmFcCalendar: Calendar
         ): MidLandFcstTa {
             return when {
                 midLandFcst.isSuccess() -> when {
