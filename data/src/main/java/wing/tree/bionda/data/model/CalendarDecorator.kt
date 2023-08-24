@@ -1,7 +1,6 @@
 package wing.tree.bionda.data.model
 
 import android.icu.util.Calendar
-import wing.tree.bionda.data.extension.cloneAsCalendar
 import wing.tree.bionda.data.extension.date
 import wing.tree.bionda.data.extension.hourOfDay
 import wing.tree.bionda.data.extension.inc
@@ -14,7 +13,7 @@ import wing.tree.bionda.data.extension.zero
 sealed interface CalendarDecorator : (Calendar) -> Calendar {
     sealed interface Base : CalendarDecorator {
         object UltraSrtNcst : Base {
-            override fun invoke(calendar: Calendar): Calendar = calendar.cloneAsCalendar().apply {
+            override fun invoke(calendar: Calendar): Calendar = calendar.apply {
                 if (minute < 40) {
                     hourOfDay -= Int.one
                 }
@@ -24,7 +23,7 @@ sealed interface CalendarDecorator : (Calendar) -> Calendar {
         }
 
         object VilageFcst : Base {
-            override fun invoke(calendar: Calendar): Calendar = calendar.cloneAsCalendar().apply {
+            override fun invoke(calendar: Calendar): Calendar = calendar.apply {
                 if (minute < Int.ten) {
                     if (hourOfDay.inc.rem(3).isZero()) {
                         hourOfDay -= 3
