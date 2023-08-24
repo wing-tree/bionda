@@ -6,7 +6,7 @@ import wing.tree.bionda.data.extension.complement
 import wing.tree.bionda.data.extension.floatOrNull
 import wing.tree.bionda.data.extension.half
 import wing.tree.bionda.data.extension.zero
-import wing.tree.bionda.model.ChartStyle
+import wing.tree.bionda.model.style.ChartStyle
 import wing.tree.bionda.model.Forecast
 
 fun List<Forecast.Item>.toTmpOffsets(

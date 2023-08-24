@@ -1,4 +1,4 @@
-package wing.tree.bionda.model
+package wing.tree.bionda.model.style
 
 import android.text.TextPaint
 import androidx.compose.material3.MaterialTheme.typography
