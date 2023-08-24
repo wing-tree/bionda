@@ -18,7 +18,7 @@ import wing.tree.bionda.data.extension.not
 import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.second
 import wing.tree.bionda.data.regular.koreaCalendar
-import wing.tree.bionda.model.Forecast
+import wing.tree.bionda.model.VilageFcst
 import wing.tree.bionda.top.level.amString
 import wing.tree.bionda.top.level.pmString
 import java.time.LocalTime
@@ -39,11 +39,11 @@ sealed class ContentTextTemplate {
             }
         }
 
-        operator fun invoke(forecast: Forecast): String {
+        operator fun invoke(vilageFcst: VilageFcst): String {
             val koreaCalendar = koreaCalendar()
             val separator = "$COMMA$SPACE"
 
-            return forecast.items
+            return vilageFcst.items
                 .filter {
                     koreaCalendar.predicate(it)
                 }.groupBy {
@@ -96,7 +96,7 @@ sealed class ContentTextTemplate {
         }
     }
 
-    protected fun Calendar.predicate(item: Forecast.Item): Boolean {
+    protected fun Calendar.predicate(item: VilageFcst.Item): Boolean {
         if (item.fcstDate not baseDate.int) {
             return false
         }

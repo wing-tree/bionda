@@ -25,7 +25,7 @@ import wing.tree.bionda.data.provider.LocationProvider
 import wing.tree.bionda.data.repository.AlarmRepository
 import wing.tree.bionda.data.repository.WeatherRepository
 import wing.tree.bionda.extension.toCoordinate
-import wing.tree.bionda.model.Forecast
+import wing.tree.bionda.model.VilageFcst
 import wing.tree.bionda.permissions.PermissionChecker
 import wing.tree.bionda.permissions.locationPermissions
 import wing.tree.bionda.scheduler.AlarmScheduler
@@ -91,7 +91,7 @@ class AlarmService : Service(), PermissionChecker {
                                 nx = nx,
                                 ny = ny
                             ).map {
-                                Forecast.toPresentationModel(it)
+                                VilageFcst.toPresentationModel(it)
                             }.onSuccess { forecast ->
                                 stopForeground(STOP_FOREGROUND_REMOVE)
 
@@ -158,10 +158,10 @@ class AlarmService : Service(), PermissionChecker {
         }
     }
 
-    private fun Alarm.postNotification(forecast: Forecast) {
+    private fun Alarm.postNotification(vilageFcst: VilageFcst) {
         val channelId = createNotificationChannel(FORECAST)
         val ptyOrSky = ContentTextTemplate.PtyOrSky(context)
-        val type = Type.Alarm(channelId, ptyOrSky(forecast), requestCode)
+        val type = Type.Alarm(channelId, ptyOrSky(vilageFcst), requestCode)
         val notification = NotificationFactory.create(context, type)
 
         notification.post(notificationId)

@@ -27,7 +27,7 @@ import wing.tree.bionda.data.extension.isNotNull
 import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.data.model.Address
-import wing.tree.bionda.model.Forecast
+import wing.tree.bionda.model.VilageFcst
 import wing.tree.bionda.view.compose.composable.core.DegreeText
 import wing.tree.bionda.view.compose.composable.core.Loading
 import wing.tree.bionda.view.compose.composable.core.TextClock
@@ -54,7 +54,7 @@ fun VilageFcst(
             VilageFcstState.Loading -> Loading(modifier = Modifier)
             is VilageFcstState.Content -> Content(
                 address = it.address,
-                forecast = it.forecast,
+                vilageFcst = it.vilageFcst,
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -68,7 +68,7 @@ fun VilageFcst(
 @Composable
 private fun Content(
     address: Address?,
-    forecast: Forecast,
+    vilageFcst: VilageFcst,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -76,7 +76,7 @@ private fun Content(
     ) {
         Header(
             address = address,
-            currentItem = forecast.currentItem,
+            currentItem = vilageFcst.currentItem,
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -94,7 +94,7 @@ private fun Content(
                 .height(180.dp) // todo, style에서 계산 필요. or requireHeight 등도 확인.
         ) {
             Chart(
-                items = forecast.items,
+                items = vilageFcst.items,
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(vertical = 12.dp)
@@ -106,7 +106,7 @@ private fun Content(
 @Composable
 private fun Header(
     address: Address?,
-    currentItem: Forecast.Item?,
+    currentItem: VilageFcst.Item?,
     modifier: Modifier = Modifier
 ) {
     Row(

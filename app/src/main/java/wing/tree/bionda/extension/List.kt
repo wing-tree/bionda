@@ -8,9 +8,9 @@ import wing.tree.bionda.data.extension.half
 import wing.tree.bionda.data.extension.inc
 import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.model.style.ChartStyle
-import wing.tree.bionda.model.Forecast
+import wing.tree.bionda.model.VilageFcst
 
-fun List<Forecast.Item>.toTmpOffsets(
+fun List<VilageFcst.Item>.toTmpOffsets(
     density: Float,
     style: ChartStyle
 ): List<Offset> {

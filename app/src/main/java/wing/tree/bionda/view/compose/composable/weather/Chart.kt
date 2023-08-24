@@ -29,13 +29,13 @@ import wing.tree.bionda.extension.drawWeatherIcon
 import wing.tree.bionda.extension.drawWsd
 import wing.tree.bionda.extension.toTmpOffsets
 import wing.tree.bionda.model.style.ChartStyle
-import wing.tree.bionda.model.Forecast
+import wing.tree.bionda.model.VilageFcst
 import java.lang.Float.min
 import java.util.Locale
 
 @Composable
 fun Chart(
-    items: ImmutableList<Forecast.Item>,
+    items: ImmutableList<VilageFcst.Item>,
     modifier: Modifier = Modifier,
     style: ChartStyle = ChartStyle.defaultValue,
 ) {

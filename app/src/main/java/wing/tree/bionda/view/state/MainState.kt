@@ -7,7 +7,7 @@ import wing.tree.bionda.data.model.Address
 import wing.tree.bionda.data.model.Alarm
 import wing.tree.bionda.data.model.weather.MidLandFcstTa
 import wing.tree.bionda.data.model.weather.UltraSrtNcst
-import wing.tree.bionda.model.Forecast
+import wing.tree.bionda.model.VilageFcst
 
 data class MainState(
     val alarmState: AlarmState,
@@ -115,7 +115,7 @@ sealed interface VilageFcstState {
     object Loading : VilageFcstState
     data class Content(
         val address: Address?,
-        val forecast: Forecast
+        val vilageFcst: VilageFcst
     ) : VilageFcstState
 
     data class Error(val throwable: Throwable) : VilageFcstState
