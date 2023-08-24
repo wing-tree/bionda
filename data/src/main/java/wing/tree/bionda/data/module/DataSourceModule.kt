@@ -32,6 +32,7 @@ object DataSourceModule {
             context = context,
             midLandFcstDao = database.midLandFcstDao(),
             midTaDao = database.midTaDao(),
+            ultraSrtNcstDao = database.ultraSrtNcstDao(),
             vilageFcstDao = database.vilageFcstDao()
         )
     }

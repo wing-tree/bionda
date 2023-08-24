@@ -9,14 +9,15 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import wing.tree.bionda.data.database.dao.MidLandFcstDao
 import wing.tree.bionda.data.database.dao.MidTaDao
+import wing.tree.bionda.data.database.dao.UltraSrtNcstDao
 import wing.tree.bionda.data.database.dao.VilageFcstDao
 import wing.tree.bionda.data.extension.double
 import wing.tree.bionda.data.extension.`is`
 import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.radians
 import wing.tree.bionda.data.extension.two
-import wing.tree.bionda.data.model.weather.FcstZoneCd
 import wing.tree.bionda.data.model.LatLon
+import wing.tree.bionda.data.model.weather.FcstZoneCd
 import wing.tree.bionda.data.model.weather.RegId
 import kotlin.math.atan2
 import kotlin.math.cos
@@ -25,12 +26,14 @@ import kotlin.math.sin
 import kotlin.math.sqrt
 import wing.tree.bionda.data.model.weather.MidLandFcst.Local as MidLandFcst
 import wing.tree.bionda.data.model.weather.MidTa.Local as MidTa
+import wing.tree.bionda.data.model.weather.UltraSrtNcst.Local as UltraSrtNcst
 import wing.tree.bionda.data.model.weather.VilageFcst.Local as VilageFcst
 
 class WeatherDataSource(
     private val context: Context,
     private val midLandFcstDao: MidLandFcstDao,
     private val midTaDao: MidTaDao,
+    private val ultraSrtNcstDao: UltraSrtNcstDao,
     private val vilageFcstDao: VilageFcstDao
 ) {
     private val fcstZoneCd: FcstZoneCd by lazy {
@@ -100,6 +103,20 @@ class WeatherDataSource(
         return midTaDao.load(
             regId = regId,
             tmFc = tmFc
+        )
+    }
+
+    suspend fun loadUltraSrtNcst(
+        baseDate: String,
+        baseTime: String,
+        nx: Int,
+        ny: Int
+    ): UltraSrtNcst? {
+        return ultraSrtNcstDao.load(
+            baseDate,
+            baseTime,
+            nx,
+            ny
         )
     }
 

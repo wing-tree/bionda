@@ -29,7 +29,7 @@ sealed interface UltraSrtNcst {
     )
 
     @Entity(
-        tableName = "vilage_fcst",
+        tableName = "ultra_srt_ncst",
         primaryKeys = [
             "nx",
             "ny",
