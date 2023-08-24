@@ -11,6 +11,7 @@ import wing.tree.bionda.data.exception.fourth
 import wing.tree.bionda.data.exception.second
 import wing.tree.bionda.data.exception.third
 import wing.tree.bionda.data.extension.zero
+import wing.tree.bionda.data.service.VilageFcstInfoService
 import wing.tree.bionda.data.validator.ResponseValidator
 
 sealed interface UltraSrtNcst {
@@ -73,15 +74,10 @@ sealed interface UltraSrtNcst {
             }
         }
 
-        fun toLocal(
-            baseDate: String,
-            baseTime: String,
-            nx: Int,
-            ny: Int
-        ): Local {
+        fun toLocal(params: VilageFcstInfoService.Params): Local = with(params) {
             validate(baseDate, baseTime, "$nx", "$ny")
 
-            return Local(
+            Local(
                 items = items.toImmutableList(),
                 baseDate = baseDate,
                 baseTime = baseTime,

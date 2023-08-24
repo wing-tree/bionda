@@ -19,6 +19,7 @@ import wing.tree.bionda.data.extension.two
 import wing.tree.bionda.data.model.LatLon
 import wing.tree.bionda.data.model.weather.FcstZoneCd
 import wing.tree.bionda.data.model.weather.RegId
+import wing.tree.bionda.data.service.VilageFcstInfoService
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.pow
@@ -106,13 +107,8 @@ class WeatherDataSource(
         )
     }
 
-    suspend fun loadUltraSrtNcst(
-        baseDate: String,
-        baseTime: String,
-        nx: Int,
-        ny: Int
-    ): UltraSrtNcst? {
-        return ultraSrtNcstDao.load(
+    suspend fun loadUltraSrtNcst(params: VilageFcstInfoService.Params): UltraSrtNcst? = with(params) {
+        ultraSrtNcstDao.load(
             baseDate,
             baseTime,
             nx,
@@ -120,13 +116,8 @@ class WeatherDataSource(
         )
     }
 
-    suspend fun loadVilageFcst(
-        baseDate: String,
-        baseTime: String,
-        nx: Int,
-        ny: Int
-    ): VilageFcst? {
-        return vilageFcstDao.load(
+    suspend fun loadVilageFcst(params: VilageFcstInfoService.Params): VilageFcst? = with(params) {
+        vilageFcstDao.load(
             baseDate,
             baseTime,
             nx,

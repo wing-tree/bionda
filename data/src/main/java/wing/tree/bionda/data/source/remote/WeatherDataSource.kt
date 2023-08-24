@@ -70,40 +70,38 @@ class WeatherDataSource(
     suspend fun getUltraSrtNcst(
         numOfRows: Int,
         pageNo: Int,
-        baseDate: String,
-        baseTime: String,
-        nx: Int,
-        ny: Int
+        params: VilageFcstInfoService.Params
     ) = retry {
-        vilageFcstInfoService.getUltraSrtNcst(
-            serviceKey = BuildConfig.vilageFcstInfoServiceKey,
-            numOfRows = numOfRows,
-            pageNo = pageNo,
-            dataType = DataType.JSON,
-            baseDate = baseDate,
-            baseTime = baseTime,
-            nx = nx,
-            ny = ny
-        )
+        with(params) {
+            vilageFcstInfoService.getUltraSrtNcst(
+                serviceKey = BuildConfig.vilageFcstInfoServiceKey,
+                numOfRows = numOfRows,
+                pageNo = pageNo,
+                dataType = DataType.JSON,
+                baseDate = baseDate,
+                baseTime = baseTime,
+                nx = nx,
+                ny = ny
+            )
+        }
     }
 
     suspend fun getVilageFcst(
         numOfRows: Int,
         pageNo: Int,
-        baseDate: String,
-        baseTime: String,
-        nx: Int,
-        ny: Int
+        params: VilageFcstInfoService.Params
     ) = retry {
-        vilageFcstInfoService.getVilageFcst(
-            serviceKey = BuildConfig.vilageFcstInfoServiceKey,
-            numOfRows = numOfRows,
-            pageNo = pageNo,
-            dataType = DataType.JSON,
-            baseDate = baseDate,
-            baseTime = baseTime,
-            nx = nx,
-            ny = ny
-        )
+        with(params) {
+            vilageFcstInfoService.getVilageFcst(
+                serviceKey = BuildConfig.vilageFcstInfoServiceKey,
+                numOfRows = numOfRows,
+                pageNo = pageNo,
+                dataType = DataType.JSON,
+                baseDate = baseDate,
+                baseTime = baseTime,
+                nx = nx,
+                ny = ny
+            )
+        }
     }
 }

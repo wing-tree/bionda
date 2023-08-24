@@ -23,6 +23,7 @@ import wing.tree.bionda.data.model.weather.UltraSrtNcst
 import wing.tree.bionda.data.model.weather.VilageFcst
 import wing.tree.bionda.data.regular.baseCalendar
 import wing.tree.bionda.data.regular.tmFcCalendar
+import wing.tree.bionda.data.service.VilageFcstInfoService
 import wing.tree.bionda.data.source.local.WeatherDataSource as LocalDataSource
 import wing.tree.bionda.data.source.remote.WeatherDataSource as RemoteDataSource
 
@@ -136,29 +137,23 @@ class WeatherRepository(
             val baseCalendar = baseCalendar(Base.UltraSrtNcst)
             val baseDate = baseCalendar.baseDate
             val baseTime = baseCalendar.baseTime
-            val vilageFcst = localDataSource.loadUltraSrtNcst(
+            val params = VilageFcstInfoService.Params(
                 baseDate = baseDate,
                 baseTime = baseTime,
                 nx = nx,
                 ny = ny
-            ) ?: remoteDataSource.getUltraSrtNcst(
+            )
+
+            val ultraSrtNcst = localDataSource.loadUltraSrtNcst(params) ?: remoteDataSource.getUltraSrtNcst(
                 numOfRows = 290,
                 pageNo = Int.one,
-                baseDate = baseDate,
-                baseTime = baseTime,
-                nx = nx,
-                ny = ny
+                params
             ).let { remote ->
                 // TODO caching with 10 minutes interval.
-                remote.toLocal(
-                    baseDate = baseCalendar.baseDate,
-                    baseTime = baseCalendar.baseTime,
-                    nx = nx,
-                    ny = ny
-                )
+                remote.toLocal(params)
             }
 
-            Complete.Success(vilageFcst)
+            Complete.Success(ultraSrtNcst)
         } catch (throwable: Throwable) {
             Complete.Failure(throwable)
         }
@@ -172,38 +167,30 @@ class WeatherRepository(
             val baseCalendar = baseCalendar(Base.VilageFcst)
             val baseDate = baseCalendar.baseDate
             val baseTime = baseCalendar.baseTime
-            val vilageFcst = localDataSource.loadVilageFcst(
+            val params = VilageFcstInfoService.Params(
                 baseDate = baseDate,
                 baseTime = baseTime,
                 nx = nx,
                 ny = ny
-            ) ?: remoteDataSource.getVilageFcst(
+            )
+
+            val vilageFcst = localDataSource.loadVilageFcst(params) ?: remoteDataSource.getVilageFcst(
                 numOfRows = 290,
                 pageNo = Int.one,
-                baseDate = baseDate,
-                baseTime = baseTime,
-                nx = nx,
-                ny = ny
+                params = params
             ).let { remote ->
                 val previous = baseCalendar.advanceHourOfDayBy(3).let {
                     localDataSource.loadVilageFcst(
-                        baseDate = it.baseDate,
-                        baseTime = it.baseDate,
-                        nx = nx,
-                        ny = ny
+                        params.copy(
+                            baseDate = it.baseDate,
+                            baseTime = it.baseTime
+                        )
                     )
                 }
 
-                remote.toLocal(
-                    baseDate = baseCalendar.baseDate,
-                    baseTime = baseCalendar.baseTime,
-                    nx = nx,
-                    ny = ny
-                )
-                    .prepend(previous)
-                    .also {
-                        localDataSource.cache(it)
-                    }
+                remote.toLocal(params).prepend(previous).also {
+                    localDataSource.cache(it)
+                }
             }
 
             Complete.Success(vilageFcst)

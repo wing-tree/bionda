@@ -6,6 +6,13 @@ import wing.tree.bionda.data.model.weather.UltraSrtNcst
 import wing.tree.bionda.data.model.weather.VilageFcst
 
 interface VilageFcstInfoService {
+    data class Params(
+        val baseDate: String,
+        val baseTime: String,
+        val nx: Int,
+        val ny: Int
+    )
+
     @GET("getUltraSrtNcst")
     suspend fun getUltraSrtNcst(
         @Query("serviceKey") serviceKey: String,
