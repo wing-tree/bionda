@@ -19,6 +19,7 @@ import wing.tree.bionda.data.model.weather.MidLandFcstTa
 import wing.tree.bionda.data.model.weather.MidLandFcstTa.Companion.MidLandFcstTa
 import wing.tree.bionda.data.model.weather.MidTa
 import wing.tree.bionda.data.model.weather.RegId
+import wing.tree.bionda.data.model.weather.UltraSrtNcst
 import wing.tree.bionda.data.model.weather.VilageFcst
 import wing.tree.bionda.data.regular.baseCalendar
 import wing.tree.bionda.data.regular.tmFcCalendar
@@ -122,6 +123,42 @@ class WeatherRepository(
             )
 
             Complete.Success(midLandFcstTa)
+        } catch (throwable: Throwable) {
+            Complete.Failure(throwable)
+        }
+    }
+
+    suspend fun getUltraSrtNcst(
+        nx: Int,
+        ny: Int
+    ): Complete<UltraSrtNcst.Local> {
+        return try {
+            val baseCalendar = baseCalendar(Base.UltraSrtNcst)
+            val baseDate = baseCalendar.baseDate
+            val baseTime = baseCalendar.baseTime
+            val vilageFcst = localDataSource.loadUltraSrtNcst(
+                baseDate = baseDate,
+                baseTime = baseTime,
+                nx = nx,
+                ny = ny
+            ) ?: remoteDataSource.getUltraSrtNcst(
+                numOfRows = 290,
+                pageNo = Int.one,
+                baseDate = baseDate,
+                baseTime = baseTime,
+                nx = nx,
+                ny = ny
+            ).let { remote ->
+                // TODO caching with 10 minutes interval.
+                remote.toLocal(
+                    baseDate = baseCalendar.baseDate,
+                    baseTime = baseCalendar.baseTime,
+                    nx = nx,
+                    ny = ny
+                )
+            }
+
+            Complete.Success(vilageFcst)
         } catch (throwable: Throwable) {
             Complete.Failure(throwable)
         }

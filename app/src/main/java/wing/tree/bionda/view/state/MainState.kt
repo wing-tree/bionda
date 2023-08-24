@@ -6,13 +6,24 @@ import kotlinx.collections.immutable.persistentSetOf
 import wing.tree.bionda.data.model.Address
 import wing.tree.bionda.data.model.Alarm
 import wing.tree.bionda.data.model.weather.MidLandFcstTa
+import wing.tree.bionda.data.model.weather.UltraSrtNcst
 import wing.tree.bionda.model.Forecast
 
 data class MainState(
-    val alarmState: AlarmState = AlarmState.initialValue,
-    val inSelectionMode: Boolean = false,
-    val weatherState: WeatherState = WeatherState.initialValue
-)
+    val alarmState: AlarmState,
+    val inSelectionMode: Boolean,
+    val headerState: HeaderState,
+    val weatherState: WeatherState
+) {
+    companion object {
+        val initialValue = MainState(
+            alarmState = AlarmState.initialValue,
+            inSelectionMode = false,
+            headerState = HeaderState.initialValue,
+            weatherState = WeatherState.initialValue
+        )
+    }
+}
 
 sealed interface AlarmState {
     val requestPermissions: ImmutableSet<String>
@@ -80,6 +91,20 @@ sealed interface MidLandFcstTaState {
     data class Content(val midLandFcstTa: MidLandFcstTa) : MidLandFcstTaState
 
     data class Error(val throwable: Throwable) : MidLandFcstTaState
+
+    companion object {
+        val initialValue = Loading
+    }
+}
+
+sealed interface HeaderState {
+    object Loading : HeaderState
+    data class Content(
+        val address: Address?,
+        val ultraSrtNcst: UltraSrtNcst
+    ) : HeaderState
+
+    data class Error(val throwable: Throwable) : HeaderState
 
     companion object {
         val initialValue = Loading

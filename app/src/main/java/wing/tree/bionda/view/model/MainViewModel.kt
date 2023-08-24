@@ -34,6 +34,7 @@ import wing.tree.bionda.data.model.Alarm
 import wing.tree.bionda.data.model.weather.MidLandFcstTa
 import wing.tree.bionda.data.model.Result
 import wing.tree.bionda.data.model.Result.Complete
+import wing.tree.bionda.data.model.weather.UltraSrtNcst
 import wing.tree.bionda.data.model.weather.VilageFcst
 import wing.tree.bionda.data.provider.LocationProvider
 import wing.tree.bionda.data.repository.AlarmRepository
@@ -47,6 +48,7 @@ import wing.tree.bionda.scheduler.AlarmScheduler
 import wing.tree.bionda.view.state.AlarmState
 import wing.tree.bionda.view.state.MainState
 import wing.tree.bionda.view.state.MidLandFcstTaState
+import wing.tree.bionda.view.state.HeaderState
 import wing.tree.bionda.view.state.VilageFcstState
 import wing.tree.bionda.view.state.WeatherState
 import java.util.Locale
@@ -64,6 +66,26 @@ class MainViewModel @Inject constructor(
     private val location = MutableStateFlow<Result<Location?>>(Result.Loading)
     private val requestPermissions = MutableStateFlow<ImmutableSet<String>>(persistentSetOf())
     private val stopTimeoutMillis = Long.fiveSecondsInMilliseconds
+    private val headerState = location.map {
+        when (it) {
+            Result.Loading -> HeaderState.Loading
+            is Complete.Success -> it.value?.let { location ->
+                val (nx, ny) = location.toCoordinate()
+                val address = getAddress(location)
+
+                weatherRepository
+                    .getUltraSrtNcst(nx = nx, ny = ny)
+                    .asState(address)
+            } ?: HeaderState.Error(NullPointerException("Location is Null")) // TODO error define.
+
+            is Complete.Failure -> HeaderState.Error(it.throwable)
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(stopTimeoutMillis),
+        initialValue = HeaderState.initialValue
+    )
+
     private val midLandFcstTaState = location.map {
         when (it) {
             Result.Loading -> MidLandFcstTaState.Loading
@@ -164,17 +186,19 @@ class MainViewModel @Inject constructor(
     val state: StateFlow<MainState> = combine(
         alarmState,
         inSelectionMode,
+        headerState,
         weatherState
-    ) { alarmState, inSelectionMode, weatherState ->
+    ) { alarmState, inSelectionMode, ultraSrtNcstState, weatherState ->
         MainState(
             alarmState = alarmState,
             inSelectionMode = inSelectionMode,
+            headerState = ultraSrtNcstState,
             weatherState = weatherState
         )
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(stopTimeoutMillis),
-        initialValue = MainState()
+        initialValue = MainState.initialValue
     )
 
     private suspend fun getAddress(location: Location) = suspendCancellableCoroutine { cancellableContinuation ->
@@ -313,6 +337,15 @@ class MainViewModel @Inject constructor(
     private fun Complete<MidLandFcstTa>.asState(): MidLandFcstTaState = when (this) {
         is Complete.Success -> MidLandFcstTaState.Content(midLandFcstTa = value)
         is Complete.Failure -> MidLandFcstTaState.Error(throwable)
+    }
+
+    private fun Complete<UltraSrtNcst.Local>.asState(address: Address?): HeaderState = when (this) {
+        is Complete.Success -> HeaderState.Content(
+            address = address,
+            ultraSrtNcst = value
+        )
+
+        is Complete.Failure -> HeaderState.Error(throwable)
     }
 
     private fun Complete<VilageFcst.Local>.asState(address: Address?): VilageFcstState = when (this) {
