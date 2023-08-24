@@ -5,6 +5,7 @@ import androidx.compose.ui.unit.Dp
 import wing.tree.bionda.data.extension.complement
 import wing.tree.bionda.data.extension.floatOrNull
 import wing.tree.bionda.data.extension.half
+import wing.tree.bionda.data.extension.inc
 import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.model.style.ChartStyle
 import wing.tree.bionda.model.Forecast
@@ -38,7 +39,7 @@ fun List<Forecast.Item>.toTmpOffsets(
 
         tmps.forEachIndexed { index, tmp ->
             if (index < tmps.lastIndex) {
-                add(tmp.plus(tmps[index.inc()]).half)
+                add(tmp.plus(tmps[index.inc]).half)
             }
         }
 
