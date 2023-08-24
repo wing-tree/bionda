@@ -135,11 +135,9 @@ class WeatherRepository(
     ): Complete<UltraSrtNcst.Local> {
         return try {
             val baseCalendar = baseCalendar(Base.UltraSrtNcst)
-            val baseDate = baseCalendar.baseDate
-            val baseTime = baseCalendar.baseTime
             val params = VilageFcstInfoService.Params(
-                baseDate = baseDate,
-                baseTime = baseTime,
+                baseDate = baseCalendar.baseDate,
+                baseTime = baseCalendar.baseTime,
                 nx = nx,
                 ny = ny
             )
@@ -165,11 +163,9 @@ class WeatherRepository(
     ): Complete<VilageFcst.Local> {
         return try {
             val baseCalendar = baseCalendar(Base.VilageFcst)
-            val baseDate = baseCalendar.baseDate
-            val baseTime = baseCalendar.baseTime
             val params = VilageFcstInfoService.Params(
-                baseDate = baseDate,
-                baseTime = baseTime,
+                baseDate = baseCalendar.baseDate,
+                baseTime = baseCalendar.baseTime,
                 nx = nx,
                 ny = ny
             )
