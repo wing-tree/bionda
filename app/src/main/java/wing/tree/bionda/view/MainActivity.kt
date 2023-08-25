@@ -42,7 +42,6 @@ import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.toggle
 import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.data.top.level.koreaCalendar
-import wing.tree.bionda.data.top.level.noOperations
 import wing.tree.bionda.extension.add
 import wing.tree.bionda.extension.launchApplicationDetailsSettings
 import wing.tree.bionda.extension.rememberWindowSizeClass
@@ -54,6 +53,7 @@ import wing.tree.bionda.permissions.PermissionChecker
 import wing.tree.bionda.permissions.RequestMultiplePermissions
 import wing.tree.bionda.permissions.locationPermissions
 import wing.tree.bionda.theme.BiondaTheme
+import wing.tree.bionda.top.level.noOperations
 import wing.tree.bionda.view.compose.composable.SingleChoiceSegmentedButtonRow
 import wing.tree.bionda.view.compose.composable.alarm.Alarm
 import wing.tree.bionda.view.compose.composable.core.VerticalSpacer
@@ -130,9 +130,7 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
                 Scaffold(
                     topBar = {
                         CenterAlignedTopAppBar(
-                            title = {
-                                noOperations
-                            },
+                            title = noOperations,
                             navigationIcon = {
                                 Icon(
                                     imageVector = Icons.Default.Menu,
