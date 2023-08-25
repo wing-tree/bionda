@@ -94,9 +94,10 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
     override fun onRequestMultiplePermissionsResult(result: PermissionChecker.Result) {
         val (granted, denied) = result
 
-        when {
-            granted.containsAny(locationPermissions) -> viewModel.load()
-            denied.containsAll(locationPermissions) -> viewModel.notifyPermissionsDenied(denied)
+        if (granted.containsAny(locationPermissions)) {
+            viewModel.load()
+        } else {
+            viewModel.notifyPermissionsDenied(denied)
         }
     }
 
@@ -217,6 +218,14 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
                 viewModel.notifyPermissionDenied(SCHEDULE_EXACT_ALARM)
             } else {
                 viewModel.notifyPermissionGranted(SCHEDULE_EXACT_ALARM)
+            }
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (checkSelfSinglePermission(POST_NOTIFICATIONS)) {
+                viewModel.notifyPermissionGranted(POST_NOTIFICATIONS)
+            } else {
+                viewModel.notifyPermissionDenied(POST_NOTIFICATIONS)
             }
         }
     }
