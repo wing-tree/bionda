@@ -74,18 +74,18 @@ class MainActivity : AppCompatActivity(), PermissionChecker {
     }
 
     private val permissions: Set<String> = buildSet {
-        addAll(locationPermissions)
-
-        if (VERSION.SDK_INT >= VERSION_CODES.Q) {
+        if (VERSION.SDK_INT == VERSION_CODES.Q) {
             add(ACCESS_BACKGROUND_LOCATION)
         }
+
+        addAll(locationPermissions)
 
         if (VERSION.SDK_INT >= VERSION_CODES.TIRAMISU) {
             add(POST_NOTIFICATIONS)
         }
     }
 
-    private val requestPermissions = RequestMultiplePermissions().also {
+    private val requestMultiplePermissions = RequestMultiplePermissions().also {
         it.initialize(this)
     }
 
@@ -97,8 +97,8 @@ class MainActivity : AppCompatActivity(), PermissionChecker {
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.RESUMED) {
-                val (granted, denied) = requestPermissions.request(permissions)
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                val (granted, denied) = requestMultiplePermissions.request(permissions)
 
                 with(viewModel) {
                     if (granted.containsAny(locationPermissions)) {
