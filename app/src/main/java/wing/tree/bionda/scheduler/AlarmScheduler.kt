@@ -20,6 +20,17 @@ class AlarmScheduler(private val context: Context) {
         context.getSystemService(AlarmManager::class.java)
     }
 
+    fun cancel(alarm: Alarm) {
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            alarm.requestCode,
+            Intent(context, AlarmReceiver::class.java),
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
+        alarmManager.cancel(pendingIntent)
+    }
+
     fun schedule(alarm: Alarm) {
         val pendingIntent = Intent(context, AlarmReceiver::class.java).apply {
             putExtra(EXTRA_ALARM_ID, alarm.id)
@@ -69,14 +80,11 @@ class AlarmScheduler(private val context: Context) {
         }
     }
 
-    fun cancel(alarm: Alarm) {
-        val pendingIntent = PendingIntent.getBroadcast(
-            context,
-            alarm.requestCode,
-            Intent(context, AlarmReceiver::class.java),
-            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-        )
-
-        alarmManager.cancel(pendingIntent)
+    fun scheduleOrCancel(alarm: Alarm) {
+        if (alarm.on) {
+            schedule(alarm)
+        } else {
+            cancel(alarm)
+        }
     }
 }

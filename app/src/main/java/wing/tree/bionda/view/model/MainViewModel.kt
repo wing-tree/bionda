@@ -318,12 +318,7 @@ class MainViewModel @Inject constructor(
     fun update(alarm: Alarm) {
         viewModelScope.launch {
             alarmRepository.update(alarm)
-
-            if (alarm.on) {
-                alarmScheduler.schedule(alarm)
-            } else {
-                alarmScheduler.cancel(alarm)
-            }
+            alarmScheduler.scheduleOrCancel(alarm)
         }
     }
 
