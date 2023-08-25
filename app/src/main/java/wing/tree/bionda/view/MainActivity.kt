@@ -36,7 +36,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.google.android.material.timepicker.MaterialTimePicker
 import dagger.hilt.android.AndroidEntryPoint
 import wing.tree.bionda.data.constant.SCHEME_PACKAGE
 import wing.tree.bionda.data.extension.containsAny
@@ -53,6 +52,7 @@ import wing.tree.bionda.extension.add
 import wing.tree.bionda.extension.rememberWindowSizeClass
 import wing.tree.bionda.extension.remove
 import wing.tree.bionda.extension.requestAccessBackgroundLocationPermission
+import wing.tree.bionda.extension.showMaterialTimePicker
 import wing.tree.bionda.extension.toggle
 import wing.tree.bionda.permissions.PermissionChecker
 import wing.tree.bionda.permissions.RequestMultiplePermissions
@@ -352,28 +352,6 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
             Action.SelectionMode.ALARM_OFF -> viewModel.alarmOff()
             Action.SelectionMode.ALARM_ON -> viewModel.alarmOn()
             Action.SelectionMode.DELETE_ALL -> viewModel.deleteAll()
-        }
-    }
-
-    private fun showMaterialTimePicker(
-        hour: Int,
-        minute: Int,
-        onPositiveButtonClick: (hour: Int, minute: Int) -> Unit
-    ) {
-        val materialTimePicker = MaterialTimePicker.Builder()
-            .setHour(hour)
-            .setMinute(minute)
-            .build()
-
-        materialTimePicker.also {
-            it.addOnPositiveButtonClickListener { _ ->
-                onPositiveButtonClick(
-                    it.hour,
-                    it.minute
-                )
-            }
-
-            it.show(supportFragmentManager, it.tag)
         }
     }
 }
