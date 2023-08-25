@@ -19,6 +19,14 @@ import wing.tree.bionda.data.constant.SCHEME_PACKAGE
 import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.model.WindowSizeClass
 
+fun Activity.launchApplicationDetailsSettings() {
+    Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+        data = Uri.fromParts(SCHEME_PACKAGE, packageName, null)
+    }.let {
+        startActivity(it)
+    }
+}
+
 @Composable
 fun Activity.rememberWindowSizeClass(): WindowSizeClass {
     val windowSize = rememberWindowSize()
@@ -48,16 +56,7 @@ fun Activity.requestAccessBackgroundLocationPermission() {
             Int.zero
         )
     } else {
-        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-            .apply {
-                data = Uri.fromParts(
-                    SCHEME_PACKAGE,
-                    packageName,
-                    null
-                )
-            }
-
-        startActivity(intent)
+        launchApplicationDetailsSettings()
     }
 }
 

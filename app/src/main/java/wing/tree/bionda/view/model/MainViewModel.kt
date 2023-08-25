@@ -8,7 +8,6 @@ import androidx.compose.animation.core.AnimationConstants.DefaultDurationMillis
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
@@ -125,7 +124,7 @@ class MainViewModel @Inject constructor(
     )
 
     val inSelectionMode = MutableStateFlow(false)
-    val selected = MutableStateFlow<ImmutableSet<Long>>(persistentSetOf())
+    val selected = MutableStateFlow<PersistentSet<Long>>(persistentSetOf())
 
     init {
         viewModelScope.launch {

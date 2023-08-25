@@ -1,24 +1,19 @@
 package wing.tree.bionda.extension
 
-import kotlinx.collections.immutable.ImmutableSet
-import kotlinx.collections.immutable.toPersistentSet
+import kotlinx.collections.immutable.PersistentSet
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 
-fun <T> MutableStateFlow<ImmutableSet<T>>.add(element: T) = update {
-    with(it.toPersistentSet()) {
-        add(element)
-    }
+fun <T> MutableStateFlow<PersistentSet<T>>.add(element: T) = update {
+    it.add(element)
 }
 
-fun <T> MutableStateFlow<ImmutableSet<T>>.remove(element: T) = update {
-    with(it.toPersistentSet()) {
-        remove(element)
-    }
+fun <T> MutableStateFlow<PersistentSet<T>>.remove(element: T) = update {
+    it.remove(element)
 }
 
-fun <T> MutableStateFlow<ImmutableSet<T>>.toggle(element: T) = update {
-    with(it.toPersistentSet()) {
+fun <T> MutableStateFlow<PersistentSet<T>>.toggle(element: T) = update {
+    with(it) {
         if (element in this) {
             remove(element)
         } else {

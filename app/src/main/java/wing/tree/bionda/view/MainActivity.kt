@@ -5,10 +5,8 @@ import android.Manifest.permission.POST_NOTIFICATIONS
 import android.Manifest.permission.SCHEDULE_EXACT_ALARM
 import android.app.AlarmManager
 import android.content.Intent
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
 import android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
@@ -37,7 +35,6 @@ import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dagger.hilt.android.AndroidEntryPoint
-import wing.tree.bionda.data.constant.SCHEME_PACKAGE
 import wing.tree.bionda.data.extension.containsAny
 import wing.tree.bionda.data.extension.empty
 import wing.tree.bionda.data.extension.`is`
@@ -47,6 +44,7 @@ import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.data.regular.koreaCalendar
 import wing.tree.bionda.data.regular.noOperations
 import wing.tree.bionda.extension.add
+import wing.tree.bionda.extension.launchApplicationDetailsSettings
 import wing.tree.bionda.extension.rememberWindowSizeClass
 import wing.tree.bionda.extension.remove
 import wing.tree.bionda.extension.requestAccessBackgroundLocationPermission
@@ -237,10 +235,8 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
         }
     }
 
-    private fun onAddAlarmClick() {
-        showMaterialTimePicker(koreaCalendar()) { hour, minute ->
-            viewModel.add(hour, minute)
-        }
+    private fun onAddAlarmClick() = showMaterialTimePicker(koreaCalendar()) { hour, minute ->
+        viewModel.add(hour, minute)
     }
 
     private fun onAlarms(
@@ -250,46 +246,34 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
         val alarm = action.alarm
 
         when (action) {
-            is Action.Alarms.Click -> {
-                if (inSelectionMode) {
-                    viewModel.selected.toggle(alarm.id)
-                } else {
-                    showMaterialTimePicker(hour = alarm.hour, minute = alarm.minute) { hour, minute ->
-                        viewModel.update(alarm.copy(hour = hour, minute = minute))
-                    }
+            is Action.Alarms.Click -> if (inSelectionMode) {
+                viewModel.selected.toggle(alarm.id)
+            } else {
+                showMaterialTimePicker(hour = alarm.hour, minute = alarm.minute) { hour, minute ->
+                    viewModel.update(alarm.copy(hour = hour, minute = minute))
                 }
             }
 
-            is Action.Alarms.LongClick -> {
-                if (inSelectionMode.not()) {
-                    viewModel.selected.toggle(alarm.id)
+            is Action.Alarms.LongClick -> if (inSelectionMode.not()) {
+                viewModel.selected.toggle(alarm.id)
 
-                    viewModel.inSelectionMode.value = true
-                }
+                viewModel.inSelectionMode.value = true
             }
 
             is Action.Alarms.CheckChange -> viewModel.update(alarm.copy(on = action.checked))
-            is Action.Alarms.SelectedChange -> {
-                with(viewModel.selected) {
-                    if (action.selected) {
-                        add(alarm.id)
-                    } else {
-                        remove(alarm.id)
-                    }
+            is Action.Alarms.SelectedChange -> with(viewModel.selected) {
+                if (action.selected) {
+                    add(alarm.id)
+                } else {
+                    remove(alarm.id)
                 }
             }
 
-            is Action.Alarms.ConditionClick -> {
-                viewModel.update(
-                    with(alarm) {
-                        copy(
-                            conditions = conditions.toggle(
-                                action.condition
-                            )
-                        )
-                    }
-                )
-            }
+            is Action.Alarms.ConditionClick -> viewModel.update(
+                with(alarm) {
+                    copy(conditions = conditions.toggle(action.condition))
+                }
+            )
         }
     }
 
@@ -310,17 +294,7 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
                     if (checkSelfSinglePermission(POST_NOTIFICATIONS)) {
                         viewModel.notifyPermissionGranted(POST_NOTIFICATIONS)
                     } else {
-                        val intent =
-                            Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                                .apply {
-                                    data = Uri.fromParts(
-                                        SCHEME_PACKAGE,
-                                        packageName,
-                                        null
-                                    )
-                                }
-
-                        startActivity(intent)
+                        launchApplicationDetailsSettings()
                     }
                 }
             }
