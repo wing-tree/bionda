@@ -1,76 +1,52 @@
 package wing.tree.bionda.permissions
 
-import android.content.pm.PackageManager
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import wing.tree.bionda.data.extension.`is`
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.Channel
+import wing.tree.bionda.data.extension.one
+import wing.tree.bionda.data.extension.single
 import wing.tree.bionda.permissions.PermissionChecker.Result
 import wing.tree.bionda.permissions.PermissionChecker.State
 
-interface RequestMultiplePermissions : PermissionChecker {
-    val launcher: ActivityResultLauncher<Array<String>>
-    val permissions: Set<String>
+@OptIn(ExperimentalCoroutinesApi::class)
+class RequestMultiplePermissions : PermissionChecker,
+    CoroutineScope by CoroutineScope(Dispatchers.IO.limitedParallelism(Int.single))
+{
+    private val contract = ActivityResultContracts.RequestMultiplePermissions()
+    private var activityResultLauncher: ActivityResultLauncher<Array<String>>? = null
+    private var channel: Channel<Result>? = null
 
-    fun onCheckSelfMultiplePermissions(result: Result)
-    fun onRequestMultiplePermissionsResult(result: Result)
-    fun onShouldShowRequestMultiplePermissionsRationale(result: Result)
-
-    private fun ComponentActivity.checkSelfMultiplePermissions(
-        permissions: Set<String>
-    ): Result {
-        return permissions.associateWith {
-            if (checkSelfPermission(it) `is` PackageManager.PERMISSION_GRANTED) {
-                State.Granted
-            } else {
-                State.Denied(shouldShowRequestPermissionRationale(it))
-            }
-        }.let {
-            Result(it)
-        }
-    }
-
-    private fun ComponentActivity.shouldShowRequestMultiplePermissionsRationale(
-        permissions: Set<String>
-    ): Result {
-        return permissions.associateWith {
-            State.Denied(shouldShowRequestPermissionRationale(it))
-        }.let {
-            Result(it)
-        }
-    }
-
-    fun ComponentActivity.registerForActivityResult() = registerForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) {
-        onRequestMultiplePermissionsResult(
-            it.mapValues { (key, value) ->
+    fun initialize(componentActivity: ComponentActivity) = with(componentActivity) {
+        activityResultLauncher = registerForActivityResult(contract) { result ->
+            result.mapValues { (key, value) ->
                 if (value) {
                     State.Granted
                 } else {
                     State.Denied(shouldShowRequestPermissionRationale(key))
                 }
-            }.let { m ->
-                Result(m)
+            }.let {
+                with(channel) {
+                    checkNotNull(this)
+                    trySend(Result(it))
+                }
             }
-        )
+        }
     }
 
-    fun ComponentActivity.requestMultiplePermissions() {
-        var permissions = checkSelfMultiplePermissions(permissions).also {
-            onCheckSelfMultiplePermissions(it)
-        }
-            .denied()
+    suspend fun request(permissions: Set<String>): Result {
+        val activityResultLauncher = activityResultLauncher
 
-        if (permissions.isNotEmpty()) {
-            permissions = shouldShowRequestMultiplePermissionsRationale(permissions).also {
-                onShouldShowRequestMultiplePermissionsRationale(it)
-            }
-                .denied()
+        checkNotNull(activityResultLauncher)
 
-            if (permissions.isNotEmpty()) {
-                launcher.launch(permissions.toTypedArray())
-            }
+        return with(Channel<Result>(Int.one)) {
+            channel = this
+
+            activityResultLauncher.launch(permissions.toTypedArray())
+            receive()
         }
     }
 }
