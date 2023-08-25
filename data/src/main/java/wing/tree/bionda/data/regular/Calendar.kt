@@ -14,13 +14,11 @@ import java.util.Date
 import java.util.Locale
 
 fun baseCalendar(base: CalendarDecorator.Base): Calendar = koreaCalendar().cloneAsBaseCalendar(base)
-
 fun fcstCalendar(hourOfDay: Int): Calendar = koreaCalendar().apply {
     this.hourOfDay = hourOfDay
 }
 
 fun koreaCalendar(block: Calendar.() -> Unit) = koreaCalendar().apply(block)
-
 fun koreaCalendar(date: Date): Calendar = Calendar.getInstance(Locale.KOREA).apply {
     time = date
 }

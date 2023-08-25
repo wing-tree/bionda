@@ -40,9 +40,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import wing.tree.bionda.data.constant.SCHEME_PACKAGE
 import wing.tree.bionda.data.extension.containsAny
 import wing.tree.bionda.data.extension.empty
-import wing.tree.bionda.data.extension.hourOfDay
 import wing.tree.bionda.data.extension.`is`
-import wing.tree.bionda.data.extension.minute
 import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.toggle
 import wing.tree.bionda.data.extension.zero
@@ -240,12 +238,7 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
     }
 
     private fun onAddAlarmClick() {
-        val koreaCalendar = koreaCalendar()
-
-        showMaterialTimePicker(
-            hour = koreaCalendar.hourOfDay,
-            minute = koreaCalendar.minute
-        ) { hour, minute ->
+        showMaterialTimePicker(koreaCalendar()) { hour, minute ->
             viewModel.add(hour, minute)
         }
     }
@@ -275,10 +268,7 @@ class MainActivity : AppCompatActivity(), RequestMultiplePermissions {
                 }
             }
 
-            is Action.Alarms.CheckChange -> {
-                viewModel.update(alarm.copy(on = action.checked))
-            }
-
+            is Action.Alarms.CheckChange -> viewModel.update(alarm.copy(on = action.checked))
             is Action.Alarms.SelectedChange -> {
                 with(viewModel.selected) {
                     if (action.selected) {

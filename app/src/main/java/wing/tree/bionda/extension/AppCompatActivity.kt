@@ -1,7 +1,21 @@
 package wing.tree.bionda.extension
 
+import android.icu.util.Calendar
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.timepicker.MaterialTimePicker
+import wing.tree.bionda.data.extension.hourOfDay
+import wing.tree.bionda.data.extension.minute
+
+fun AppCompatActivity.showMaterialTimePicker(
+    calendar: Calendar,
+    onPositiveButtonClick: (hour: Int, minute: Int) -> Unit
+) {
+    showMaterialTimePicker(
+        hour = calendar.hourOfDay,
+        minute = calendar.minute,
+        onPositiveButtonClick = onPositiveButtonClick
+    )
+}
 
 fun AppCompatActivity.showMaterialTimePicker(
     hour: Int,
