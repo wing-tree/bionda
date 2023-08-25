@@ -9,6 +9,7 @@ infix fun Any?.not(other: Any?) = `is`(other).not()
 @OptIn(ExperimentalContracts::class)
 fun Any?.isNull(): Boolean {
     contract {
+        returns(true) implies (this@isNull == null)
         returns(false) implies (this@isNull != null)
     }
 
@@ -19,6 +20,7 @@ fun Any?.isNull(): Boolean {
 fun Any?.isNotNull(): Boolean {
     contract {
         returns(true) implies (this@isNotNull != null)
+        returns(false) implies (this@isNotNull == null)
     }
 
     return this not null
