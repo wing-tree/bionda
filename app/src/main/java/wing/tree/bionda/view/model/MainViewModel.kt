@@ -42,7 +42,8 @@ import wing.tree.bionda.data.repository.WeatherRepository
 import wing.tree.bionda.exception.PermissionsDeniedException
 import wing.tree.bionda.extension.checkSelfPermission
 import wing.tree.bionda.extension.toCoordinate
-import wing.tree.bionda.model.Forecast
+import wing.tree.bionda.mapper.UltraSrtNcstMapper
+import wing.tree.bionda.mapper.VilageFcstMapper
 import wing.tree.bionda.permissions.locationPermissions
 import wing.tree.bionda.scheduler.AlarmScheduler
 import wing.tree.bionda.view.state.AlarmState
@@ -60,8 +61,10 @@ class MainViewModel @Inject constructor(
     application: Application,
     private val alarmRepository: AlarmRepository,
     private val alarmScheduler: AlarmScheduler,
-    private val weatherRepository: WeatherRepository,
-    private val locationProvider: LocationProvider
+    private val locationProvider: LocationProvider,
+    private val ultraSrtNcstMapper: UltraSrtNcstMapper,
+    private val vilageFcstMapper: VilageFcstMapper,
+    private val weatherRepository: WeatherRepository
 ) : AndroidViewModel(application) {
     private val location = MutableStateFlow<Result<Location?>>(Result.Loading)
     private val requestPermissions = MutableStateFlow<PersistentSet<String>>(persistentSetOf())
@@ -72,10 +75,9 @@ class MainViewModel @Inject constructor(
             is Complete.Success -> it.value?.let { location ->
                 val (nx, ny) = location.toCoordinate()
                 val address = getAddress(location)
+                val ultraSrtNcst = weatherRepository.getUltraSrtNcst(nx = nx, ny = ny)
 
-                weatherRepository
-                    .getUltraSrtNcst(nx = nx, ny = ny)
-                    .asState(address)
+                ultraSrtNcst.asState(address)
             } ?: HeaderState.Error(NullPointerException("Location is Null")) // TODO error define.
 
             is Complete.Failure -> HeaderState.Error(it.throwable)
@@ -108,11 +110,10 @@ class MainViewModel @Inject constructor(
             Result.Loading -> VilageFcstState.Loading
             is Complete.Success -> it.value?.let { location ->
                 val (nx, ny) = location.toCoordinate()
-                val address = getAddress(location)
 
                 weatherRepository
                     .getVilageFcst(nx = nx, ny = ny)
-                    .asState(address)
+                    .asState()
             } ?: VilageFcstState.Error(NullPointerException("Location is Null")) // TODO error define.
 
             is Complete.Failure -> VilageFcstState.Error(it.throwable)
@@ -334,16 +335,15 @@ class MainViewModel @Inject constructor(
     private fun Complete<UltraSrtNcst.Local>.asState(address: Address?): HeaderState = when (this) {
         is Complete.Success -> HeaderState.Content(
             address = address,
-            ultraSrtNcst = value
+            ultraSrtNcst = ultraSrtNcstMapper.toPresentationModel(value)
         )
 
         is Complete.Failure -> HeaderState.Error(throwable)
     }
 
-    private fun Complete<VilageFcst.Local>.asState(address: Address?): VilageFcstState = when (this) {
+    private fun Complete<VilageFcst.Local>.asState(): VilageFcstState = when (this) {
         is Complete.Success -> VilageFcstState.Content(
-            address = address,
-            forecast = Forecast.toPresentationModel(value)
+            vilageFcst = vilageFcstMapper.toPresentationModel(value)
         )
 
         is Complete.Failure -> VilageFcstState.Error(throwable)

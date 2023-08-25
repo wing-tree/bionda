@@ -9,6 +9,7 @@ import wing.tree.bionda.data.extension.advanceHourOfDayBy
 import wing.tree.bionda.data.extension.awaitOrElse
 import wing.tree.bionda.data.extension.baseDate
 import wing.tree.bionda.data.extension.baseTime
+import wing.tree.bionda.data.extension.eight
 import wing.tree.bionda.data.extension.isNull
 import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.tmFc
@@ -143,7 +144,7 @@ class WeatherRepository(
             )
 
             val ultraSrtNcst = localDataSource.loadUltraSrtNcst(params) ?: remoteDataSource.getUltraSrtNcst(
-                numOfRows = 290,
+                numOfRows = Int.eight,
                 pageNo = Int.one,
                 params
             ).let { remote ->

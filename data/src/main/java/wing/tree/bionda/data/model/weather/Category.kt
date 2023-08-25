@@ -15,4 +15,6 @@ object Category {
     const val WAV = "WAV"
     const val VEC = "VEC"
     const val WSD = "WSD"
+    const val T1H = "T1H"
+    const val RN1 = "RN1"
 }

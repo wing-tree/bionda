@@ -29,7 +29,7 @@ import wing.tree.bionda.data.extension.isZero
 import wing.tree.bionda.data.extension.quarter
 import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.model.style.ChartStyle
-import wing.tree.bionda.model.Forecast
+import wing.tree.bionda.model.VilageFcst
 
 val DrawScope.nativeCanvas: Canvas get() = drawContext.canvas.nativeCanvas
 
@@ -169,7 +169,7 @@ fun DrawScope.drawTmpChart(
 }
 
 fun DrawScope.drawWeatherIcon(
-    item: Forecast.Item,
+    item: VilageFcst.Item,
     context: Context,
     pointF: PointF,
     style: ChartStyle.WeatherIcon

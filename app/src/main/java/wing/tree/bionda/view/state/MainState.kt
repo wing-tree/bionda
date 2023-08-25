@@ -6,8 +6,8 @@ import kotlinx.collections.immutable.persistentSetOf
 import wing.tree.bionda.data.model.Address
 import wing.tree.bionda.data.model.Alarm
 import wing.tree.bionda.data.model.weather.MidLandFcstTa
-import wing.tree.bionda.data.model.weather.UltraSrtNcst
-import wing.tree.bionda.model.Forecast
+import wing.tree.bionda.model.UltraSrtNcst
+import wing.tree.bionda.model.VilageFcst
 
 data class MainState(
     val alarmState: AlarmState,
@@ -113,11 +113,7 @@ sealed interface HeaderState {
 
 sealed interface VilageFcstState {
     object Loading : VilageFcstState
-    data class Content(
-        val address: Address?,
-        val forecast: Forecast
-    ) : VilageFcstState
-
+    data class Content(val vilageFcst: VilageFcst) : VilageFcstState
     data class Error(val throwable: Throwable) : VilageFcstState
 
     companion object {
