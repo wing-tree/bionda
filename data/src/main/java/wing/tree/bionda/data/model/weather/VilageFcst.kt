@@ -14,8 +14,8 @@ import wing.tree.bionda.data.extension.hourOfDay
 import wing.tree.bionda.data.extension.string
 import wing.tree.bionda.data.extension.two
 import wing.tree.bionda.data.extension.zero
-import wing.tree.bionda.data.regular.koreaCalendar
 import wing.tree.bionda.data.service.VilageFcstInfoService
+import wing.tree.bionda.data.top.level.koreaCalendar
 import wing.tree.bionda.data.validator.ResponseValidator
 
 sealed interface VilageFcst {

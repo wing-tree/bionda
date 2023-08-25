@@ -41,8 +41,8 @@ import wing.tree.bionda.data.extension.`is`
 import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.toggle
 import wing.tree.bionda.data.extension.zero
-import wing.tree.bionda.data.regular.koreaCalendar
-import wing.tree.bionda.data.regular.noOperations
+import wing.tree.bionda.data.top.level.koreaCalendar
+import wing.tree.bionda.data.top.level.noOperations
 import wing.tree.bionda.extension.add
 import wing.tree.bionda.extension.launchApplicationDetailsSettings
 import wing.tree.bionda.extension.rememberWindowSizeClass

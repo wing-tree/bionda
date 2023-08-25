@@ -45,6 +45,7 @@ import wing.tree.bionda.mapper.UltraSrtNcstMapper
 import wing.tree.bionda.mapper.VilageFcstMapper
 import wing.tree.bionda.permissions.locationPermissions
 import wing.tree.bionda.scheduler.AlarmScheduler
+import wing.tree.bionda.top.level.emptyPersistentSet
 import wing.tree.bionda.view.state.AlarmState
 import wing.tree.bionda.view.state.HeaderState
 import wing.tree.bionda.view.state.MainState
@@ -66,7 +67,7 @@ class MainViewModel @Inject constructor(
     private val weatherRepository: WeatherRepository
 ) : AndroidViewModel(application) {
     private val location = MutableStateFlow<Result<Location?>>(Result.Loading)
-    private val requestPermissions = MutableStateFlow<PersistentSet<String>>(persistentSetOf())
+    private val requestPermissions = MutableStateFlow<PersistentSet<String>>(emptyPersistentSet())
     private val stopTimeoutMillis = Long.fiveSecondsInMilliseconds
     private val headerState = location.map {
         when (it) {
@@ -270,7 +271,7 @@ class MainViewModel @Inject constructor(
                 alarmScheduler.cancel(it)
             }
 
-            selected.value = persistentSetOf()
+            selected.value = emptyPersistentSet()
         }
     }
 

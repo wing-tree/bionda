@@ -12,7 +12,7 @@ import wing.tree.bionda.data.extension.hourOfDay
 import wing.tree.bionda.data.extension.minute
 import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.model.Alarm
-import wing.tree.bionda.data.regular.koreaCalendar
+import wing.tree.bionda.data.top.level.koreaCalendar
 import wing.tree.bionda.receiver.AlarmReceiver
 
 class AlarmScheduler(private val context: Context) {

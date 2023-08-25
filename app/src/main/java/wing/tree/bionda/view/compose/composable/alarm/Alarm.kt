@@ -53,7 +53,7 @@ import wing.tree.bionda.R
 import wing.tree.bionda.data.extension.empty
 import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.model.Alarm
-import wing.tree.bionda.data.regular.koreaCalendar
+import wing.tree.bionda.data.top.level.koreaCalendar
 import wing.tree.bionda.extension.zero
 import wing.tree.bionda.model.WindowSizeClass
 import wing.tree.bionda.view.compose.composable.core.HorizontalSpacer

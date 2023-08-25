@@ -18,7 +18,7 @@ import wing.tree.bionda.R
 import wing.tree.bionda.data.extension.empty
 import wing.tree.bionda.data.extension.half
 import wing.tree.bionda.data.extension.zero
-import wing.tree.bionda.data.regular.fcstCalendar
+import wing.tree.bionda.data.top.level.fcstCalendar
 import wing.tree.bionda.extension.drawFcstHour
 import wing.tree.bionda.extension.drawPcp
 import wing.tree.bionda.extension.drawPop
@@ -28,8 +28,8 @@ import wing.tree.bionda.extension.drawTmpChart
 import wing.tree.bionda.extension.drawWeatherIcon
 import wing.tree.bionda.extension.drawWsd
 import wing.tree.bionda.extension.toTmpOffsets
-import wing.tree.bionda.model.style.ChartStyle
 import wing.tree.bionda.model.VilageFcst
+import wing.tree.bionda.model.style.ChartStyle
 import java.lang.Float.min
 import java.util.Locale
 

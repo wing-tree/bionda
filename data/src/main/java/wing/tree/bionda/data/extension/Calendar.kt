@@ -2,9 +2,9 @@ package wing.tree.bionda.data.extension
 
 import android.icu.util.Calendar
 import wing.tree.bionda.data.model.CalendarDecorator
-import wing.tree.bionda.data.regular.koreaCalendarOf
 import wing.tree.bionda.data.top.level.baseDateFormat
 import wing.tree.bionda.data.top.level.baseTimeFormat
+import wing.tree.bionda.data.top.level.koreaCalendarOf
 import wing.tree.bionda.data.top.level.tmFcFormat
 
 val Calendar.baseDate: String get() = baseDateFormat.format(time)

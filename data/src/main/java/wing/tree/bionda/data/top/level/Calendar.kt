@@ -1,4 +1,4 @@
-package wing.tree.bionda.data.regular
+package wing.tree.bionda.data.top.level
 
 import android.icu.util.Calendar
 import wing.tree.bionda.data.extension.cloneAsBaseCalendar
@@ -8,8 +8,6 @@ import wing.tree.bionda.data.extension.minute
 import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.data.model.CalendarDecorator
-import wing.tree.bionda.data.top.level.baseDateFormat
-import wing.tree.bionda.data.top.level.baseTimeFormat
 import java.util.Date
 import java.util.Locale
 

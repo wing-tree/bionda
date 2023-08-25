@@ -22,9 +22,9 @@ import wing.tree.bionda.data.model.weather.MidTa
 import wing.tree.bionda.data.model.weather.RegId
 import wing.tree.bionda.data.model.weather.UltraSrtNcst
 import wing.tree.bionda.data.model.weather.VilageFcst
-import wing.tree.bionda.data.regular.baseCalendar
-import wing.tree.bionda.data.regular.tmFcCalendar
 import wing.tree.bionda.data.service.VilageFcstInfoService
+import wing.tree.bionda.data.top.level.baseCalendar
+import wing.tree.bionda.data.top.level.tmFcCalendar
 import wing.tree.bionda.data.source.local.WeatherDataSource as LocalDataSource
 import wing.tree.bionda.data.source.remote.WeatherDataSource as RemoteDataSource
 

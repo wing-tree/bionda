@@ -17,7 +17,7 @@ import wing.tree.bionda.data.extension.int
 import wing.tree.bionda.data.extension.not
 import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.second
-import wing.tree.bionda.data.regular.koreaCalendar
+import wing.tree.bionda.data.top.level.koreaCalendar
 import wing.tree.bionda.model.VilageFcst
 import wing.tree.bionda.top.level.amString
 import wing.tree.bionda.top.level.pmString
@@ -96,15 +96,9 @@ sealed class ContentTextTemplate {
         }
     }
 
-    protected fun Calendar.predicate(item: VilageFcst.Item): Boolean {
-        if (item.fcstDate not baseDate.int) {
-            return false
-        }
-
-        if (item.fcstHour < hourOfDay) {
-            return false
-        }
-
-        return true
+    protected fun Calendar.predicate(item: VilageFcst.Item): Boolean = when {
+        item.fcstDate not baseDate.int -> false
+        item.fcstHour < hourOfDay -> false
+        else -> true
     }
 }

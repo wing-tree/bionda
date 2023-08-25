@@ -40,8 +40,8 @@ import wing.tree.bionda.data.extension.tmFc
 import wing.tree.bionda.data.model.weather.MidLandFcstTa.BothFailure
 import wing.tree.bionda.data.model.weather.MidLandFcstTa.BothSuccess
 import wing.tree.bionda.data.model.weather.MidLandFcstTa.OneOfSuccess
-import wing.tree.bionda.data.regular.koreaCalendar
 import wing.tree.bionda.data.top.level.dayOfMonthFormat
+import wing.tree.bionda.data.top.level.koreaCalendar
 import wing.tree.bionda.model.WeatherIcons
 import wing.tree.bionda.theme.SunOrange
 import wing.tree.bionda.theme.WaterBlue
