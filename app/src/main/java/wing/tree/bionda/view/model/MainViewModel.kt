@@ -9,9 +9,9 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
-import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.collections.immutable.toPersistentSet
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,9 +31,9 @@ import wing.tree.bionda.data.extension.negativeOne
 import wing.tree.bionda.data.extension.ten
 import wing.tree.bionda.data.model.Address
 import wing.tree.bionda.data.model.Alarm
-import wing.tree.bionda.data.model.weather.MidLandFcstTa
 import wing.tree.bionda.data.model.Result
 import wing.tree.bionda.data.model.Result.Complete
+import wing.tree.bionda.data.model.weather.MidLandFcstTa
 import wing.tree.bionda.data.model.weather.UltraSrtNcst
 import wing.tree.bionda.data.model.weather.VilageFcst
 import wing.tree.bionda.data.provider.LocationProvider
@@ -46,9 +46,9 @@ import wing.tree.bionda.model.Forecast
 import wing.tree.bionda.permissions.locationPermissions
 import wing.tree.bionda.scheduler.AlarmScheduler
 import wing.tree.bionda.view.state.AlarmState
+import wing.tree.bionda.view.state.HeaderState
 import wing.tree.bionda.view.state.MainState
 import wing.tree.bionda.view.state.MidLandFcstTaState
-import wing.tree.bionda.view.state.HeaderState
 import wing.tree.bionda.view.state.VilageFcstState
 import wing.tree.bionda.view.state.WeatherState
 import java.util.Locale
@@ -64,7 +64,7 @@ class MainViewModel @Inject constructor(
     private val locationProvider: LocationProvider
 ) : AndroidViewModel(application) {
     private val location = MutableStateFlow<Result<Location?>>(Result.Loading)
-    private val requestPermissions = MutableStateFlow<ImmutableSet<String>>(persistentSetOf())
+    private val requestPermissions = MutableStateFlow<PersistentSet<String>>(persistentSetOf())
     private val stopTimeoutMillis = Long.fiveSecondsInMilliseconds
     private val headerState = location.map {
         when (it) {
@@ -292,11 +292,7 @@ class MainViewModel @Inject constructor(
         }
 
         requestPermissions.update {
-            buildSet {
-                addAll(permissions)
-                addAll(it)
-                removeAll(locationPermissions)
-            }.toImmutableSet()
+            it.addAll(permissions).removeAll(locationPermissions)
         }
     }
 
@@ -308,11 +304,7 @@ class MainViewModel @Inject constructor(
         }
 
         requestPermissions.update {
-            buildSet {
-                add(permission)
-                addAll(it)
-                removeAll(locationPermissions)
-            }.toImmutableSet()
+            it.add(permission).removeAll(locationPermissions)
         }
     }
 
