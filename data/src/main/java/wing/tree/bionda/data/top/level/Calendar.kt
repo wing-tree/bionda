@@ -54,8 +54,7 @@ fun koreaCalendarOf(
 fun tmFcCalendar() = koreaCalendar(minute = Int.zero).apply {
     hourOfDay = when {
         hourOfDay < 6 -> {
-            date -= Int.one
-            18
+            date -= Int.one; 18
         }
 
         hourOfDay < 18 -> 6

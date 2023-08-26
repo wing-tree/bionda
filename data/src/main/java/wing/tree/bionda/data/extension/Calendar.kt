@@ -7,9 +7,9 @@ import wing.tree.bionda.data.top.level.baseTimeFormat
 import wing.tree.bionda.data.top.level.koreaCalendarOf
 import wing.tree.bionda.data.top.level.tmFcFormat
 
-val Calendar.baseDate: String get() = baseDateFormat.format(time)
-val Calendar.baseTime: String get() = baseTimeFormat.format(time)
-val Calendar.tmFc: String get() = tmFcFormat.format(time)
+val Calendar.baseDate: String get() = baseDateFormat.format(this)
+val Calendar.baseTime: String get() = baseTimeFormat.format(this)
+val Calendar.tmFc: String get() = tmFcFormat.format(this)
 
 var Calendar.date: Int
     get() = get(Calendar.DATE)
