@@ -136,7 +136,9 @@ class WeatherRepository(
                 ny = ny
             )
 
-            val vilageFcst = localDataSource.loadVilageFcst(params) ?: remoteDataSource.getVilageFcst(
+            val vilageFcst = localDataSource.loadVilageFcst(
+                params = params
+            ) ?: remoteDataSource.getVilageFcst(
                 numOfRows = 290,
                 params = params
             ).let {
