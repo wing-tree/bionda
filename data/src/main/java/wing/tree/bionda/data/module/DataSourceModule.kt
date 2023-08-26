@@ -8,6 +8,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import wing.tree.bionda.data.database.Database
 import wing.tree.bionda.data.service.MidFcstInfoService
+import wing.tree.bionda.data.service.RiseSetInfoService
 import wing.tree.bionda.data.service.VilageFcstInfoService
 import wing.tree.bionda.data.source.local.AlarmDataSource
 import wing.tree.bionda.data.source.local.WeatherDataSource as LocalDataSource
@@ -32,6 +33,7 @@ object DataSourceModule {
             context = context,
             midLandFcstDao = database.midLandFcstDao(),
             midTaDao = database.midTaDao(),
+            lcRiseSetInfoDao = database.lcRiseSetInfoDao(),
             ultraSrtNcstDao = database.ultraSrtNcstDao(),
             vilageFcstDao = database.vilageFcstDao()
         )
@@ -40,10 +42,12 @@ object DataSourceModule {
     @Provides
     fun providesRemoteDataSource(
         midFcstInfoService: MidFcstInfoService,
+        riseSetInfoService: RiseSetInfoService,
         vilageFcstInfoService: VilageFcstInfoService
     ): RemoteDataSource {
         return RemoteDataSource(
             midFcstInfoService = midFcstInfoService,
+            riseSetInfoService = riseSetInfoService,
             vilageFcstInfoService = vilageFcstInfoService
         )
     }

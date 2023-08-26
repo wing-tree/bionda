@@ -7,6 +7,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
+import wing.tree.bionda.data.database.dao.LCRiseSetInfoDao
 import wing.tree.bionda.data.database.dao.MidLandFcstDao
 import wing.tree.bionda.data.database.dao.MidTaDao
 import wing.tree.bionda.data.database.dao.UltraSrtNcstDao
@@ -19,12 +20,14 @@ import wing.tree.bionda.data.extension.two
 import wing.tree.bionda.data.model.LatLon
 import wing.tree.bionda.data.model.weather.FcstZoneCd
 import wing.tree.bionda.data.model.weather.RegId
+import wing.tree.bionda.data.service.RiseSetInfoService
 import wing.tree.bionda.data.service.VilageFcstInfoService
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.pow
 import kotlin.math.sin
 import kotlin.math.sqrt
+import wing.tree.bionda.data.model.weather.LCRiseSetInfo.Local as LCRiseSetInfo
 import wing.tree.bionda.data.model.weather.MidLandFcst.Local as MidLandFcst
 import wing.tree.bionda.data.model.weather.MidTa.Local as MidTa
 import wing.tree.bionda.data.model.weather.UltraSrtNcst.Local as UltraSrtNcst
@@ -34,6 +37,7 @@ class WeatherDataSource(
     private val context: Context,
     private val midLandFcstDao: MidLandFcstDao,
     private val midTaDao: MidTaDao,
+    private val lcRiseSetInfoDao: LCRiseSetInfoDao,
     private val ultraSrtNcstDao: UltraSrtNcstDao,
     private val vilageFcstDao: VilageFcstDao
 ) {
@@ -81,6 +85,12 @@ class WeatherDataSource(
         }
     }
 
+    fun cache(lcRiseSetInfo: LCRiseSetInfo) {
+        supervisorScope.launch {
+            lcRiseSetInfoDao.clearAndInsert(lcRiseSetInfo)
+        }
+    }
+
     fun cache(midTa: MidTa) {
         supervisorScope.launch {
             midTaDao.clearAndInsert(midTa)
@@ -91,6 +101,16 @@ class WeatherDataSource(
         supervisorScope.launch {
             vilageFcstDao.clearAndInsert(vilageFcst)
         }
+    }
+
+    suspend fun loadLCRiseSetInfo(
+        params: RiseSetInfoService.Params
+    ): LCRiseSetInfo? = with(params) {
+        lcRiseSetInfoDao.load(
+            locdate = locdate,
+            longitude = longitude,
+            latitude = latitude
+        )
     }
 
     suspend fun loadMidLandFcst(regId: String, tmFc: String): MidLandFcst? {

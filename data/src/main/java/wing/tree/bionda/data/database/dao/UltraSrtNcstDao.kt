@@ -13,7 +13,8 @@ interface UltraSrtNcstDao {
 
     @Query(
         """
-            SELECT * FROM ultra_srt_ncst WHERE baseDate = :baseDate 
+            SELECT * FROM ultra_srt_ncst 
+            WHERE baseDate = :baseDate 
             AND baseTime = :baseTime 
             AND nx = :nx 
             AND ny = :ny

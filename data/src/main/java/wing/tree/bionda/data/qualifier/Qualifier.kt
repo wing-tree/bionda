@@ -9,5 +9,9 @@ object Qualifier {
 
     @Retention(AnnotationRetention.BINARY)
     @Qualifier
+    annotation class RiseSetInfoService
+
+    @Retention(AnnotationRetention.BINARY)
+    @Qualifier
     annotation class VilageFcstInfoService
 }

@@ -10,6 +10,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
+import retrofit2.converter.jaxb.JaxbConverterFactory
 import wing.tree.bionda.data.BuildConfig
 import wing.tree.bionda.data.qualifier.Qualifier
 
@@ -17,6 +18,7 @@ import wing.tree.bionda.data.qualifier.Qualifier
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
     private const val MID_FCST_INFO_SERVICE_URL = "http://apis.data.go.kr/1360000/MidFcstInfoService/"
+    private const val RISE_SET_INFO_SERVICE_URL = "http://apis.data.go.kr/B090041/openapi/service/RiseSetInfoService/"
     private const val VILAGE_FCST_INFO_SERVICE_URL = "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/"
 
     private val httpLoggingInterceptor = HttpLoggingInterceptor().apply {
@@ -39,6 +41,16 @@ object NetworkModule {
     ): Retrofit = Retrofit.Builder()
         .baseUrl(MID_FCST_INFO_SERVICE_URL)
         .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
+        .client(okHttpClient)
+        .build()
+
+    @Provides
+    @Qualifier.RiseSetInfoService
+    fun providesRiseSetInfoServiceRetrofit(
+        okHttpClient: OkHttpClient
+    ): Retrofit = Retrofit.Builder()
+        .baseUrl(RISE_SET_INFO_SERVICE_URL)
+        .addConverterFactory(JaxbConverterFactory.create())
         .client(okHttpClient)
         .build()
 

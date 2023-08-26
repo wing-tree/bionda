@@ -11,12 +11,15 @@ import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.three
 import wing.tree.bionda.data.extension.two
 import wing.tree.bionda.data.model.DataType
+import wing.tree.bionda.data.model.weather.LCRiseSetInfo
 import wing.tree.bionda.data.service.MidFcstInfoService
+import wing.tree.bionda.data.service.RiseSetInfoService
 import wing.tree.bionda.data.service.VilageFcstInfoService
 import kotlin.math.pow
 
 class WeatherDataSource(
     private val midFcstInfoService: MidFcstInfoService,
+    private val riseSetInfoService: RiseSetInfoService,
     private val vilageFcstInfoService: VilageFcstInfoService
 ) {
     private suspend fun <T> retry(
@@ -35,6 +38,22 @@ class WeatherDataSource(
         }
 
         return block()
+    }
+
+    suspend fun getLCRiseSetInfo(
+        params: RiseSetInfoService.Params
+    ) = retry {
+        with(params) {
+            riseSetInfoService.getLCRiseSetInfo(
+                serviceKey = BuildConfig.riseSetInfoServiceKey,
+                locdate = locdate,
+                longitude = longitude,
+                latitude = latitude,
+                dnYn = dnYn
+            )
+        }.let {
+            LCRiseSetInfo.Remote(it)
+        }
     }
 
     suspend fun getMidLandFcst(

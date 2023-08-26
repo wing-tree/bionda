@@ -13,6 +13,8 @@
     <string name="schedule_exact_alarm_permission_rationale">정확한 시간에 알람을 받으시려면, 이 권한을 허용해 주세요.</string>
     <string name="share_the_app">앱 공유하기</string>
     <string name="snow">눈</string>
+    <string name="sunrise">일출</string>
+    <string name="sunset">일몰</string>
     <string name="take_an_umbrella">우산 챙기세요!</string>
     <string name="weather">날씨</string>
 

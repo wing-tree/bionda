@@ -13,7 +13,8 @@ interface VilageFcstDao {
 
     @Query(
         """
-            SELECT * FROM vilage_fcst WHERE baseDate = :baseDate 
+            SELECT * FROM vilage_fcst 
+            WHERE baseDate = :baseDate 
             AND baseTime = :baseTime 
             AND nx = :nx 
             AND ny = :ny

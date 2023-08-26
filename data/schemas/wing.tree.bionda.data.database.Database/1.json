@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "2a332bd807adac8643262e623dcf96dc",
+    "identityHash": "bafc22191c9351fb143e6d2b2765356b",
     "entities": [
       {
         "tableName": "alarm",
@@ -43,6 +43,46 @@
           "autoGenerate": true,
           "columnNames": [
             "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "lc_rise_set_info",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`item` TEXT NOT NULL, `locdate` TEXT NOT NULL, `longitude` INTEGER NOT NULL, `latitude` INTEGER NOT NULL, PRIMARY KEY(`locdate`, `longitude`, `latitude`))",
+        "fields": [
+          {
+            "fieldPath": "item",
+            "columnName": "item",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "locdate",
+            "columnName": "locdate",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "longitude",
+            "columnName": "longitude",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "latitude",
+            "columnName": "latitude",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "locdate",
+            "longitude",
+            "latitude"
           ]
         },
         "indices": [],
@@ -115,6 +155,53 @@
         "foreignKeys": []
       },
       {
+        "tableName": "ultra_srt_ncst",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`items` TEXT NOT NULL, `nx` INTEGER NOT NULL, `ny` INTEGER NOT NULL, `baseDate` TEXT NOT NULL, `baseTime` TEXT NOT NULL, PRIMARY KEY(`nx`, `ny`, `baseDate`, `baseTime`))",
+        "fields": [
+          {
+            "fieldPath": "items",
+            "columnName": "items",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nx",
+            "columnName": "nx",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ny",
+            "columnName": "ny",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "baseDate",
+            "columnName": "baseDate",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "baseTime",
+            "columnName": "baseTime",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "nx",
+            "ny",
+            "baseDate",
+            "baseTime"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
         "tableName": "vilage_fcst",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`items` TEXT NOT NULL, `nx` INTEGER NOT NULL, `ny` INTEGER NOT NULL, `baseDate` TEXT NOT NULL, `baseTime` TEXT NOT NULL, PRIMARY KEY(`nx`, `ny`, `baseDate`, `baseTime`))",
         "fields": [
@@ -165,7 +252,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2a332bd807adac8643262e623dcf96dc')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'bafc22191c9351fb143e6d2b2765356b')"
     ]
   }
 }

@@ -9,6 +9,7 @@ import wing.tree.bionda.data.model.State
 import wing.tree.bionda.data.model.weather.MidLandFcstTa
 import wing.tree.bionda.model.UltraSrtNcst
 import wing.tree.bionda.model.VilageFcst
+import wing.tree.bionda.data.model.weather.LCRiseSetInfo.Local as LCRiseSetInfo
 
 data class MainState(
     val alarmState: AlarmState,
@@ -76,11 +77,13 @@ sealed interface AlarmState {
 }
 
 data class WeatherState(
+    val lcRiseSetInfo: State<LCRiseSetInfo>,
     val midLandFcstTa: State<MidLandFcstTa>,
     val vilageFcst: State<VilageFcst>
 ) {
     companion object {
         val initialValue = WeatherState(
+            lcRiseSetInfo = State.Loading,
             midLandFcstTa = State.Loading,
             vilageFcst = State.Loading
         )

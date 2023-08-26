@@ -5,10 +5,12 @@ import wing.tree.bionda.data.model.CalendarDecorator
 import wing.tree.bionda.data.top.level.baseDateFormat
 import wing.tree.bionda.data.top.level.baseTimeFormat
 import wing.tree.bionda.data.top.level.koreaCalendarOf
+import wing.tree.bionda.data.top.level.locdateFormat
 import wing.tree.bionda.data.top.level.tmFcFormat
 
 val Calendar.baseDate: String get() = baseDateFormat.format(this)
 val Calendar.baseTime: String get() = baseTimeFormat.format(this)
+val Calendar.locdate: String get() = locdateFormat.format(this)
 val Calendar.tmFc: String get() = tmFcFormat.format(this)
 
 var Calendar.date: Int

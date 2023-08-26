@@ -30,6 +30,7 @@ import wing.tree.bionda.data.model.State
 import wing.tree.bionda.data.model.State.Complete
 import wing.tree.bionda.data.model.flatMap
 import wing.tree.bionda.data.model.map
+import wing.tree.bionda.data.model.weather.LCRiseSetInfo.Local as LCRiseSetInfo
 import wing.tree.bionda.data.model.weather.MidLandFcstTa
 import wing.tree.bionda.data.model.weather.UltraSrtNcst
 import wing.tree.bionda.data.provider.LocationProvider
@@ -81,6 +82,13 @@ class MainViewModel @Inject constructor(
         }
     }
         .stateIn(initialValue = HeaderState.initialValue)
+
+    private val lcRiseSetInfo: StateFlow<State<LCRiseSetInfo>> = location.map {
+        it.flatMap {
+            weatherRepository.getLCRiseSetInfo(it)
+        }
+    }
+        .stateIn(initialValue = State.Loading)
 
     private val midLandFcstTa: StateFlow<State<MidLandFcstTa>> = location.map {
         it.flatMap { location ->
@@ -142,10 +150,12 @@ class MainViewModel @Inject constructor(
         .stateIn(initialValue = AlarmState.initialValue)
 
     private val weatherState = combine(
+        lcRiseSetInfo,
         midLandFcstTa,
         vilageFcst
-    ) { midLandFcstTaState, vilageFcstState ->
+    ) { lcRiseSetInfo, midLandFcstTaState, vilageFcstState ->
         WeatherState(
+            lcRiseSetInfo = lcRiseSetInfo,
             midLandFcstTa = midLandFcstTaState,
             vilageFcst = vilageFcstState
         )

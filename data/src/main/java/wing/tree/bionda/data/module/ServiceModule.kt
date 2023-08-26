@@ -7,6 +7,7 @@ import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import wing.tree.bionda.data.qualifier.Qualifier
 import wing.tree.bionda.data.service.MidFcstInfoService
+import wing.tree.bionda.data.service.RiseSetInfoService
 import wing.tree.bionda.data.service.VilageFcstInfoService
 
 @Module
@@ -17,6 +18,13 @@ object ServiceModule {
         @Qualifier.MidFcstInfoService retrofit: Retrofit
     ): MidFcstInfoService {
         return retrofit.create(MidFcstInfoService::class.java)
+    }
+
+    @Provides
+    fun providesRiseSetInfoService(
+        @Qualifier.RiseSetInfoService retrofit: Retrofit
+    ): RiseSetInfoService {
+        return retrofit.create(RiseSetInfoService::class.java)
     }
 
     @Provides

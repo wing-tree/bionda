@@ -1,15 +1,18 @@
 package wing.tree.bionda.data.repository
 
-import android.icu.util.Calendar
 import android.location.Location
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import wing.tree.bionda.data.PostProcessor
 import wing.tree.bionda.data.extension.awaitOrFailure
+import wing.tree.bionda.data.extension.cloneAsCalendar
+import wing.tree.bionda.data.extension.degreeMinute
+import wing.tree.bionda.data.extension.locdate
 import wing.tree.bionda.data.extension.tmFc
 import wing.tree.bionda.data.model.CalendarDecorator.Base
 import wing.tree.bionda.data.model.State.Complete
+import wing.tree.bionda.data.model.weather.LCRiseSetInfo
 import wing.tree.bionda.data.model.weather.MidLandFcst
 import wing.tree.bionda.data.model.weather.MidLandFcstTa
 import wing.tree.bionda.data.model.weather.MidLandFcstTa.Companion.MidLandFcstTa
@@ -17,8 +20,10 @@ import wing.tree.bionda.data.model.weather.MidTa
 import wing.tree.bionda.data.model.weather.RegId
 import wing.tree.bionda.data.model.weather.UltraSrtNcst
 import wing.tree.bionda.data.model.weather.VilageFcst
+import wing.tree.bionda.data.service.RiseSetInfoService
 import wing.tree.bionda.data.service.VilageFcstInfoService
 import wing.tree.bionda.data.top.level.baseCalendar
+import wing.tree.bionda.data.top.level.koreaCalendar
 import wing.tree.bionda.data.top.level.tmFcCalendar
 import wing.tree.bionda.data.source.local.WeatherDataSource as LocalDataSource
 import wing.tree.bionda.data.source.remote.WeatherDataSource as RemoteDataSource
@@ -30,9 +35,8 @@ class WeatherRepository(
 ) {
     private val ioDispatcher = Dispatchers.IO
 
-    private suspend fun getMidLandFcst(regId: String, tmFcCalendar: Calendar): Complete<MidLandFcst.Local> {
+    private suspend fun getMidLandFcst(regId: String, tmFc: String): Complete<MidLandFcst.Local> {
         return try {
-            val tmFc = tmFcCalendar.tmFc
             val local = localDataSource.loadMidLandFcst(
                 regId = regId,
                 tmFc = tmFc
@@ -51,9 +55,8 @@ class WeatherRepository(
         }
     }
 
-    private suspend fun getMidTa(regId: String, tmFcCalendar: Calendar): Complete<MidTa.Local> {
+    private suspend fun getMidTa(regId: String, tmFc: String): Complete<MidTa.Local> {
         return try {
-            val tmFc = tmFcCalendar.tmFc
             val local = localDataSource.loadMidTa(
                 regId = regId,
                 tmFc = tmFc
@@ -72,25 +75,50 @@ class WeatherRepository(
         }
     }
 
+    suspend fun getLCRiseSetInfo(location: Location): Complete<LCRiseSetInfo.Local> {
+        return try {
+            val params = with(location) {
+                RiseSetInfoService.Params(
+                    locdate = koreaCalendar().locdate,
+                    longitude = longitude.degreeMinute.int,
+                    latitude = latitude.degreeMinute.int
+                )
+            }
+
+            val lcRiseSetInfo = localDataSource.loadLCRiseSetInfo(
+                params = params
+            ) ?: remoteDataSource.getLCRiseSetInfo(
+                params = params
+            ).toLocal().also {
+                localDataSource.cache(it)
+            }
+
+            Complete.Success(lcRiseSetInfo)
+        } catch (throwable: Throwable) {
+            Complete.Failure(throwable)
+        }
+    }
+
     suspend fun getMidLandFcstTa(location: Location): Complete<MidLandFcstTa> = coroutineScope {
         try {
             val tmFcCalendar = tmFcCalendar()
+            val tmFc = tmFcCalendar.tmFc
             val midLandFcst = async(ioDispatcher) {
                 val regId = localDataSource.getRegId(location, RegId.MidLandFcst)
 
-                getMidLandFcst(regId = regId, tmFcCalendar = tmFcCalendar)
+                getMidLandFcst(regId = regId, tmFc = tmFc)
             }
 
             val midTa = async(ioDispatcher) {
                 val regId = localDataSource.getRegId(location, RegId.MidTa)
 
-                getMidTa(regId = regId, tmFcCalendar = tmFcCalendar)
+                getMidTa(regId = regId, tmFc = tmFc)
             }
 
             val midLandFcstTa = MidLandFcstTa(
                 midLandFcst = midLandFcst.awaitOrFailure(),
                 midTa = midTa.awaitOrFailure(),
-                tmFcCalendar = tmFcCalendar
+                tmFcCalendar = tmFcCalendar.cloneAsCalendar()
             )
 
             Complete.Success(midLandFcstTa)
