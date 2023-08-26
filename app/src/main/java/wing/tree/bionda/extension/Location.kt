@@ -1,11 +1,19 @@
 package wing.tree.bionda.extension
 
+import android.content.Context
+import android.location.Geocoder
 import android.location.Location
+import android.os.Build
+import kotlinx.coroutines.suspendCancellableCoroutine
 import wing.tree.bionda.data.extension.double
 import wing.tree.bionda.data.extension.half
 import wing.tree.bionda.data.extension.int
 import wing.tree.bionda.data.extension.quarter
+import wing.tree.bionda.data.extension.ten
+import wing.tree.bionda.data.model.Address
 import wing.tree.bionda.model.Coordinate
+import java.util.Locale
+import kotlin.coroutines.resume
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.floor
@@ -46,4 +54,24 @@ fun Location.toCoordinate(): Coordinate {
         nx = floor(ra * sin(theta * sn) + XO + 0.5).int,
         ny = floor(ro - ra * cos(theta * sn) + YO + 0.5).int
     )
+}
+
+suspend fun Location.getAddress(context: Context) = suspendCancellableCoroutine { cancellableContinuation ->
+    val geocoder = Geocoder(context, Locale.KOREA)
+    val maxResults = Int.ten
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        geocoder.getFromLocation(latitude, longitude, maxResults) { geocode ->
+            cancellableContinuation.resume(
+                Address.get(geocode.filterNotNull())
+            )
+        }
+    } else {
+        @Suppress("DEPRECATION")
+        geocoder.getFromLocation(latitude, longitude, maxResults)?.let { geocode ->
+            cancellableContinuation.resume(
+                Address.get(geocode.filterNotNull())
+            )
+        } ?: cancellableContinuation.resume(null)
+    }
 }
