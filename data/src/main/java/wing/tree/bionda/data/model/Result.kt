@@ -21,6 +21,16 @@ sealed class Result<out R> {
 }
 
 
+inline fun <R, T> Result<T>.flatMap(transform: (T) -> Result<R>): Result<R> {
+    return when (this) {
+        Loading -> Loading
+        is Complete -> when (this) {
+            is Complete.Success -> transform(value)
+            is Complete.Failure -> Complete.Failure(throwable)
+        }
+    }
+}
+
 inline fun <R, T> Result<T>.map(transform: (T) -> R): Result<R> {
     return when (this) {
         Loading -> Loading
