@@ -46,8 +46,12 @@ android {
 }
 
 dependencies {
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+
     api("com.jakewharton.timber:timber:5.0.1")
     api("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.5")
+
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.core:core-ktx:1.10.1")
     implementation("androidx.room:room-ktx:2.5.2")
@@ -59,15 +63,18 @@ dependencies {
     implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
     implementation("com.squareup.okhttp3:okhttp:4.11.0")
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.tickaroo.tikxml:annotation:0.8.13")
+    implementation("com.tickaroo.tikxml:core:0.8.15")
+    //noinspection GradleDependency
+    implementation("com.tickaroo.tikxml:retrofit-converter:0.8.13")
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.8.20")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
 
     kapt("com.google.dagger:hilt-android-compiler:2.44.2")
+    kapt("com.tickaroo.tikxml:processor:0.8.15")
+
     ksp("androidx.room:room-compiler:2.5.2")
     ksp("androidx.room:room-ktx:2.5.2")
-
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 
     testImplementation("junit:junit:4.13.2")
 }
