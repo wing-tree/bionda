@@ -37,8 +37,8 @@ import wing.tree.bionda.data.extension.float
 import wing.tree.bionda.data.extension.isNull
 import wing.tree.bionda.data.extension.julianDay
 import wing.tree.bionda.data.extension.tmFc
-import wing.tree.bionda.data.model.Result
-import wing.tree.bionda.data.model.Result.Complete
+import wing.tree.bionda.data.model.State
+import wing.tree.bionda.data.model.State.Complete
 import wing.tree.bionda.data.model.weather.MidLandFcstTa
 import wing.tree.bionda.data.model.weather.MidLandFcstTa.BothFailure
 import wing.tree.bionda.data.model.weather.MidLandFcstTa.BothSuccess
@@ -63,7 +63,7 @@ private val weekdays = DateFormatSymbols
 
 @Composable
 fun MidLandFcstTa(
-    state: Result<MidLandFcstTa>,
+    state: State<MidLandFcstTa>,
     modifier: Modifier = Modifier
 ) {
     AnimatedContent(
@@ -78,7 +78,7 @@ fun MidLandFcstTa(
         }
     ) {
         when(it) {
-            Result.Loading -> Loading(modifier = Modifier)
+            State.Loading -> Loading(modifier = Modifier)
             is Complete -> when (it) {
                 is Complete.Success -> Content(content = it.value)
                 is Complete.Failure -> Text("${it.throwable}")

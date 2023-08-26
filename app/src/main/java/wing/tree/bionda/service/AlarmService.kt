@@ -17,7 +17,7 @@ import timber.log.Timber
 import wing.tree.bionda.data.constant.EXTRA_ALARM_ID
 import wing.tree.bionda.data.extension.negativeOne
 import wing.tree.bionda.data.model.Alarm
-import wing.tree.bionda.data.model.Result.Complete
+import wing.tree.bionda.data.model.State.Complete
 import wing.tree.bionda.data.model.map
 import wing.tree.bionda.data.model.onFailure
 import wing.tree.bionda.data.model.onSuccess

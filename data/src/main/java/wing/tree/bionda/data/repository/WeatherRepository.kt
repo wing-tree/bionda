@@ -14,7 +14,7 @@ import wing.tree.bionda.data.extension.isNull
 import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.tmFc
 import wing.tree.bionda.data.model.CalendarDecorator.Base
-import wing.tree.bionda.data.model.Result.Complete
+import wing.tree.bionda.data.model.State.Complete
 import wing.tree.bionda.data.model.weather.MidLandFcst
 import wing.tree.bionda.data.model.weather.MidLandFcstTa
 import wing.tree.bionda.data.model.weather.MidLandFcstTa.Companion.MidLandFcstTa

@@ -26,8 +26,8 @@ import wing.tree.bionda.data.extension.long
 import wing.tree.bionda.data.extension.negativeOne
 import wing.tree.bionda.data.model.Address
 import wing.tree.bionda.data.model.Alarm
-import wing.tree.bionda.data.model.Result
-import wing.tree.bionda.data.model.Result.Complete
+import wing.tree.bionda.data.model.State
+import wing.tree.bionda.data.model.State.Complete
 import wing.tree.bionda.data.model.flatMap
 import wing.tree.bionda.data.model.map
 import wing.tree.bionda.data.model.weather.MidLandFcstTa
@@ -60,7 +60,7 @@ class MainViewModel @Inject constructor(
     private val vilageFcstMapper: VilageFcstMapper,
     private val weatherRepository: WeatherRepository
 ) : AndroidViewModel(application) {
-    private val location = MutableStateFlow<Result<Location>>(Result.Loading)
+    private val location = MutableStateFlow<State<Location>>(State.Loading)
     private val coordinate = location.map {
         it.map(Location::toCoordinate)
     }
@@ -68,7 +68,7 @@ class MainViewModel @Inject constructor(
     private val requestPermissions = MutableStateFlow<PersistentSet<String>>(emptyPersistentSet())
     private val headerState = location.map {
         when (it) {
-            Result.Loading -> HeaderState.Loading
+            State.Loading -> HeaderState.Loading
             is Complete.Success -> it.value.let { location ->
                 val (nx, ny) = location.toCoordinate()
                 val address = location.getAddress(getApplication())
@@ -82,12 +82,12 @@ class MainViewModel @Inject constructor(
     }
         .stateIn(initialValue = HeaderState.initialValue)
 
-    private val midLandFcstTa: StateFlow<Result<MidLandFcstTa>> = location.map {
+    private val midLandFcstTa: StateFlow<State<MidLandFcstTa>> = location.map {
         it.flatMap { location ->
             weatherRepository.getMidLandFcstTa(location)
         }
     }
-        .stateIn(initialValue = Result.Loading)
+        .stateIn(initialValue = State.Loading)
 
     private val vilageFcst = coordinate.map {
         it.flatMap { (nx, ny) ->
@@ -96,7 +96,7 @@ class MainViewModel @Inject constructor(
             }
         }
     }
-        .stateIn(initialValue = Result.Loading)
+        .stateIn(initialValue = State.Loading)
 
     val inSelectionMode = MutableStateFlow(false)
     val selected = MutableStateFlow<PersistentSet<Long>>(persistentSetOf())

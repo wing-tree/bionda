@@ -5,7 +5,7 @@ import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 import wing.tree.bionda.data.model.Address
 import wing.tree.bionda.data.model.Alarm
-import wing.tree.bionda.data.model.Result
+import wing.tree.bionda.data.model.State
 import wing.tree.bionda.data.model.weather.MidLandFcstTa
 import wing.tree.bionda.model.UltraSrtNcst
 import wing.tree.bionda.model.VilageFcst
@@ -76,13 +76,13 @@ sealed interface AlarmState {
 }
 
 data class WeatherState(
-    val midLandFcstTa: Result<MidLandFcstTa>,
-    val vilageFcst: Result<VilageFcst>
+    val midLandFcstTa: State<MidLandFcstTa>,
+    val vilageFcst: State<VilageFcst>
 ) {
     companion object {
         val initialValue = WeatherState(
-            midLandFcstTa = Result.Loading,
-            vilageFcst = Result.Loading
+            midLandFcstTa = State.Loading,
+            vilageFcst = State.Loading
         )
     }
 }

@@ -3,15 +3,15 @@
 package wing.tree.bionda.data.model
 
 import wing.tree.bionda.data.extension.isNull
-import wing.tree.bionda.data.model.Result.Complete
-import wing.tree.bionda.data.model.Result.Loading
+import wing.tree.bionda.data.model.State.Complete
+import wing.tree.bionda.data.model.State.Loading
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 
-sealed class Result<out R> {
-    object Loading : Result<Nothing>()
-    sealed class Complete<out R> : Result<R>() {
+sealed class State<out R> {
+    object Loading : State<Nothing>()
+    sealed class Complete<out R> : State<R>() {
         data class Success<out T>(val value: T) : Complete<T>()
         data class Failure(val throwable: Throwable) : Complete<Nothing>()
     }
@@ -21,7 +21,7 @@ sealed class Result<out R> {
 }
 
 
-inline fun <R, T> Result<T>.flatMap(transform: (T) -> Result<R>): Result<R> {
+inline fun <R, T> State<T>.flatMap(transform: (T) -> State<R>): State<R> {
     return when (this) {
         Loading -> Loading
         is Complete -> when (this) {
@@ -31,7 +31,7 @@ inline fun <R, T> Result<T>.flatMap(transform: (T) -> Result<R>): Result<R> {
     }
 }
 
-inline fun <R, T> Result<T>.map(transform: (T) -> R): Result<R> {
+inline fun <R, T> State<T>.map(transform: (T) -> R): State<R> {
     return when (this) {
         Loading -> Loading
         is Complete -> when (this) {
@@ -42,7 +42,7 @@ inline fun <R, T> Result<T>.map(transform: (T) -> R): Result<R> {
 }
 
 @OptIn(ExperimentalContracts::class)
-inline fun <T> Result<T>.onSuccess(action: (value: T) -> Unit): Result<T> {
+inline fun <T> State<T>.onSuccess(action: (value: T) -> Unit): State<T> {
     contract {
         callsInPlace(action, InvocationKind.AT_MOST_ONCE)
     }
@@ -55,7 +55,7 @@ inline fun <T> Result<T>.onSuccess(action: (value: T) -> Unit): Result<T> {
 }
 
 @OptIn(ExperimentalContracts::class)
-inline fun <T> Result<T>.onFailure(action: (throwable: Throwable) -> Unit): Result<T> {
+inline fun <T> State<T>.onFailure(action: (throwable: Throwable) -> Unit): State<T> {
     contract {
         callsInPlace(action, InvocationKind.AT_MOST_ONCE)
     }
