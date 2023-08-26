@@ -5,11 +5,8 @@ import android.location.Location
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
-import wing.tree.bionda.data.extension.advanceHourOfDayBy
-import wing.tree.bionda.data.extension.awaitOrElse
-import wing.tree.bionda.data.extension.baseDate
-import wing.tree.bionda.data.extension.baseTime
-import wing.tree.bionda.data.extension.isNull
+import wing.tree.bionda.data.PostProcessor
+import wing.tree.bionda.data.extension.awaitOrFailure
 import wing.tree.bionda.data.extension.tmFc
 import wing.tree.bionda.data.model.CalendarDecorator.Base
 import wing.tree.bionda.data.model.State.Complete
@@ -28,31 +25,24 @@ import wing.tree.bionda.data.source.remote.WeatherDataSource as RemoteDataSource
 
 class WeatherRepository(
     private val localDataSource: LocalDataSource,
-    private val remoteDataSource: RemoteDataSource
+    private val remoteDataSource: RemoteDataSource,
+    private val postProcessor: PostProcessor
 ) {
     private val ioDispatcher = Dispatchers.IO
 
     private suspend fun getMidLandFcst(regId: String, tmFcCalendar: Calendar): Complete<MidLandFcst.Local> {
         return try {
             val tmFc = tmFcCalendar.tmFc
-            val local = localDataSource.loadMidLandFcst(regId = regId, tmFc = tmFc) ?: remoteDataSource.getMidLandFcst(
+            val local = localDataSource.loadMidLandFcst(
+                regId = regId,
+                tmFc = tmFc
+            ) ?: remoteDataSource.getMidLandFcst(
                 regId = regId,
                 tmFc = tmFc
             ).let {
-                with(it.toLocal(regId = regId, tmFc = tmFc)) {
-                    if (it.item.rnSt3Am.isNull()) {
-                        val previous = localDataSource.loadMidLandFcst(
-                            regId = regId,
-                            tmFc = tmFcCalendar.advanceHourOfDayBy(12).tmFc
-                        )
-
-                        prepend(previous)
-                    } else {
-                        this
-                    }
+                with(postProcessor) {
+                    it.postProcess(regId = regId, tmFc = tmFc)
                 }
-            }.also {
-                localDataSource.cache(it)
             }
 
             Complete.Success(local)
@@ -70,21 +60,10 @@ class WeatherRepository(
             ) ?: remoteDataSource.getMidTa(
                 regId = regId,
                 tmFc = tmFc
-            ).let { remote ->
-                with(remote.toLocal(regId, tmFc)) {
-                    if (item.taMin3.isNull()) {
-                        val previous = localDataSource.loadMidTa(
-                            regId = regId,
-                            tmFc = tmFcCalendar.advanceHourOfDayBy(12).tmFc
-                        )
-
-                        prepend(previous)
-                    } else {
-                        this
-                    }
+            ).let {
+                with(postProcessor) {
+                    it.postProcess(regId = regId, tmFc = tmFc)
                 }
-            }.also {
-                localDataSource.cache(it)
             }
 
             Complete.Success(local)
@@ -109,12 +88,8 @@ class WeatherRepository(
             }
 
             val midLandFcstTa = MidLandFcstTa(
-                midLandFcst = midLandFcst.awaitOrElse {
-                    Complete.Failure(it)
-                },
-                midTa = midTa.awaitOrElse {
-                    Complete.Failure(it)
-                },
+                midLandFcst = midLandFcst.awaitOrFailure(),
+                midTa = midTa.awaitOrFailure(),
                 tmFcCalendar = tmFcCalendar
             )
 
@@ -164,18 +139,9 @@ class WeatherRepository(
             val vilageFcst = localDataSource.loadVilageFcst(params) ?: remoteDataSource.getVilageFcst(
                 numOfRows = 290,
                 params = params
-            ).let { remote ->
-                val previous = baseCalendar.advanceHourOfDayBy(3).let {
-                    localDataSource.loadVilageFcst(
-                        params.copy(
-                            baseDate = it.baseDate,
-                            baseTime = it.baseTime
-                        )
-                    )
-                }
-
-                remote.toLocal(params).prepend(previous).also {
-                    localDataSource.cache(it)
+            ).let {
+                with(postProcessor) {
+                    it.postProcess(params)
                 }
             }
 

@@ -10,17 +10,12 @@ import wing.tree.bionda.data.model.weather.VilageFcst
 
 interface VilageFcstInfoService {
     data class Params(
-        val baseDate: String,
-        val baseTime: String,
+        val baseCalendar: Calendar,
         val nx: Int,
         val ny: Int
     ) {
-        constructor(baseCalendar: Calendar, nx: Int, ny: Int): this(
-            baseDate = baseCalendar.baseDate,
-            baseTime = baseCalendar.baseTime,
-            nx = nx,
-            ny = ny
-        )
+        val baseDate = baseCalendar.baseDate
+        val baseTime = baseCalendar.baseTime
     }
 
     @GET("getUltraSrtNcst")
