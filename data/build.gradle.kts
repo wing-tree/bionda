@@ -64,14 +64,16 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.11.0")
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.tickaroo.tikxml:annotation:0.8.13")
-    implementation("com.tickaroo.tikxml:core:0.8.15")
+    //noinspection GradleDependency
+    implementation("com.tickaroo.tikxml:core:0.8.13")
     //noinspection GradleDependency
     implementation("com.tickaroo.tikxml:retrofit-converter:0.8.13")
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.8.20")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
 
     kapt("com.google.dagger:hilt-android-compiler:2.44.2")
-    kapt("com.tickaroo.tikxml:processor:0.8.15")
+    //noinspection GradleDependency
+    kapt("com.tickaroo.tikxml:processor:0.8.13")
 
     ksp("androidx.room:room-compiler:2.5.2")
     ksp("androidx.room:room-ktx:2.5.2")

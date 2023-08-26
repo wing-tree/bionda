@@ -4,6 +4,7 @@ import wing.tree.bionda.data.model.DegreeMinute
 
 val Double.Companion.one: Double get() = 1.0
 val Double.Companion.two: Double get() = 2.0
+val Double.Companion.zero: Double get() = 0.0
 val Double.degreeMinute: DegreeMinute get() = run {
     val degree = int
     val minute = minus(degree).times(60).int

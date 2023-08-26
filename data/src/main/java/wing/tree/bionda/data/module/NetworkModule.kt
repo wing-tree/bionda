@@ -1,6 +1,8 @@
 package wing.tree.bionda.data.module
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import com.tickaroo.tikxml.TikXml
+import com.tickaroo.tikxml.retrofit.TikXmlConverterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -28,6 +30,10 @@ object NetworkModule {
         }
     }
 
+    private val tikXml = TikXml.Builder()
+        .exceptionOnUnreadXml(false)
+        .build()
+
     @Provides
     fun providesOkHttpClient(): OkHttpClient = OkHttpClient.Builder()
         .addNetworkInterceptor(httpLoggingInterceptor)
@@ -50,6 +56,7 @@ object NetworkModule {
     ): Retrofit = Retrofit.Builder()
         .baseUrl(RISE_SET_INFO_SERVICE_URL)
         .client(okHttpClient)
+        .addConverterFactory(TikXmlConverterFactory.create(tikXml))
         .build()
 
     @Provides
