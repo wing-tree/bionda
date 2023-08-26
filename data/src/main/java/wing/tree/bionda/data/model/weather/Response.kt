@@ -8,8 +8,8 @@ import wing.tree.bionda.data.extension.zero
 
 @Serializable
 data class Response<T>(
-    val header: Header,
-    val body: Body<T> = Body.nothing()
+    val header: Header = Header(),
+    val body: Body<T> = Body()
 ) {
     val isUnsuccessful: Boolean get() = header.resultCode not OpenApiError.ERROR_CODE_00
     val items: Items<T> get() = body.items
@@ -17,28 +17,18 @@ data class Response<T>(
 
 @Serializable
 data class Header(
-    val resultCode: String,
-    val resultMsg: String
+    val resultCode: String = String.empty,
+    val resultMsg: String = String.empty
 )
 
 @Serializable
 data class Body<T>(
-    val dataType: String,
-    val items: Items<T>,
-    val numOfRows: Int,
-    val pageNo: Int,
-    val totalCount: Int
-) {
-    companion object {
-        fun <T> nothing() = Body<T>(
-            dataType = String.empty,
-            items = Items(),
-            numOfRows = Int.zero,
-            pageNo = Int.zero,
-            totalCount = Int.zero
-        )
-    }
-}
+    val dataType: String = String.empty,
+    val items: Items<T> = Items(),
+    val numOfRows: Int = Int.zero,
+    val pageNo: Int = Int.zero,
+    val totalCount: Int = Int.zero
+)
 
 @Serializable
 data class Items<T>(
