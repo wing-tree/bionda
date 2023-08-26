@@ -3,9 +3,11 @@ package wing.tree.bionda.data.source.remote
 import kotlinx.coroutines.delay
 import timber.log.Timber
 import wing.tree.bionda.data.BuildConfig
+import wing.tree.bionda.data.extension.eight
 import wing.tree.bionda.data.extension.five
 import wing.tree.bionda.data.extension.hundreds
 import wing.tree.bionda.data.extension.long
+import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.three
 import wing.tree.bionda.data.extension.two
 import wing.tree.bionda.data.model.DataType
@@ -36,8 +38,8 @@ class WeatherDataSource(
     }
 
     suspend fun getMidLandFcst(
-        numOfRows: Int,
-        pageNo: Int,
+        numOfRows: Int = Int.one,
+        pageNo: Int = Int.one,
         regId: String,
         tmFc: String
     ) = retry {
@@ -52,8 +54,8 @@ class WeatherDataSource(
     }
 
     suspend fun getMidTa(
-        numOfRows: Int,
-        pageNo: Int,
+        numOfRows: Int = Int.one,
+        pageNo: Int = Int.one,
         regId: String,
         tmFc: String
     ) = retry {
@@ -68,8 +70,8 @@ class WeatherDataSource(
     }
 
     suspend fun getUltraSrtNcst(
-        numOfRows: Int,
-        pageNo: Int,
+        numOfRows: Int = Int.eight,
+        pageNo: Int = Int.one,
         params: VilageFcstInfoService.Params
     ) = retry {
         with(params) {
@@ -88,7 +90,7 @@ class WeatherDataSource(
 
     suspend fun getVilageFcst(
         numOfRows: Int,
-        pageNo: Int,
+        pageNo: Int = Int.one,
         params: VilageFcstInfoService.Params
     ) = retry {
         with(params) {

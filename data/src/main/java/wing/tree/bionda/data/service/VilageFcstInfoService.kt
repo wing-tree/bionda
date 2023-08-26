@@ -1,7 +1,10 @@
 package wing.tree.bionda.data.service
 
+import android.icu.util.Calendar
 import retrofit2.http.GET
 import retrofit2.http.Query
+import wing.tree.bionda.data.extension.baseDate
+import wing.tree.bionda.data.extension.baseTime
 import wing.tree.bionda.data.model.weather.UltraSrtNcst
 import wing.tree.bionda.data.model.weather.VilageFcst
 
@@ -11,7 +14,14 @@ interface VilageFcstInfoService {
         val baseTime: String,
         val nx: Int,
         val ny: Int
-    )
+    ) {
+        constructor(baseCalendar: Calendar, nx: Int, ny: Int): this(
+            baseDate = baseCalendar.baseDate,
+            baseTime = baseCalendar.baseTime,
+            nx = nx,
+            ny = ny
+        )
+    }
 
     @GET("getUltraSrtNcst")
     suspend fun getUltraSrtNcst(
