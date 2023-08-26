@@ -5,6 +5,7 @@ import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 import wing.tree.bionda.data.model.Address
 import wing.tree.bionda.data.model.Alarm
+import wing.tree.bionda.data.model.Result
 import wing.tree.bionda.data.model.weather.MidLandFcstTa
 import wing.tree.bionda.model.UltraSrtNcst
 import wing.tree.bionda.model.VilageFcst
@@ -75,25 +76,14 @@ sealed interface AlarmState {
 }
 
 data class WeatherState(
-    val midLandFcstTaState: MidLandFcstTaState,
-    val vilageFcstState: VilageFcstState
+    val midLandFcstTa: Result<MidLandFcstTa>,
+    val vilageFcst: Result<VilageFcst>
 ) {
     companion object {
         val initialValue = WeatherState(
-            midLandFcstTaState = MidLandFcstTaState.initialValue,
-            vilageFcstState = VilageFcstState.initialValue
+            midLandFcstTa = Result.Loading,
+            vilageFcst = Result.Loading
         )
-    }
-}
-
-sealed interface MidLandFcstTaState {
-    object Loading : MidLandFcstTaState
-    data class Content(val midLandFcstTa: MidLandFcstTa) : MidLandFcstTaState
-
-    data class Error(val throwable: Throwable) : MidLandFcstTaState
-
-    companion object {
-        val initialValue = Loading
     }
 }
 
@@ -105,16 +95,6 @@ sealed interface HeaderState {
     ) : HeaderState
 
     data class Error(val throwable: Throwable) : HeaderState
-
-    companion object {
-        val initialValue = Loading
-    }
-}
-
-sealed interface VilageFcstState {
-    object Loading : VilageFcstState
-    data class Content(val vilageFcst: VilageFcst) : VilageFcstState
-    data class Error(val throwable: Throwable) : VilageFcstState
 
     companion object {
         val initialValue = Loading

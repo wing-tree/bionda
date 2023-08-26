@@ -24,12 +24,12 @@ fun Weather(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         VilageFcst(
-            state = state.vilageFcstState,
+            state = state.vilageFcst,
             modifier = Modifier.fillMaxWidth()
         )
 
         MidLandFcstTa(
-            state = state.midLandFcstTaState,
+            state = state.midLandFcstTa,
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()

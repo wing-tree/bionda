@@ -15,14 +15,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import wing.tree.bionda.data.extension.empty
+import wing.tree.bionda.data.model.Result
+import wing.tree.bionda.data.model.Result.Complete
 import wing.tree.bionda.model.VilageFcst
 import wing.tree.bionda.view.compose.composable.core.Loading
 import wing.tree.bionda.view.compose.composable.core.VerticalSpacer
-import wing.tree.bionda.view.state.VilageFcstState
 
 @Composable
 fun VilageFcst(
-    state: VilageFcstState,
+    state: Result<VilageFcst>,
     modifier: Modifier = Modifier
 ) {
     AnimatedContent(
@@ -37,14 +38,14 @@ fun VilageFcst(
         }
     ) {
         when (it) {
-            VilageFcstState.Loading -> Loading(modifier = Modifier)
-            is VilageFcstState.Content -> Content(
-                vilageFcst = it.vilageFcst,
-                modifier = Modifier.fillMaxWidth()
-            )
+            Result.Loading -> Loading(modifier = Modifier)
+            is Complete -> when (it) {
+                is Complete.Success -> Content(
+                    vilageFcst = it.value,
+                    modifier = Modifier.fillMaxWidth()
+                )
 
-            is VilageFcstState.Error -> {
-                Text(text = "${it.throwable}")
+                is Complete.Failure -> Text(text = "${it.throwable}")
             }
         }
     }

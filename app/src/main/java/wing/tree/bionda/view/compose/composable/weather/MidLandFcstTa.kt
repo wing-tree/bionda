@@ -37,6 +37,9 @@ import wing.tree.bionda.data.extension.float
 import wing.tree.bionda.data.extension.isNull
 import wing.tree.bionda.data.extension.julianDay
 import wing.tree.bionda.data.extension.tmFc
+import wing.tree.bionda.data.model.Result
+import wing.tree.bionda.data.model.Result.Complete
+import wing.tree.bionda.data.model.weather.MidLandFcstTa
 import wing.tree.bionda.data.model.weather.MidLandFcstTa.BothFailure
 import wing.tree.bionda.data.model.weather.MidLandFcstTa.BothSuccess
 import wing.tree.bionda.data.model.weather.MidLandFcstTa.OneOfSuccess
@@ -48,7 +51,6 @@ import wing.tree.bionda.theme.WaterBlue
 import wing.tree.bionda.view.compose.composable.core.DegreeText
 import wing.tree.bionda.view.compose.composable.core.Loading
 import wing.tree.bionda.view.compose.composable.core.VerticalSpacer
-import wing.tree.bionda.view.state.MidLandFcstTaState
 import java.util.Locale
 import wing.tree.bionda.data.model.weather.MidLandFcst.Local as MidLandFcst
 import wing.tree.bionda.data.model.weather.MidTa.Local as MidTa
@@ -61,7 +63,7 @@ private val weekdays = DateFormatSymbols
 
 @Composable
 fun MidLandFcstTa(
-    state: MidLandFcstTaState,
+    state: Result<MidLandFcstTa>,
     modifier: Modifier = Modifier
 ) {
     AnimatedContent(
@@ -76,24 +78,26 @@ fun MidLandFcstTa(
         }
     ) {
         when(it) {
-            MidLandFcstTaState.Loading -> Loading(modifier = Modifier)
-            is MidLandFcstTaState.Content -> Content(content = it)
-            is MidLandFcstTaState.Error -> Text("${it.throwable}")
+            Result.Loading -> Loading(modifier = Modifier)
+            is Complete -> when (it) {
+                is Complete.Success -> Content(content = it.value)
+                is Complete.Failure -> Text("${it.throwable}")
+            }
         }
     }
 }
 
 @Composable
 private fun Content(
-    content: MidLandFcstTaState.Content,
+    content: MidLandFcstTa,
     modifier: Modifier = Modifier
 ) {
     ElevatedCard(modifier = modifier) {
         Column(modifier = Modifier.padding(vertical = 12.dp)) {
-            when(val midLandFcstTa = content.midLandFcstTa) {
-                is BothSuccess -> BothSuccess(bothSuccess = midLandFcstTa)
-                is OneOfSuccess -> OneOfSuccess(oneOfSuccess = midLandFcstTa)
-                is BothFailure -> BothFailure(bothFailure = midLandFcstTa)
+            when(content) {
+                is BothSuccess -> BothSuccess(bothSuccess = content)
+                is OneOfSuccess -> OneOfSuccess(oneOfSuccess = content)
+                is BothFailure -> BothFailure(bothFailure = content)
             }
         }
     }

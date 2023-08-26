@@ -1,9 +1,7 @@
 package wing.tree.bionda.view.model
 
 import android.app.Application
-import android.location.Geocoder
 import android.location.Location
-import android.os.Build
 import androidx.compose.animation.core.AnimationConstants.DefaultDurationMillis
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,8 +9,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
-import kotlinx.collections.immutable.toPersistentSet
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -22,24 +20,24 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.suspendCancellableCoroutine
 import wing.tree.bionda.data.extension.fiveSecondsInMilliseconds
 import wing.tree.bionda.data.extension.ifTrue
 import wing.tree.bionda.data.extension.long
 import wing.tree.bionda.data.extension.negativeOne
-import wing.tree.bionda.data.extension.ten
 import wing.tree.bionda.data.model.Address
 import wing.tree.bionda.data.model.Alarm
 import wing.tree.bionda.data.model.Result
 import wing.tree.bionda.data.model.Result.Complete
+import wing.tree.bionda.data.model.flatMap
+import wing.tree.bionda.data.model.map
 import wing.tree.bionda.data.model.weather.MidLandFcstTa
 import wing.tree.bionda.data.model.weather.UltraSrtNcst
-import wing.tree.bionda.data.model.weather.VilageFcst
 import wing.tree.bionda.data.provider.LocationProvider
 import wing.tree.bionda.data.repository.AlarmRepository
 import wing.tree.bionda.data.repository.WeatherRepository
 import wing.tree.bionda.exception.PermissionsDeniedException
 import wing.tree.bionda.extension.checkSelfPermission
+import wing.tree.bionda.extension.getAddress
 import wing.tree.bionda.extension.toCoordinate
 import wing.tree.bionda.mapper.UltraSrtNcstMapper
 import wing.tree.bionda.mapper.VilageFcstMapper
@@ -49,12 +47,8 @@ import wing.tree.bionda.top.level.emptyPersistentSet
 import wing.tree.bionda.view.state.AlarmState
 import wing.tree.bionda.view.state.HeaderState
 import wing.tree.bionda.view.state.MainState
-import wing.tree.bionda.view.state.MidLandFcstTaState
-import wing.tree.bionda.view.state.VilageFcstState
 import wing.tree.bionda.view.state.WeatherState
-import java.util.Locale
 import javax.inject.Inject
-import kotlin.coroutines.resume
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
@@ -66,63 +60,43 @@ class MainViewModel @Inject constructor(
     private val vilageFcstMapper: VilageFcstMapper,
     private val weatherRepository: WeatherRepository
 ) : AndroidViewModel(application) {
-    private val location = MutableStateFlow<Result<Location?>>(Result.Loading)
+    private val location = MutableStateFlow<Result<Location>>(Result.Loading)
+    private val coordinate = location.map {
+        it.map(Location::toCoordinate)
+    }
+
     private val requestPermissions = MutableStateFlow<PersistentSet<String>>(emptyPersistentSet())
-    private val stopTimeoutMillis = Long.fiveSecondsInMilliseconds
     private val headerState = location.map {
         when (it) {
             Result.Loading -> HeaderState.Loading
-            is Complete.Success -> it.value?.let { location ->
+            is Complete.Success -> it.value.let { location ->
                 val (nx, ny) = location.toCoordinate()
-                val address = getAddress(location)
+                val address = location.getAddress(getApplication())
                 val ultraSrtNcst = weatherRepository.getUltraSrtNcst(nx = nx, ny = ny)
 
                 ultraSrtNcst.asState(address)
-            } ?: HeaderState.Error(NullPointerException("Location is Null")) // TODO error define.
+            }
 
             is Complete.Failure -> HeaderState.Error(it.throwable)
         }
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(stopTimeoutMillis),
-        initialValue = HeaderState.initialValue
-    )
+    }
+        .stateIn(initialValue = HeaderState.initialValue)
 
-    private val midLandFcstTaState = location.map {
-        when (it) {
-            Result.Loading -> MidLandFcstTaState.Loading
-            is Complete.Success -> it.value?.let { location ->
-                weatherRepository
-                    .getMidLandFcstTa(location)
-                    .asState()
-            } ?: MidLandFcstTaState.Error(NullPointerException("Location is Null")) // TODO error define.
-
-            is Complete.Failure -> MidLandFcstTaState.Error(it.throwable)
+    private val midLandFcstTa: StateFlow<Result<MidLandFcstTa>> = location.map {
+        it.flatMap { location ->
+            weatherRepository.getMidLandFcstTa(location)
         }
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(stopTimeoutMillis),
-        initialValue = MidLandFcstTaState.initialValue
-    )
+    }
+        .stateIn(initialValue = Result.Loading)
 
-    private val vilageFcstState = location.map {
-        when (it) {
-            Result.Loading -> VilageFcstState.Loading
-            is Complete.Success -> it.value?.let { location ->
-                val (nx, ny) = location.toCoordinate()
-
-                weatherRepository
-                    .getVilageFcst(nx = nx, ny = ny)
-                    .asState()
-            } ?: VilageFcstState.Error(NullPointerException("Location is Null")) // TODO error define.
-
-            is Complete.Failure -> VilageFcstState.Error(it.throwable)
+    private val vilageFcst = coordinate.map {
+        it.flatMap { (nx, ny) ->
+            weatherRepository.getVilageFcst(nx = nx, ny = ny).map { vilageFcst ->
+                vilageFcstMapper.toPresentationModel(vilageFcst)
+            }
         }
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(stopTimeoutMillis),
-        initialValue = VilageFcstState.initialValue
-    )
+    }
+        .stateIn(initialValue = Result.Loading)
 
     val inSelectionMode = MutableStateFlow(false)
     val selected = MutableStateFlow<PersistentSet<Long>>(persistentSetOf())
@@ -164,25 +138,19 @@ class MainViewModel @Inject constructor(
                 throwable = alarm.throwable
             )
         }
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(stopTimeoutMillis),
-        initialValue = AlarmState.initialValue
-    )
+    }
+        .stateIn(initialValue = AlarmState.initialValue)
 
     private val weatherState = combine(
-        midLandFcstTaState,
-        vilageFcstState
+        midLandFcstTa,
+        vilageFcst
     ) { midLandFcstTaState, vilageFcstState ->
         WeatherState(
-            midLandFcstTaState = midLandFcstTaState,
-            vilageFcstState = vilageFcstState
+            midLandFcstTa = midLandFcstTaState,
+            vilageFcst = vilageFcstState
         )
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(stopTimeoutMillis),
-        initialValue = WeatherState.initialValue
-    )
+    }
+        .stateIn(initialValue = WeatherState.initialValue)
 
     val state: StateFlow<MainState> = combine(
         alarmState,
@@ -196,31 +164,8 @@ class MainViewModel @Inject constructor(
             headerState = ultraSrtNcstState,
             weatherState = weatherState
         )
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(stopTimeoutMillis),
-        initialValue = MainState.initialValue
-    )
-
-    private suspend fun getAddress(location: Location) = suspendCancellableCoroutine { cancellableContinuation ->
-        val geocoder = Geocoder(getApplication(), Locale.KOREA)
-        val maxResults = Int.ten
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            geocoder.getFromLocation(location.latitude, location.longitude, maxResults) { geocode ->
-                cancellableContinuation.resume(
-                    Address.get(geocode.filterNotNull())
-                )
-            }
-        } else {
-            @Suppress("DEPRECATION")
-            geocoder.getFromLocation(location.latitude, location.longitude, maxResults)?.let { geocode ->
-                cancellableContinuation.resume(
-                    Address.get(geocode.filterNotNull())
-                )
-            } ?: cancellableContinuation.resume(null)
-        }
     }
+        .stateIn(initialValue = MainState.initialValue)
 
     fun add(hour: Int, minute: Int) {
         viewModelScope.launch {
@@ -235,14 +180,12 @@ class MainViewModel @Inject constructor(
 
     fun alarmOff() {
         viewModelScope.launch {
-            alarmState.selected().map {
-                it.copy(on = false)
+            alarmState.selected().map { alarm ->
+                alarm.copy(on = false).also {
+                    alarmScheduler.cancel(it)
+                }
             }
                 .let {
-                    it.forEach { alarm ->
-                        alarmScheduler.cancel(alarm)
-                    }
-
                     alarmRepository.updateAll(it)
                 }
         }
@@ -250,14 +193,12 @@ class MainViewModel @Inject constructor(
 
     fun alarmOn() {
         viewModelScope.launch {
-            alarmState.selected().map {
-                it.copy(on = true)
+            alarmState.selected().map { alarm ->
+                alarm.copy(on = true).also {
+                    alarmScheduler.schedule(it)
+                }
             }
                 .let {
-                    it.forEach { alarm ->
-                        alarmScheduler.schedule(alarm)
-                    }
-
                     alarmRepository.updateAll(it)
                 }
         }
@@ -280,7 +221,9 @@ class MainViewModel @Inject constructor(
             checkSelfPermission(it)
         }.ifTrue {
             viewModelScope.launch {
-                location.value = locationProvider.getLocation()
+                location.value = locationProvider.getLocation().map {
+                    it ?: Location("") // TODO set default location, and set error message.
+                }
             }
         }
     }
@@ -311,7 +254,7 @@ class MainViewModel @Inject constructor(
 
     fun notifyPermissionGranted(permission: String) {
         requestPermissions.update {
-            it.toPersistentSet().remove(permission)
+            it.remove(permission)
         }
     }
 
@@ -320,11 +263,6 @@ class MainViewModel @Inject constructor(
             alarmRepository.update(alarm)
             alarmScheduler.scheduleOrCancel(alarm)
         }
-    }
-
-    private fun Complete<MidLandFcstTa>.asState(): MidLandFcstTaState = when (this) {
-        is Complete.Success -> MidLandFcstTaState.Content(midLandFcstTa = value)
-        is Complete.Failure -> MidLandFcstTaState.Error(throwable)
     }
 
     private fun Complete<UltraSrtNcst.Local>.asState(address: Address?): HeaderState = when (this) {
@@ -336,14 +274,6 @@ class MainViewModel @Inject constructor(
         is Complete.Failure -> HeaderState.Error(throwable)
     }
 
-    private fun Complete<VilageFcst.Local>.asState(): VilageFcstState = when (this) {
-        is Complete.Success -> VilageFcstState.Content(
-            vilageFcst = vilageFcstMapper.toPresentationModel(value)
-        )
-
-        is Complete.Failure -> VilageFcstState.Error(throwable)
-    }
-
     private fun StateFlow<AlarmState>.selected(): List<Alarm> = with(value) {
         if (this is AlarmState.Content) {
             alarms.filter {
@@ -353,4 +283,12 @@ class MainViewModel @Inject constructor(
             emptyList()
         }
     }
+
+    private fun <T> Flow<T>.stateIn(
+        initialValue: T
+    ) = stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(Long.fiveSecondsInMilliseconds),
+        initialValue = initialValue
+    )
 }
