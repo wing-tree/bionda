@@ -217,7 +217,7 @@ sealed interface MidTa {
 
     @Serializable
     data class Remote(override val response: Response<Item>) : MidTa, ResponseValidator {
-        override val item: Item get() = response.body.items.item.first()
+        override val item: Item get() = response.items.first()
 
         override fun validate(vararg params: String) {
             if (response.isUnsuccessful) {

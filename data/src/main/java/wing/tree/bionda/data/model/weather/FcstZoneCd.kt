@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class FcstZoneCd(val response: Response<Item>) {
-    val items: List<Item> = response.body.items.item
+    val items: List<Item> = response.items
 
     @Serializable
     data class Item(

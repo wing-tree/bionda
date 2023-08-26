@@ -12,6 +12,7 @@ data class Response<T>(
     val body: Body<T> = Body.nothing()
 ) {
     val isUnsuccessful: Boolean get() = header.resultCode not OpenApiError.ERROR_CODE_00
+    val items: Items<T> get() = body.items
 }
 
 @Serializable
@@ -42,4 +43,4 @@ data class Body<T>(
 @Serializable
 data class Items<T>(
     val item: List<T> = emptyList()
-)
+) : List<T> by item

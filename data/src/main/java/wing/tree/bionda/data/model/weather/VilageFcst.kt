@@ -73,7 +73,7 @@ sealed interface VilageFcst {
     data class Remote(
         override val response: Response<Item>
     ) : VilageFcst, ResponseValidator {
-        override val items: List<Item> get() = response.body.items.item
+        override val items: List<Item> get() = response.items
         override val nx: Int get() = items.firstOrNull()?.nx ?: Int.zero
         override val ny: Int get() = items.firstOrNull()?.ny ?: Int.zero
 
