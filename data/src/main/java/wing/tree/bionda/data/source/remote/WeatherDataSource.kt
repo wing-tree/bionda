@@ -11,7 +11,6 @@ import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.three
 import wing.tree.bionda.data.extension.two
 import wing.tree.bionda.data.model.DataType
-import wing.tree.bionda.data.model.weather.LCRiseSetInfo
 import wing.tree.bionda.data.service.MidFcstInfoService
 import wing.tree.bionda.data.service.RiseSetInfoService
 import wing.tree.bionda.data.service.VilageFcstInfoService
@@ -51,8 +50,6 @@ class WeatherDataSource(
                 latitude = latitude,
                 dnYn = dnYn
             )
-        }.let {
-            LCRiseSetInfo.Remote(it)
         }
     }
 

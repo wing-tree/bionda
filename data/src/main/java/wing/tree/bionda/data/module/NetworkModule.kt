@@ -10,7 +10,6 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
-import retrofit2.converter.jaxb.JaxbConverterFactory
 import wing.tree.bionda.data.BuildConfig
 import wing.tree.bionda.data.qualifier.Qualifier
 
@@ -40,8 +39,8 @@ object NetworkModule {
         okHttpClient: OkHttpClient
     ): Retrofit = Retrofit.Builder()
         .baseUrl(MID_FCST_INFO_SERVICE_URL)
-        .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
         .client(okHttpClient)
+        .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
         .build()
 
     @Provides
@@ -50,7 +49,6 @@ object NetworkModule {
         okHttpClient: OkHttpClient
     ): Retrofit = Retrofit.Builder()
         .baseUrl(RISE_SET_INFO_SERVICE_URL)
-        .addConverterFactory(JaxbConverterFactory.create())
         .client(okHttpClient)
         .build()
 
@@ -60,7 +58,7 @@ object NetworkModule {
         okHttpClient: OkHttpClient
     ): Retrofit = Retrofit.Builder()
         .baseUrl(VILAGE_FCST_INFO_SERVICE_URL)
-        .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
         .client(okHttpClient)
+        .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
         .build()
 }
