@@ -1,5 +1,6 @@
 package wing.tree.bionda.model
 
+import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Stable
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
@@ -14,8 +15,11 @@ data class VilageFcst(
     data class Item(
         val fcstDate: Int,
         val fcstTime: Int,
-        val codeValues: ImmutableMap<String, String>
+        val codeValues: ImmutableMap<String, String>,
+        val type: Type = Type.VilageFcst
     ) {
+        private val weatherIcons = WeatherIcons.Daytime
+
         val fcstHour: Int get() = fcstTime.div(Int.oneHundred)
         val pcp = codeValues[Category.PCP]
         val pop = codeValues[Category.POP]
@@ -25,7 +29,31 @@ data class VilageFcst(
         val tmp = codeValues[Category.TMP]
         val tmn = codeValues[Category.TMN]
         val tmx = codeValues[Category.TMX]
-        val weatherIcon = WeatherIcons.Daytime
+        val weatherIcon = weatherIcons.let {
+            it.pty[pty.code] ?: it.sky[sky.code]
+        }
+
         val wsd = codeValues[Category.WSD]
+
+        sealed interface Type {
+            @DrawableRes
+            fun getWeatherIcon(item: Item): Int?
+
+            object VilageFcst : Type {
+                override fun getWeatherIcon(item: Item) = with(item) {
+                    weatherIcons.let {
+                        it.pty[pty.code] ?: it.sky[sky.code]
+                    }
+                }
+            }
+
+            object Sunrise : Type {
+                override fun getWeatherIcon(item: Item) = item.weatherIcons.sunrise
+            }
+
+            object Sunset : Type {
+                override fun getWeatherIcon(item: Item): Int = item.weatherIcons.sunset
+            }
+        }
     }
 }

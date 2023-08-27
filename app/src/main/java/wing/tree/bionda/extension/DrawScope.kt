@@ -177,25 +177,22 @@ fun DrawScope.drawWeatherIcon(
     val width = style.width.toPx()
     val height = style.height.toPx()
 
-    with(item.weatherIcon) {
-        pty[item.pty.code] ?: sky[item.sky.code]
-    }
-        ?.let {
-            val image = ContextCompat.getDrawable(context, it)
-                ?.toBitmap(width = width.int, height = height.int)
-                ?.asImageBitmap()
+    item.weatherIcon?.let {
+        val image = ContextCompat.getDrawable(context, it)
+            ?.toBitmap(width = width.int, height = height.int)
+            ?.asImageBitmap()
 
-            image?.let {
-                drawImage(
-                    image = image,
-                    topLeft = Offset(
-                        pointF.x.minus(width.half),
-                        height.half,
-                    ),
-                    colorFilter = ColorFilter.tint(style.color, BlendMode.SrcAtop)
-                )
-            }
+        image?.let {
+            drawImage(
+                image = image,
+                topLeft = Offset(
+                    pointF.x.minus(width.half),
+                    height.half,
+                ),
+                colorFilter = ColorFilter.tint(style.color, BlendMode.SrcAtop)
+            )
         }
+    }
 
     pointF.y += height.half
 }
