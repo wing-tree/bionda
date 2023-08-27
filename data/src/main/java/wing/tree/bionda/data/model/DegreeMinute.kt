@@ -9,6 +9,6 @@ data class DegreeMinute(
     val int: Int get() = toString().int
 
     override fun toString(): String {
-        return "$degree$minute"
+        return "$degree${String.format("%02d", minute)}"
     }
 }
