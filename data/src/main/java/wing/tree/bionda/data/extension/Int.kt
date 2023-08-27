@@ -3,6 +3,7 @@
 package wing.tree.bionda.data.extension
 
 val Int.Companion.eight: Int get() = 8
+val Int.Companion.four: Int get() = 4
 val Int.Companion.halfAnHour: Int get() = 30
 val Int.Companion.negativeOne: Int get() = -1
 val Int.Companion.one: Int get() = 1
