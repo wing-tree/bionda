@@ -1,5 +1,6 @@
 package wing.tree.bionda.data.model.weather
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Ignore
 import com.tickaroo.tikxml.annotation.Element
@@ -9,6 +10,8 @@ import kotlinx.serialization.Serializable
 import wing.tree.bionda.data.constant.COMMA
 import wing.tree.bionda.data.constant.SPACE
 import wing.tree.bionda.data.exception.OpenApiError
+import wing.tree.bionda.data.exception.fifth
+import wing.tree.bionda.data.exception.fourth
 import wing.tree.bionda.data.exception.second
 import wing.tree.bionda.data.exception.third
 import wing.tree.bionda.data.extension.not
@@ -57,12 +60,21 @@ sealed interface LCRiseSetInfo {
         val aste: String
     )
 
-    @Entity("lc_rise_set_info", primaryKeys = ["locdate", "longitude", "latitude"])
+    @Entity(
+        tableName = "lc_rise_set_info",
+        primaryKeys = [
+            "locdate",
+            "primaryLongitude",
+            "primaryLatitude"
+        ]
+    )
     data class Local(
         override val item: Item,
         val locdate: String,
-        val longitude: String,
-        val latitude: String,
+        @ColumnInfo(name = "primaryLongitude") val longitude: String,
+        @ColumnInfo(name = "primaryLatitude")  val latitude: String,
+        val secondaryLongitude: String,
+        val secondaryLatitude: String
     ) : LCRiseSetInfo {
         @Ignore
         val sunrise = item.sunrise
@@ -86,6 +98,8 @@ sealed interface LCRiseSetInfo {
                     add("locdate=${params.first()}")
                     add("longitude=${params.second()}")
                     add("latitude=${params.third()}")
+                    add("secondaryLongitude=${params.fourth()}")
+                    add("secondaryLatitude=${params.fifth()}")
                 }.joinToString("$COMMA$SPACE")
 
                 throw OpenApiError(
@@ -95,14 +109,19 @@ sealed interface LCRiseSetInfo {
             }
         }
 
-        fun toLocal(): Local = with(item) {
-            validate(locdate, longitude, latitude)
+        fun toLocal(
+            secondaryLongitude: String,
+            secondaryLatitude: String
+        ): Local = with(item) {
+            validate(locdate, longitude, latitude, secondaryLongitude, secondaryLatitude)
 
             return Local(
                 item = this,
                 locdate = locdate,
                 longitude = longitude,
-                latitude = latitude
+                latitude = latitude,
+                secondaryLongitude = secondaryLongitude,
+                secondaryLatitude = secondaryLatitude
             )
         }
     }

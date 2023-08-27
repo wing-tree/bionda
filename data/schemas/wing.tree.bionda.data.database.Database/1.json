@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "bafc22191c9351fb143e6d2b2765356b",
+    "identityHash": "9ae3d694e9593e974d211e1c9c31939e",
     "entities": [
       {
         "tableName": "alarm",
@@ -50,7 +50,7 @@
       },
       {
         "tableName": "lc_rise_set_info",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`item` TEXT NOT NULL, `locdate` TEXT NOT NULL, `longitude` INTEGER NOT NULL, `latitude` INTEGER NOT NULL, PRIMARY KEY(`locdate`, `longitude`, `latitude`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`item` TEXT NOT NULL, `locdate` TEXT NOT NULL, `primaryLongitude` TEXT NOT NULL, `primaryLatitude` TEXT NOT NULL, `secondaryLongitude` TEXT NOT NULL, `secondaryLatitude` TEXT NOT NULL, PRIMARY KEY(`locdate`, `primaryLongitude`, `primaryLatitude`))",
         "fields": [
           {
             "fieldPath": "item",
@@ -66,14 +66,26 @@
           },
           {
             "fieldPath": "longitude",
-            "columnName": "longitude",
-            "affinity": "INTEGER",
+            "columnName": "primaryLongitude",
+            "affinity": "TEXT",
             "notNull": true
           },
           {
             "fieldPath": "latitude",
-            "columnName": "latitude",
-            "affinity": "INTEGER",
+            "columnName": "primaryLatitude",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "secondaryLongitude",
+            "columnName": "secondaryLongitude",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "secondaryLatitude",
+            "columnName": "secondaryLatitude",
+            "affinity": "TEXT",
             "notNull": true
           }
         ],
@@ -81,8 +93,8 @@
           "autoGenerate": false,
           "columnNames": [
             "locdate",
-            "longitude",
-            "latitude"
+            "primaryLongitude",
+            "primaryLatitude"
           ]
         },
         "indices": [],
@@ -252,7 +264,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'bafc22191c9351fb143e6d2b2765356b')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9ae3d694e9593e974d211e1c9c31939e')"
     ]
   }
 }

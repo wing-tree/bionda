@@ -11,7 +11,8 @@ import wing.tree.bionda.data.extension.locdate
 import wing.tree.bionda.data.extension.tmFc
 import wing.tree.bionda.data.extension.toDegreeMinute
 import wing.tree.bionda.data.model.CalendarDecorator.Base
-import wing.tree.bionda.data.model.DegreeMinute
+import wing.tree.bionda.data.model.DegreeMinute.Type.LATITUDE
+import wing.tree.bionda.data.model.DegreeMinute.Type.LONGITUDE
 import wing.tree.bionda.data.model.State.Complete
 import wing.tree.bionda.data.model.weather.LCRiseSetInfo
 import wing.tree.bionda.data.model.weather.MidLandFcst
@@ -78,19 +79,22 @@ class WeatherRepository(
 
     suspend fun getLCRiseSetInfo(location: Location): Complete<LCRiseSetInfo.Local> {
         return try {
-            val params = with(location) {
-                RiseSetInfoService.Params(
-                    locdate = koreaCalendar().locdate,
-                    longitude = "${longitude.toDegreeMinute(DegreeMinute.Type.LONGITUDE)}",
-                    latitude = "${latitude.toDegreeMinute(DegreeMinute.Type.LATITUDE)}"
-                )
-            }
+            val longitude = "${location.latitude.toDegreeMinute(LATITUDE)}"
+            val latitude = "${location.longitude.toDegreeMinute(LONGITUDE)}"
+            val params = RiseSetInfoService.Params(
+                locdate = koreaCalendar().locdate,
+                longitude = longitude,
+                latitude = latitude
+            )
 
             val lcRiseSetInfo = localDataSource.loadLCRiseSetInfo(
                 params = params
             ) ?: remoteDataSource.getLCRiseSetInfo(
                 params = params
-            ).toLocal().also {
+            ).toLocal(
+                secondaryLongitude = longitude,
+                secondaryLatitude = latitude
+            ).also {
                 localDataSource.cache(it)
             }
 
