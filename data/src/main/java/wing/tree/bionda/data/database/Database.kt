@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import wing.tree.bionda.data.database.dao.AlarmDao
+import wing.tree.bionda.data.database.dao.AreaDao
 import wing.tree.bionda.data.database.dao.LCRiseSetInfoDao
 import wing.tree.bionda.data.database.dao.MidLandFcstDao
 import wing.tree.bionda.data.database.dao.MidTaDao
@@ -16,6 +17,7 @@ import wing.tree.bionda.data.database.type.converters.MidTaConverters
 import wing.tree.bionda.data.database.type.converters.UltraSrtNcstConverters
 import wing.tree.bionda.data.database.type.converters.VilageFcstConverters
 import wing.tree.bionda.data.model.Alarm
+import wing.tree.bionda.data.model.Area
 import wing.tree.bionda.data.model.weather.LCRiseSetInfo.Local as LCRiseSetInfo
 import wing.tree.bionda.data.model.weather.MidLandFcst.Local as MidLandFcst
 import wing.tree.bionda.data.model.weather.MidTa.Local as MidTa
@@ -24,6 +26,7 @@ import wing.tree.bionda.data.model.weather.VilageFcst.Local as VilageFcst
 
 @androidx.room.Database(
     entities = [
+        Area::class,
         Alarm::class,
         LCRiseSetInfo::class,
         MidLandFcst::class,
@@ -44,6 +47,7 @@ import wing.tree.bionda.data.model.weather.VilageFcst.Local as VilageFcst
 )
 abstract class Database : RoomDatabase() {
     abstract fun alarmDao(): AlarmDao
+    abstract fun areaDao(): AreaDao
     abstract fun midLandFcstDao(): MidLandFcstDao
     abstract fun midTaDao(): MidTaDao
     abstract fun lcRiseSetInfoDao(): LCRiseSetInfoDao
