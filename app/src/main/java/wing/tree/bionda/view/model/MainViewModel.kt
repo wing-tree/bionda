@@ -113,6 +113,8 @@ class MainViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
+            weatherRepository.buildAreaDB()
+
             inSelectionMode.collectLatest {
                 if (it.not()) {
                     delay(DefaultDurationMillis.long)

@@ -39,6 +39,8 @@ class WeatherRepository(
 ) {
     private val ioDispatcher = Dispatchers.IO
 
+    suspend fun buildAreaDB() = localDataSource.buildAreaDB()
+
     private suspend fun getMidLandFcst(regId: String, tmFc: String): Complete<MidLandFcst.Local> {
         return try {
             val local = localDataSource.loadMidLandFcst(
