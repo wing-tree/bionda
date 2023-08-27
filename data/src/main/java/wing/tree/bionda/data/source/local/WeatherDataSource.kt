@@ -7,6 +7,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
+import wing.tree.bionda.data.database.dao.AreaDao
 import wing.tree.bionda.data.database.dao.LCRiseSetInfoDao
 import wing.tree.bionda.data.database.dao.MidLandFcstDao
 import wing.tree.bionda.data.database.dao.MidTaDao
@@ -35,6 +36,7 @@ import wing.tree.bionda.data.model.weather.VilageFcst.Local as VilageFcst
 
 class WeatherDataSource(
     private val context: Context,
+    private val areaDao: AreaDao,
     private val midLandFcstDao: MidLandFcstDao,
     private val midTaDao: MidTaDao,
     private val lcRiseSetInfoDao: LCRiseSetInfoDao,
@@ -109,6 +111,7 @@ class WeatherDataSource(
         }
     }
 
+    suspend fun loadArea() = areaDao.load()
     suspend fun loadLCRiseSetInfo(
         params: RiseSetInfoService.Params
     ): LCRiseSetInfo? = with(params) {

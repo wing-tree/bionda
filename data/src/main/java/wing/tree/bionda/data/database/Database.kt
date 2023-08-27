@@ -43,12 +43,12 @@ import wing.tree.bionda.data.model.weather.VilageFcst.Local as VilageFcst
     VilageFcstConverters::class
 )
 abstract class Database : RoomDatabase() {
-    abstract fun alarmDao(): AlarmDao
-    abstract fun midLandFcstDao(): MidLandFcstDao
-    abstract fun midTaDao(): MidTaDao
-    abstract fun lcRiseSetInfoDao(): LCRiseSetInfoDao
-    abstract fun ultraSrtNcstDao(): UltraSrtNcstDao
-    abstract fun vilageFcstDao(): VilageFcstDao
+    abstract val alarmDao: AlarmDao
+    abstract val midLandFcstDao: MidLandFcstDao
+    abstract val midTaDao: MidTaDao
+    abstract val lcRiseSetInfoDao: LCRiseSetInfoDao
+    abstract val ultraSrtNcstDao: UltraSrtNcstDao
+    abstract val vilageFcstDao: VilageFcstDao
 
     companion object {
         private const val NAME = "database"

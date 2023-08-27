@@ -6,14 +6,18 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import wing.tree.bionda.data.database.AreaDatabase
 import wing.tree.bionda.data.database.Database
-import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
     @Provides
-    @Singleton
+    fun providesAreaDatabase(@ApplicationContext context: Context): AreaDatabase {
+        return AreaDatabase.getInstance(context)
+    }
+
+    @Provides
     fun providesDatabase(@ApplicationContext context: Context): Database {
         return Database.getInstance(context)
     }

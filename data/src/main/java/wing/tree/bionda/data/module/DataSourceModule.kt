@@ -6,6 +6,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import wing.tree.bionda.data.database.AreaDatabase
 import wing.tree.bionda.data.database.Database
 import wing.tree.bionda.data.service.MidFcstInfoService
 import wing.tree.bionda.data.service.RiseSetInfoService
@@ -21,21 +22,23 @@ object DataSourceModule {
     fun providesAlarmDataSource(
         database: Database
     ): AlarmDataSource {
-        return AlarmDataSource(database.alarmDao())
+        return AlarmDataSource(database.alarmDao)
     }
 
     @Provides
     fun providesLocalDataSource(
         @ApplicationContext context: Context,
+        areaDatabase: AreaDatabase,
         database: Database
     ): LocalDataSource {
         return LocalDataSource(
             context = context,
-            midLandFcstDao = database.midLandFcstDao(),
-            midTaDao = database.midTaDao(),
-            lcRiseSetInfoDao = database.lcRiseSetInfoDao(),
-            ultraSrtNcstDao = database.ultraSrtNcstDao(),
-            vilageFcstDao = database.vilageFcstDao()
+            areaDao = areaDatabase.areaDao,
+            midLandFcstDao = database.midLandFcstDao,
+            midTaDao = database.midTaDao,
+            lcRiseSetInfoDao = database.lcRiseSetInfoDao,
+            ultraSrtNcstDao = database.ultraSrtNcstDao,
+            vilageFcstDao = database.vilageFcstDao
         )
     }
 
