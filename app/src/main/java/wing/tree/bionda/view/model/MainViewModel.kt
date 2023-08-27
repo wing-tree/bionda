@@ -84,8 +84,8 @@ class MainViewModel @Inject constructor(
         .stateIn(initialValue = HeaderState.initialValue)
 
     private val lcRiseSetInfo: StateFlow<State<LCRiseSetInfo>> = location.map {
-        it.flatMap {
-            weatherRepository.getLCRiseSetInfo(it)
+        it.flatMap { location ->
+            weatherRepository.getLCRiseSetInfo(location)
         }
     }
         .stateIn(initialValue = State.Loading)
@@ -153,11 +153,11 @@ class MainViewModel @Inject constructor(
         lcRiseSetInfo,
         midLandFcstTa,
         vilageFcst
-    ) { lcRiseSetInfo, midLandFcstTaState, vilageFcstState ->
+    ) { lcRiseSetInfo, midLandFcstTa, vilageFcst ->
         WeatherState(
             lcRiseSetInfo = lcRiseSetInfo,
-            midLandFcstTa = midLandFcstTaState,
-            vilageFcst = vilageFcstState
+            midLandFcstTa = midLandFcstTa,
+            vilageFcst = vilageFcst
         )
     }
         .stateIn(initialValue = WeatherState.initialValue)
