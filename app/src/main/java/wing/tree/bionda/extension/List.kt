@@ -29,7 +29,7 @@ fun List<VilageFcst.Item>.toTmpOffsets(
     }
 
     val tmps = map {
-        it.tmp?.toFloat() ?: Float.zero
+        it.tmp?.floatOrNull ?: Float.zero
     }
 
     fun Dp.toPx() = value.times(density)

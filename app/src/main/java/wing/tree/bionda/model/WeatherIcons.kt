@@ -9,6 +9,9 @@ sealed interface WeatherIcons {
     val pty: Map<String, DrawableRes?>
     val wf: Map<String, DrawableRes>
 
+    val sunrise: Int get() = R.drawable.wi_sunrise
+    val sunset: Int get() = R.drawable.wi_sunset
+
     object Daytime : WeatherIcons {
         override val sky: Map<String, DrawableRes> = mapOf(
             "1" to R.drawable.wi_day_sunny,
