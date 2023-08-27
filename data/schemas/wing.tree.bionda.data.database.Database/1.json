@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "9ae3d694e9593e974d211e1c9c31939e",
+    "identityHash": "3f688444e2259cfba83e3aa6d2eb54f2",
     "entities": [
       {
         "tableName": "alarm",
@@ -168,7 +168,7 @@
       },
       {
         "tableName": "ultra_srt_ncst",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`items` TEXT NOT NULL, `nx` INTEGER NOT NULL, `ny` INTEGER NOT NULL, `baseDate` TEXT NOT NULL, `baseTime` TEXT NOT NULL, PRIMARY KEY(`nx`, `ny`, `baseDate`, `baseTime`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`items` TEXT NOT NULL, `nx` INTEGER NOT NULL, `ny` INTEGER NOT NULL, `baseDate` TEXT NOT NULL, `baseTime` TEXT NOT NULL, `minute` INTEGER NOT NULL, PRIMARY KEY(`nx`, `ny`, `baseDate`, `baseTime`, `minute`))",
         "fields": [
           {
             "fieldPath": "items",
@@ -199,6 +199,12 @@
             "columnName": "baseTime",
             "affinity": "TEXT",
             "notNull": true
+          },
+          {
+            "fieldPath": "minute",
+            "columnName": "minute",
+            "affinity": "INTEGER",
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -207,7 +213,8 @@
             "nx",
             "ny",
             "baseDate",
-            "baseTime"
+            "baseTime",
+            "minute"
           ]
         },
         "indices": [],
@@ -264,7 +271,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9ae3d694e9593e974d211e1c9c31939e')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3f688444e2259cfba83e3aa6d2eb54f2')"
     ]
   }
 }

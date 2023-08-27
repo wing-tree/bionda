@@ -8,6 +8,8 @@ import wing.tree.bionda.data.PostProcessor
 import wing.tree.bionda.data.extension.awaitOrFailure
 import wing.tree.bionda.data.extension.cloneAsCalendar
 import wing.tree.bionda.data.extension.locdate
+import wing.tree.bionda.data.extension.minute
+import wing.tree.bionda.data.extension.roundDownToTens
 import wing.tree.bionda.data.extension.tmFc
 import wing.tree.bionda.data.extension.toDegreeMinute
 import wing.tree.bionda.data.model.CalendarDecorator.Base
@@ -138,17 +140,22 @@ class WeatherRepository(
     ): Complete<UltraSrtNcst.Local> {
         return try {
             val baseCalendar = baseCalendar(Base.UltraSrtNcst)
+            val minute = koreaCalendar().minute.roundDownToTens()
             val params = VilageFcstInfoService.Params(
                 baseCalendar = baseCalendar,
                 nx = nx,
                 ny = ny
             )
 
-            val ultraSrtNcst = localDataSource.loadUltraSrtNcst(params) ?: remoteDataSource.getUltraSrtNcst(
+            val ultraSrtNcst = localDataSource.loadUltraSrtNcst(
+                params = params,
+                minute = minute
+            ) ?: remoteDataSource.getUltraSrtNcst(
                 params = params
-            ).let { remote ->
-                // TODO caching with 10 minutes interval.
-                remote.toLocal(params)
+            ).let {
+                with(postProcessor) {
+                    it.postProcess(params, minute)
+                }
             }
 
             Complete.Success(ultraSrtNcst)

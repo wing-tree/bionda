@@ -97,6 +97,12 @@ class WeatherDataSource(
         }
     }
 
+    fun cache(ultraSrtNcst: UltraSrtNcst) {
+        supervisorScope.launch {
+            ultraSrtNcstDao.clearAndInsert(ultraSrtNcst)
+        }
+    }
+
     fun cache(vilageFcst: VilageFcst) {
         supervisorScope.launch {
             vilageFcstDao.clearAndInsert(vilageFcst)
@@ -127,12 +133,16 @@ class WeatherDataSource(
         )
     }
 
-    suspend fun loadUltraSrtNcst(params: VilageFcstInfoService.Params): UltraSrtNcst? = with(params) {
+    suspend fun loadUltraSrtNcst(
+        params: VilageFcstInfoService.Params,
+        minute: Int
+    ): UltraSrtNcst? = with(params) {
         ultraSrtNcstDao.load(
             baseDate,
             baseTime,
             nx,
-            ny
+            ny,
+            minute
         )
     }
 

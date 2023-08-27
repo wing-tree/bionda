@@ -18,13 +18,15 @@ interface UltraSrtNcstDao {
             AND baseTime = :baseTime 
             AND nx = :nx 
             AND ny = :ny
+            AND minute = :minute
         """
     )
     suspend fun load(
         baseDate : String,
         baseTime : String,
         nx: Int,
-        ny: Int
+        ny: Int,
+        minute: Int
     ): UltraSrtNcst.Local?
 
     @Query("DELETE FROM ultra_srt_ncst")

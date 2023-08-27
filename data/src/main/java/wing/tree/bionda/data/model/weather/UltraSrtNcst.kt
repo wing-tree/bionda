@@ -7,6 +7,7 @@ import kotlinx.serialization.Serializable
 import wing.tree.bionda.data.constant.COMMA
 import wing.tree.bionda.data.constant.SPACE
 import wing.tree.bionda.data.exception.OpenApiError
+import wing.tree.bionda.data.exception.fifth
 import wing.tree.bionda.data.exception.fourth
 import wing.tree.bionda.data.exception.second
 import wing.tree.bionda.data.exception.third
@@ -35,7 +36,8 @@ sealed interface UltraSrtNcst {
             "nx",
             "ny",
             "baseDate",
-            "baseTime"
+            "baseTime",
+            "minute"
         ]
     )
     data class Local(
@@ -43,7 +45,8 @@ sealed interface UltraSrtNcst {
         override val nx: Int,
         override val ny: Int,
         val baseDate: String,
-        val baseTime: String
+        val baseTime: String,
+        val minute: Int
     ) : UltraSrtNcst
 
     @Serializable
@@ -65,6 +68,7 @@ sealed interface UltraSrtNcst {
                     add("baseTime=${params.second()}")
                     add("nx=${params.third()}")
                     add("ny=${params.fourth()}")
+                    add("minute=${params.fifth()}")
                 }.joinToString("$COMMA$SPACE")
 
                 throw OpenApiError(
@@ -74,15 +78,19 @@ sealed interface UltraSrtNcst {
             }
         }
 
-        fun toLocal(params: VilageFcstInfoService.Params): Local = with(params) {
-            validate(baseDate, baseTime, "$nx", "$ny")
+        fun toLocal(
+            params: VilageFcstInfoService.Params,
+            minute: Int
+        ): Local = with(params) {
+            validate(baseDate, baseTime, "$nx", "$ny", "$minute")
 
             Local(
                 items = items.toImmutableList(),
                 baseDate = baseDate,
                 baseTime = baseTime,
                 nx = this.nx,
-                ny = this.ny
+                ny = this.ny,
+                minute = minute
             )
         }
     }
