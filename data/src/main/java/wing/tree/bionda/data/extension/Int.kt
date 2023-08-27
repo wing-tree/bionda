@@ -6,6 +6,7 @@ val Int.Companion.eight: Int get() = 8
 val Int.Companion.halfAnHour: Int get() = 30
 val Int.Companion.negativeOne: Int get() = -1
 val Int.Companion.one: Int get() = 1
+val Int.Companion.oneMinute: Int get() = 60
 val Int.Companion.oneHundred: Int get() = 100
 val Int.Companion.single: Int get() = 1
 val Int.Companion.sixty: Int get() = 60
