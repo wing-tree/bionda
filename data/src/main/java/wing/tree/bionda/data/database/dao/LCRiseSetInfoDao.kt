@@ -19,7 +19,7 @@ interface LCRiseSetInfoDao {
             AND latitude = :latitude
         """
     )
-    suspend fun load(locdate: String, longitude: Int, latitude: Int): LCRiseSetInfo?
+    suspend fun load(locdate: String, longitude: String, latitude: String): LCRiseSetInfo?
 
     @Query("DELETE FROM lc_rise_set_info")
     suspend fun clear()

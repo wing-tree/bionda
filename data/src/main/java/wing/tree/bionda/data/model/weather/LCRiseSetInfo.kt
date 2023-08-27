@@ -24,13 +24,13 @@ sealed interface LCRiseSetInfo {
         @PropertyElement
         val location: String,
         @PropertyElement
-        val longitude: Int,
+        val longitude: String,
         @PropertyElement
-        val longitudeNum: Double,
+        val longitudeNum: String,
         @PropertyElement
-        val latitude: Int,
+        val latitude: String,
         @PropertyElement
-        val latitudeNum: Double,
+        val latitudeNum: String,
         @PropertyElement
         val sunrise: String,
         @PropertyElement
@@ -61,8 +61,8 @@ sealed interface LCRiseSetInfo {
     data class Local(
         override val item: Item,
         val locdate: String,
-        val longitude: Int,
-        val latitude: Int,
+        val longitude: String,
+        val latitude: String,
     ) : LCRiseSetInfo {
         @Ignore
         val sunrise = item.sunrise
@@ -96,7 +96,7 @@ sealed interface LCRiseSetInfo {
         }
 
         fun toLocal(): Local = with(item) {
-            validate(locdate, "$longitude", "$latitude")
+            validate(locdate, longitude, latitude)
 
             return Local(
                 item = this,

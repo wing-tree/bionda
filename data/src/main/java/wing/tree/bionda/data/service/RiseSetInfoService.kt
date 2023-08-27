@@ -8,8 +8,8 @@ import wing.tree.bionda.data.model.weather.LCRiseSetInfo
 interface RiseSetInfoService {
     data class Params(
         val locdate: String,
-        val longitude: Int,
-        val latitude: Int,
+        val longitude: String,
+        val latitude: String,
         val dnYn: String = N
     )
 
@@ -17,8 +17,8 @@ interface RiseSetInfoService {
     suspend fun getLCRiseSetInfo(
         @Query("serviceKey") serviceKey: String,
         @Query("locdate") locdate: String,
-        @Query("longitude") longitude: Int,
-        @Query("latitude") latitude: Int,
+        @Query("longitude") longitude: String,
+        @Query("latitude") latitude: String,
         @Query("dnYn") dnYn: String
     ): LCRiseSetInfo.Response
 }
