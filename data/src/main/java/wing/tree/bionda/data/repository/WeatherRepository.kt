@@ -7,10 +7,11 @@ import kotlinx.coroutines.coroutineScope
 import wing.tree.bionda.data.PostProcessor
 import wing.tree.bionda.data.extension.awaitOrFailure
 import wing.tree.bionda.data.extension.cloneAsCalendar
-import wing.tree.bionda.data.extension.degreeMinute
 import wing.tree.bionda.data.extension.locdate
 import wing.tree.bionda.data.extension.tmFc
+import wing.tree.bionda.data.extension.toDegreeMinute
 import wing.tree.bionda.data.model.CalendarDecorator.Base
+import wing.tree.bionda.data.model.DegreeMinute
 import wing.tree.bionda.data.model.State.Complete
 import wing.tree.bionda.data.model.weather.LCRiseSetInfo
 import wing.tree.bionda.data.model.weather.MidLandFcst
@@ -80,8 +81,8 @@ class WeatherRepository(
             val params = with(location) {
                 RiseSetInfoService.Params(
                     locdate = koreaCalendar().locdate,
-                    longitude = longitude.degreeMinute.int,
-                    latitude = latitude.degreeMinute.int
+                    longitude = "${longitude.toDegreeMinute(DegreeMinute.Type.LONGITUDE)}",
+                    latitude = "${latitude.toDegreeMinute(DegreeMinute.Type.LATITUDE)}"
                 )
             }
 

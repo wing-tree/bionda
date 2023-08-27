@@ -18,6 +18,7 @@ val Int.dec: Int get() = dec()
 val Int.float: Float get() = toFloat()
 val Int.half: Int get() = div(2)
 val Int.inc: Int get() = inc()
+val Int.isNegative: Boolean get() = this < 0
 val Int.long: Long get() = toLong()
 val Int.string: String get() = toString()
 
