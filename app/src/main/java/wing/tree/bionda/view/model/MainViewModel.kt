@@ -29,8 +29,8 @@ import wing.tree.bionda.data.model.Alarm
 import wing.tree.bionda.data.model.State
 import wing.tree.bionda.data.model.State.Complete
 import wing.tree.bionda.data.model.flatMap
+import wing.tree.bionda.data.model.isSuccess
 import wing.tree.bionda.data.model.map
-import wing.tree.bionda.data.model.weather.LCRiseSetInfo.Local as LCRiseSetInfo
 import wing.tree.bionda.data.model.weather.MidLandFcstTa
 import wing.tree.bionda.data.model.weather.UltraSrtNcst
 import wing.tree.bionda.data.provider.LocationProvider
@@ -42,6 +42,7 @@ import wing.tree.bionda.extension.getAddress
 import wing.tree.bionda.extension.toCoordinate
 import wing.tree.bionda.mapper.UltraSrtNcstMapper
 import wing.tree.bionda.mapper.VilageFcstMapper
+import wing.tree.bionda.model.VilageFcst
 import wing.tree.bionda.permissions.locationPermissions
 import wing.tree.bionda.scheduler.AlarmScheduler
 import wing.tree.bionda.top.level.emptyPersistentSet
@@ -50,6 +51,7 @@ import wing.tree.bionda.view.state.HeaderState
 import wing.tree.bionda.view.state.MainState
 import wing.tree.bionda.view.state.WeatherState
 import javax.inject.Inject
+import wing.tree.bionda.data.model.weather.LCRiseSetInfo.Local as LCRiseSetInfo
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
@@ -157,7 +159,7 @@ class MainViewModel @Inject constructor(
         WeatherState(
             lcRiseSetInfo = lcRiseSetInfo,
             midLandFcstTa = midLandFcstTa,
-            vilageFcst = vilageFcst
+            vilageFcst = vilageFcst.insertLCRiseSetInfo(lcRiseSetInfo)
         )
     }
         .stateIn(initialValue = WeatherState.initialValue)
@@ -194,10 +196,9 @@ class MainViewModel @Inject constructor(
                 alarm.copy(on = false).also {
                     alarmScheduler.cancel(it)
                 }
+            }.let {
+                alarmRepository.updateAll(it)
             }
-                .let {
-                    alarmRepository.updateAll(it)
-                }
         }
     }
 
@@ -207,10 +208,9 @@ class MainViewModel @Inject constructor(
                 alarm.copy(on = true).also {
                     alarmScheduler.schedule(it)
                 }
+            }.let {
+                alarmRepository.updateAll(it)
             }
-                .let {
-                    alarmRepository.updateAll(it)
-                }
         }
     }
 
@@ -282,6 +282,18 @@ class MainViewModel @Inject constructor(
         )
 
         is Complete.Failure -> HeaderState.Error(throwable)
+    }
+
+    private fun State<VilageFcst>.insertLCRiseSetInfo(
+        lcRiseSetInfo: State<LCRiseSetInfo>
+    ) = map {
+        with(lcRiseSetInfo) {
+            if (isSuccess()) {
+                it.insertLCRiseSetInfo(value)
+            } else {
+                it
+            }
+        }
     }
 
     private fun StateFlow<AlarmState>.selected(): List<Alarm> = with(value) {

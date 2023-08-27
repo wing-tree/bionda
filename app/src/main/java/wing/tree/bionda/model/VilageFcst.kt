@@ -2,14 +2,18 @@ package wing.tree.bionda.model
 
 import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Stable
-import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
+import kotlinx.collections.immutable.PersistentList
+import wing.tree.bionda.data.extension.int
+import wing.tree.bionda.data.extension.isNonNegative
 import wing.tree.bionda.data.extension.oneHundred
 import wing.tree.bionda.data.model.weather.Category
 import wing.tree.bionda.data.model.weather.CodeValue
+import wing.tree.bionda.data.model.weather.LCRiseSetInfo
+import wing.tree.bionda.top.level.emptyPersistentMap
 
 data class VilageFcst(
-    val items: ImmutableList<Item>
+    val items: PersistentList<Item>
 ) {
     @Stable
     data class Item(
@@ -29,10 +33,7 @@ data class VilageFcst(
         val tmp = codeValues[Category.TMP]
         val tmn = codeValues[Category.TMN]
         val tmx = codeValues[Category.TMX]
-        val weatherIcon = weatherIcons.let {
-            it.pty[pty.code] ?: it.sky[sky.code]
-        }
-
+        val weatherIcon: Int? @DrawableRes get() = type.getWeatherIcon(this)
         val wsd = codeValues[Category.WSD]
 
         sealed interface Type {
@@ -55,5 +56,52 @@ data class VilageFcst(
                 override fun getWeatherIcon(item: Item): Int = item.weatherIcons.sunset
             }
         }
+    }
+
+    fun insertLCRiseSetInfo(lcRiseSetInfo: LCRiseSetInfo.Local): VilageFcst = with(items) {
+        val builder = builder()
+        val locdate = lcRiseSetInfo.locdate.trim().int
+        val sunrise = lcRiseSetInfo.sunrise.trim().int
+        val sunset = lcRiseSetInfo.sunset.trim().int
+
+        indexOfFirst {
+            when {
+                it.fcstDate < locdate -> false
+                it.fcstTime < sunrise -> false
+                else -> true
+            }
+        }.let {
+            if (it.isNonNegative) {
+                val item = Item(
+                    fcstDate = locdate,
+                    fcstTime = sunrise,
+                    codeValues = emptyPersistentMap(),
+                    type = Item.Type.Sunrise
+                )
+
+                builder.add(it, item)
+            }
+        }
+
+        indexOfFirst {
+            when {
+                it.fcstDate < locdate -> false
+                it.fcstTime < sunset -> false
+                else -> true
+            }
+        }.let {
+            if (it.isNonNegative) {
+                val item = Item(
+                    fcstDate = locdate,
+                    fcstTime = sunset,
+                    codeValues = emptyPersistentMap(),
+                    type = Item.Type.Sunset
+                )
+
+                builder.add(it, item)
+            }
+        }
+
+        copy(items = builder.build())
     }
 }
