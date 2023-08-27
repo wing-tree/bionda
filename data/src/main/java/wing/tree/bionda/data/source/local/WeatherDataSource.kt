@@ -62,9 +62,9 @@ class WeatherDataSource(
     private val supervisorScope = CoroutineScope(Dispatchers.IO.plus(SupervisorJob()))
 
     fun getRegId(location: Location, regId: RegId): String {
-        val item = fcstZoneCd.items.minByOrNull {
+        val item = fcstZoneCd.items.minBy {
             location.haversine(LatLon(lat = it.lat, lon = it.lon))
-        } ?: return regId.default
+        }
 
         return getRegId(item, regId)
     }
@@ -111,7 +111,14 @@ class WeatherDataSource(
         }
     }
 
-    suspend fun loadArea() = areaDao.load()
+    suspend fun getAreaNo(location: Location): String {
+        val area = areaDao.load().minBy {
+            location.haversine(LatLon(lat = it.latitude, lon = it.longitude))
+        }
+
+        return area.no
+    }
+
     suspend fun loadLCRiseSetInfo(
         params: RiseSetInfoService.Params
     ): LCRiseSetInfo? = with(params) {
