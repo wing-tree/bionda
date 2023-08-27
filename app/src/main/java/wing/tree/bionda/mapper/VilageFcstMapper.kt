@@ -1,7 +1,7 @@
 package wing.tree.bionda.mapper
 
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableMap
+import kotlinx.collections.immutable.toPersistentList
 import wing.tree.bionda.data.model.weather.VilageFcst.Local as DataModel
 import wing.tree.bionda.model.VilageFcst as PresentationModel
 
@@ -12,7 +12,7 @@ class VilageFcstMapper : DataModelMapper<DataModel, PresentationModel> {
         }.map { (key, value) ->
             val (fcstDate, fcstTime) = key
 
-            wing.tree.bionda.model.VilageFcst.Item(
+            PresentationModel.Item(
                 fcstDate = fcstDate,
                 fcstTime = fcstTime,
                 codeValues = value.associate {
@@ -22,6 +22,6 @@ class VilageFcstMapper : DataModelMapper<DataModel, PresentationModel> {
             )
         }
 
-        return PresentationModel(items = items.toImmutableList())
+        return PresentationModel(items = items.toPersistentList())
     }
 }

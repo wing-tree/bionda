@@ -42,6 +42,16 @@ inline fun <R, T> State<T>.map(transform: (T) -> R): State<R> {
 }
 
 @OptIn(ExperimentalContracts::class)
+fun <T> State<T>.isSuccess(): Boolean {
+    contract {
+        returns(true) implies (this@isSuccess is Complete.Success<T>)
+        returns(false) implies (this@isSuccess is Complete.Failure)
+    }
+
+    return this is Complete.Success<T>
+}
+
+@OptIn(ExperimentalContracts::class)
 inline fun <T> State<T>.onSuccess(action: (value: T) -> Unit): State<T> {
     contract {
         callsInPlace(action, InvocationKind.AT_MOST_ONCE)
