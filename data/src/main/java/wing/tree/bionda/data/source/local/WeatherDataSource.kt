@@ -7,19 +7,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
-import wing.tree.bionda.data.database.dao.AreaDao
 import wing.tree.bionda.data.database.dao.LCRiseSetInfoDao
 import wing.tree.bionda.data.database.dao.MidLandFcstDao
 import wing.tree.bionda.data.database.dao.MidTaDao
 import wing.tree.bionda.data.database.dao.UltraSrtNcstDao
 import wing.tree.bionda.data.database.dao.VilageFcstDao
-import wing.tree.bionda.data.database.sttKiller
 import wing.tree.bionda.data.extension.double
 import wing.tree.bionda.data.extension.`is`
 import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.radians
 import wing.tree.bionda.data.extension.two
-import wing.tree.bionda.data.model.Area
 import wing.tree.bionda.data.model.LatLon
 import wing.tree.bionda.data.model.weather.FcstZoneCd
 import wing.tree.bionda.data.model.weather.RegId
@@ -38,7 +35,6 @@ import wing.tree.bionda.data.model.weather.VilageFcst.Local as VilageFcst
 
 class WeatherDataSource(
     private val context: Context,
-    private val areaDao: AreaDao,
     private val midLandFcstDao: MidLandFcstDao,
     private val midTaDao: MidTaDao,
     private val lcRiseSetInfoDao: LCRiseSetInfoDao,
@@ -177,35 +173,5 @@ class WeatherDataSource(
         val c = atan2(sqrt(a), sqrt(Double.one.minus(a))).double
 
         return 6371.times(c)
-    }
-
-    suspend fun buildAreaDB() {
-            val a = sttKiller().dropLast(1)
-            for (i in a.withIndex()) {
-                val b = i.value.split('/')
-
-                val areaNo = b[0]
-                val nx = b[1]
-//                    try {
-//                    b[1]
-//                } catch (e: Exception) {
-//                    println("wwwwwwiii:${i.index},${a.count()}")
-//                    "---"
-//                }
-                val ny = b[2]
-                val longitude = b[3]
-                val latitude = b[4]
-                //$nx,$ny,$longitude,$latitude
-                areaDao.insert(
-                    Area(
-                        index = i.index.inc(),
-                        no = areaNo.trim(),
-                        nx = nx.trim().toInt(),
-                        ny = ny.trim().toInt(),
-                        longitude = longitude.trim().toDouble(),
-                        latitude = latitude.trim().toDouble()
-                    )
-                )
-            }
     }
 }

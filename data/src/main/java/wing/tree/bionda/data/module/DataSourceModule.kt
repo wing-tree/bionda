@@ -31,7 +31,6 @@ object DataSourceModule {
     ): LocalDataSource {
         return LocalDataSource(
             context = context,
-            areaDao = database.areaDao(),
             midLandFcstDao = database.midLandFcstDao(),
             midTaDao = database.midTaDao(),
             lcRiseSetInfoDao = database.lcRiseSetInfoDao(),
