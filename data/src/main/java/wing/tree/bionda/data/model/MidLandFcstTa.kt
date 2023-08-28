@@ -1,6 +1,5 @@
 package wing.tree.bionda.data.model
 
-import android.icu.util.Calendar
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import wing.tree.bionda.data.extension.zero
@@ -10,10 +9,11 @@ import wing.tree.bionda.data.model.MidLandFcst.Local as LandFcst
 import wing.tree.bionda.data.model.MidTa.Local as Ta
 
 sealed interface MidLandFcstTa {
-    val tmFcCalendar: Calendar
+    val tmFc: String
 
     data class BothSuccess(
-        override val tmFcCalendar: Calendar,
+        override val tmFc: String,
+        val julianDay: Int,
         val midLandFcst: LandFcst,
         val midTa: Ta
     ) : MidLandFcstTa {
@@ -39,7 +39,8 @@ sealed interface MidLandFcstTa {
                         ta = item.ta.copy(n = this)
                     )
                 }
-            }.toImmutableList()
+            }
+                .toImmutableList()
         } else {
             items
         }
@@ -49,20 +50,22 @@ sealed interface MidLandFcstTa {
         val throwable: Throwable
 
         data class MidLandFcst(
-            override val tmFcCalendar: Calendar,
+            override val tmFc: String,
             override val throwable: Throwable,
+            val julianDay: Int,
             val midLandFcst: LandFcst
         ) : OneOfSuccess
 
         data class MidTa(
-            override val tmFcCalendar: Calendar,
+            override val tmFc: String,
             override val throwable: Throwable,
+            val julianDay: Int,
             val midTa: Ta
         ) : OneOfSuccess
     }
 
     data class BothFailure(
-        override val tmFcCalendar: Calendar,
+        override val tmFc: String,
         val midLandFcst: Throwable,
         val midTa: Throwable
     ) : MidLandFcstTa
@@ -71,18 +74,21 @@ sealed interface MidLandFcstTa {
         fun MidLandFcstTa(
             midLandFcst: Complete<LandFcst>,
             midTa: Complete<Ta>,
-            tmFcCalendar: Calendar
+            tmFc: String,
+            julianDay: Int
         ): MidLandFcstTa {
             return when {
                 midLandFcst.isSuccess() -> when {
                     midTa.isSuccess() -> BothSuccess(
-                        tmFcCalendar = tmFcCalendar,
+                        tmFc = tmFc,
+                        julianDay = julianDay,
                         midLandFcst = midLandFcst.value,
                         midTa = midTa.value
                     )
 
                     else -> OneOfSuccess.MidLandFcst(
-                        tmFcCalendar = tmFcCalendar,
+                        tmFc = tmFc,
+                        julianDay = julianDay,
                         throwable = midTa.throwable,
                         midLandFcst = midLandFcst.value
                     )
@@ -90,13 +96,14 @@ sealed interface MidLandFcstTa {
 
                 else -> when {
                     midTa.isSuccess() -> OneOfSuccess.MidTa(
-                        tmFcCalendar = tmFcCalendar,
+                        tmFc = tmFc,
+                        julianDay = julianDay,
                         throwable = midLandFcst.throwable,
                         midTa = midTa.value
                     )
 
                     else -> BothFailure(
-                        tmFcCalendar = tmFcCalendar,
+                        tmFc = tmFc,
                         midLandFcst = midLandFcst.throwable,
                         midTa = midTa.throwable
                     )

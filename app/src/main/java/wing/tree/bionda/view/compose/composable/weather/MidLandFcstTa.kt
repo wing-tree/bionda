@@ -36,7 +36,6 @@ import wing.tree.bionda.data.extension.empty
 import wing.tree.bionda.data.extension.float
 import wing.tree.bionda.data.extension.isNull
 import wing.tree.bionda.data.extension.julianDay
-import wing.tree.bionda.data.extension.tmFc
 import wing.tree.bionda.data.model.core.State
 import wing.tree.bionda.data.model.core.State.Complete
 import wing.tree.bionda.data.model.MidLandFcstTa
@@ -111,7 +110,7 @@ private fun BothSuccess(
     val items = with(bothSuccess) {
         val n = koreaCalendar()
             .julianDay
-            .minus(tmFcCalendar.julianDay)
+            .minus(julianDay)
 
         advancedDayBy(n)
     }
@@ -121,7 +120,7 @@ private fun BothSuccess(
     }
 
     // TODO: Remove
-    Text(text = bothSuccess.tmFcCalendar.tmFc)
+    Text(text = bothSuccess.tmFc)
 
     LazyRow(
         modifier = modifier,
@@ -158,7 +157,7 @@ private fun OneOfSuccess(
                 val items = with(oneOfSuccess) {
                     val n = koreaCalendar()
                         .julianDay
-                        .minus(tmFcCalendar.julianDay)
+                        .minus(julianDay)
 
                     midLandFcst.advancedDayBy(n)
                 }
@@ -181,7 +180,7 @@ private fun OneOfSuccess(
                 val items = with(oneOfSuccess) {
                     val n = koreaCalendar()
                         .julianDay
-                        .minus(tmFcCalendar.julianDay)
+                        .minus(julianDay)
 
                     midTa.advancedDayBy(n)
                 }

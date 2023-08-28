@@ -6,7 +6,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import wing.tree.bionda.data.PostProcessor
 import wing.tree.bionda.data.extension.awaitOrFailure
-import wing.tree.bionda.data.extension.cloneAsCalendar
+import wing.tree.bionda.data.extension.julianDay
 import wing.tree.bionda.data.extension.locdate
 import wing.tree.bionda.data.extension.minute
 import wing.tree.bionda.data.extension.roundDownToTens
@@ -127,7 +127,8 @@ class WeatherRepository(
             val midLandFcstTa = MidLandFcstTa(
                 midLandFcst = midLandFcst.awaitOrFailure(),
                 midTa = midTa.awaitOrFailure(),
-                tmFcCalendar = tmFcCalendar.cloneAsCalendar()
+                tmFc = tmFc,
+                julianDay = tmFcCalendar.julianDay
             )
 
             Complete.Success(midLandFcstTa)
