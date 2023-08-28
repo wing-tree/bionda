@@ -30,5 +30,11 @@ fun Int.ifZero(defaultValue: () -> Int) = if (this `is` Int.zero) {
     this
 }
 
+fun Int.ifZero(defaultValue: Int) = if (this `is` Int.zero) {
+    defaultValue
+} else {
+    this
+}
+
 fun Int.isZero(): Boolean = `is`(Int.zero)
 fun Int.roundDownToTens() = times(Int.ten).div(Int.ten)

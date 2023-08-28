@@ -4,8 +4,12 @@ import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Stable
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.PersistentList
+import wing.tree.bionda.data.extension.ifZero
 import wing.tree.bionda.data.extension.int
+import wing.tree.bionda.data.extension.`is`
 import wing.tree.bionda.data.extension.isNonNegative
+import wing.tree.bionda.data.extension.not
+import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.oneHundred
 import wing.tree.bionda.data.model.Category
 import wing.tree.bionda.data.model.CodeValue
@@ -65,10 +69,12 @@ data class VilageFcst(
         val sunset = lcRiseSetInfo.sunset.trim().int
 
         indexOfFirst {
+            val fcstHour = it.fcstHour.ifZero(defaultValue = 24)
+
             when {
-                it.fcstDate < locdate -> false
-                it.fcstTime < sunrise -> false
-                else -> true
+                it.fcstDate not locdate -> false
+                fcstHour < sunrise.div(Int.oneHundred) -> false
+                else -> fcstHour.minus(sunrise.div(Int.oneHundred)) `is` Int.one
             }
         }.let {
             if (it.isNonNegative) {
@@ -84,10 +90,12 @@ data class VilageFcst(
         }
 
         indexOfFirst {
+            val fcstHour = it.fcstHour.ifZero(defaultValue = 24)
+
             when {
-                it.fcstDate < locdate -> false
-                it.fcstTime < sunset -> false
-                else -> true
+                it.fcstDate not locdate -> false
+                fcstHour < sunset.div(Int.oneHundred) -> false
+                else -> fcstHour.minus(sunset.div(Int.oneHundred)) `is` Int.one
             }
         }.let {
             if (it.isNonNegative) {
