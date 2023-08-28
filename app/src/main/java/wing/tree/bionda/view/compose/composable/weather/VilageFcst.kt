@@ -15,8 +15,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import wing.tree.bionda.data.extension.empty
-import wing.tree.bionda.data.model.State
-import wing.tree.bionda.data.model.State.Complete
+import wing.tree.bionda.data.model.core.State
+import wing.tree.bionda.data.model.core.State.Complete
 import wing.tree.bionda.model.VilageFcst
 import wing.tree.bionda.view.compose.composable.core.Loading
 import wing.tree.bionda.view.compose.composable.core.VerticalSpacer

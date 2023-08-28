@@ -5,7 +5,7 @@ import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 import wing.tree.bionda.data.model.Address
 import wing.tree.bionda.data.model.Alarm
-import wing.tree.bionda.data.model.State
+import wing.tree.bionda.data.model.core.State
 import wing.tree.bionda.data.model.MidLandFcstTa
 import wing.tree.bionda.model.UltraSrtNcst
 import wing.tree.bionda.model.VilageFcst

@@ -15,7 +15,7 @@ import wing.tree.bionda.data.extension.toDegreeMinute
 import wing.tree.bionda.data.model.CalendarDecorator.Base
 import wing.tree.bionda.data.model.DegreeMinute.Type.LATITUDE
 import wing.tree.bionda.data.model.DegreeMinute.Type.LONGITUDE
-import wing.tree.bionda.data.model.State.Complete
+import wing.tree.bionda.data.model.core.State.Complete
 import wing.tree.bionda.data.model.LCRiseSetInfo
 import wing.tree.bionda.data.model.MidLandFcst
 import wing.tree.bionda.data.model.MidLandFcstTa

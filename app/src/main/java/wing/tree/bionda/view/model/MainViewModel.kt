@@ -26,11 +26,11 @@ import wing.tree.bionda.data.extension.long
 import wing.tree.bionda.data.extension.negativeOne
 import wing.tree.bionda.data.model.Address
 import wing.tree.bionda.data.model.Alarm
-import wing.tree.bionda.data.model.State
-import wing.tree.bionda.data.model.State.Complete
-import wing.tree.bionda.data.model.flatMap
-import wing.tree.bionda.data.model.isSuccess
-import wing.tree.bionda.data.model.map
+import wing.tree.bionda.data.model.core.State
+import wing.tree.bionda.data.model.core.State.Complete
+import wing.tree.bionda.data.model.core.flatMap
+import wing.tree.bionda.data.model.core.isSuccess
+import wing.tree.bionda.data.model.core.map
 import wing.tree.bionda.data.model.MidLandFcstTa
 import wing.tree.bionda.data.model.UltraSrtNcst
 import wing.tree.bionda.data.provider.LocationProvider

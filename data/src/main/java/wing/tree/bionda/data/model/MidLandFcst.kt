@@ -11,6 +11,7 @@ import wing.tree.bionda.data.constant.SPACE
 import wing.tree.bionda.data.exception.OpenApiError
 import wing.tree.bionda.data.exception.second
 import wing.tree.bionda.data.extension.zero
+import wing.tree.bionda.data.model.core.Response
 import wing.tree.bionda.data.validator.ResponseValidator
 
 sealed interface MidLandFcst {

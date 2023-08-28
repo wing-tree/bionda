@@ -11,9 +11,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import wing.tree.bionda.data.extension.empty
-import wing.tree.bionda.data.model.State
-import wing.tree.bionda.data.model.State.Complete
-import wing.tree.bionda.data.model.State.Loading
+import wing.tree.bionda.data.model.core.State
+import wing.tree.bionda.data.model.core.State.Complete
+import wing.tree.bionda.data.model.core.State.Loading
 import wing.tree.bionda.view.compose.composable.core.Loading
 import wing.tree.bionda.data.model.LCRiseSetInfo.Local as LCRiseSetInfo
 

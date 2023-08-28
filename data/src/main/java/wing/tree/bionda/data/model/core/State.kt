@@ -1,10 +1,10 @@
 @file:Suppress("unused")
 
-package wing.tree.bionda.data.model
+package wing.tree.bionda.data.model.core
 
 import wing.tree.bionda.data.extension.isNull
-import wing.tree.bionda.data.model.State.Complete
-import wing.tree.bionda.data.model.State.Loading
+import wing.tree.bionda.data.model.core.State.Complete
+import wing.tree.bionda.data.model.core.State.Loading
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract

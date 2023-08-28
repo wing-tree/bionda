@@ -1,6 +1,6 @@
 package wing.tree.bionda.data.validator
 
-import wing.tree.bionda.data.model.Response
+import wing.tree.bionda.data.model.core.Response
 
 interface ResponseValidator {
     val response: Response<*>

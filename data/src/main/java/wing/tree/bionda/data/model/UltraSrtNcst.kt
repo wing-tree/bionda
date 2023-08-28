@@ -12,6 +12,7 @@ import wing.tree.bionda.data.exception.fourth
 import wing.tree.bionda.data.exception.second
 import wing.tree.bionda.data.exception.third
 import wing.tree.bionda.data.extension.zero
+import wing.tree.bionda.data.model.core.Response
 import wing.tree.bionda.data.service.VilageFcstInfoService
 import wing.tree.bionda.data.validator.ResponseValidator
 

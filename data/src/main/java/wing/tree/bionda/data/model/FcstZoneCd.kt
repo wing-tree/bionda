@@ -1,6 +1,7 @@
 package wing.tree.bionda.data.model
 
 import kotlinx.serialization.Serializable
+import wing.tree.bionda.data.model.core.Response
 
 @Serializable
 data class FcstZoneCd(val response: Response<Item>) {

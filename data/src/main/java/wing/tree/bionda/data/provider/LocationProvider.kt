@@ -16,9 +16,9 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import timber.log.Timber
 import wing.tree.bionda.data.exception.OnCanceledException
 import wing.tree.bionda.data.extension.zero
-import wing.tree.bionda.data.model.State
-import wing.tree.bionda.data.model.ifFailure
-import wing.tree.bionda.data.model.ifNull
+import wing.tree.bionda.data.model.core.State
+import wing.tree.bionda.data.model.core.ifFailure
+import wing.tree.bionda.data.model.core.ifNull
 import kotlin.coroutines.resume
 
 class LocationProvider(private val context: Context)  {

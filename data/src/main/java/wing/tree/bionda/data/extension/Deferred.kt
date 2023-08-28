@@ -1,7 +1,7 @@
 package wing.tree.bionda.data.extension
 
 import kotlinx.coroutines.Deferred
-import wing.tree.bionda.data.model.State.Complete
+import wing.tree.bionda.data.model.core.State.Complete
 
 suspend fun <T> Deferred<T>.awaitOrElse(defaultValue: (Exception) -> T) = try {
     await()
