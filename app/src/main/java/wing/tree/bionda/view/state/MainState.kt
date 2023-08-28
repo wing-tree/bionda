@@ -6,10 +6,10 @@ import kotlinx.collections.immutable.persistentSetOf
 import wing.tree.bionda.data.model.Address
 import wing.tree.bionda.data.model.Alarm
 import wing.tree.bionda.data.model.State
-import wing.tree.bionda.data.model.weather.MidLandFcstTa
+import wing.tree.bionda.data.model.MidLandFcstTa
 import wing.tree.bionda.model.UltraSrtNcst
 import wing.tree.bionda.model.VilageFcst
-import wing.tree.bionda.data.model.weather.LCRiseSetInfo.Local as LCRiseSetInfo
+import wing.tree.bionda.data.model.LCRiseSetInfo.Local as LCRiseSetInfo
 
 data class MainState(
     val alarmState: AlarmState,

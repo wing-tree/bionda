@@ -1,4 +1,4 @@
-package wing.tree.bionda.data.model.weather
+package wing.tree.bionda.data.model
 
 import androidx.room.Entity
 import kotlinx.collections.immutable.ImmutableList
@@ -7,15 +7,18 @@ import kotlinx.serialization.Serializable
 import wing.tree.bionda.data.constant.COMMA
 import wing.tree.bionda.data.constant.SPACE
 import wing.tree.bionda.data.exception.OpenApiError
-import wing.tree.bionda.data.exception.fifth
 import wing.tree.bionda.data.exception.fourth
 import wing.tree.bionda.data.exception.second
 import wing.tree.bionda.data.exception.third
+import wing.tree.bionda.data.extension.hourOfDay
+import wing.tree.bionda.data.extension.string
+import wing.tree.bionda.data.extension.two
 import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.data.service.VilageFcstInfoService
+import wing.tree.bionda.data.top.level.koreaCalendar
 import wing.tree.bionda.data.validator.ResponseValidator
 
-sealed interface UltraSrtNcst {
+sealed interface VilageFcst {
     val items: List<Item>
     val nx: Int
     val ny: Int
@@ -25,19 +28,20 @@ sealed interface UltraSrtNcst {
         val baseDate: Int,
         val baseTime: Int,
         val category: String,
-        val nx: Int,
-        val ny: Int,
-        val obsrValue: Double
+        val fcstDate : Int,
+        val fcstTime : Int,
+        val fcstValue : String,
+        val nx : Int,
+        val ny : Int
     )
 
     @Entity(
-        tableName = "ultra_srt_ncst",
+        tableName = "vilage_fcst",
         primaryKeys = [
             "nx",
             "ny",
             "baseDate",
-            "baseTime",
-            "minute"
+            "baseTime"
         ]
     )
     data class Local(
@@ -45,14 +49,30 @@ sealed interface UltraSrtNcst {
         override val nx: Int,
         override val ny: Int,
         val baseDate: String,
-        val baseTime: String,
-        val minute: Int
-    ) : UltraSrtNcst
+        val baseTime: String
+    ) : VilageFcst {
+        fun prepend(vilageFcst: Local?): Local {
+            val koreaCalendar = koreaCalendar().apply {
+                hourOfDay -= Int.two
+            }
+
+            return with(vilageFcst?.items ?: emptyList()) {
+                // TODO make 26 to const.
+                takeLast(26).filter {
+                    koreaCalendar < koreaCalendar(it.fcstDate.string, it.fcstTime.string)
+                }.let {
+                    val items = items.plus(it).toImmutableList()
+
+                    copy(items = items)
+                }
+            }
+        }
+    }
 
     @Serializable
     data class Remote(
         override val response: Response<Item>
-    ) : UltraSrtNcst, ResponseValidator {
+    ) : VilageFcst, ResponseValidator {
         override val items: List<Item> get() = response.items
         override val nx: Int get() = items.firstOrNull()?.nx ?: Int.zero
         override val ny: Int get() = items.firstOrNull()?.ny ?: Int.zero
@@ -68,7 +88,6 @@ sealed interface UltraSrtNcst {
                     add("baseTime=${params.second()}")
                     add("nx=${params.third()}")
                     add("ny=${params.fourth()}")
-                    add("minute=${params.fifth()}")
                 }.joinToString("$COMMA$SPACE")
 
                 throw OpenApiError(
@@ -78,19 +97,15 @@ sealed interface UltraSrtNcst {
             }
         }
 
-        fun toLocal(
-            params: VilageFcstInfoService.Params,
-            minute: Int
-        ): Local = with(params) {
-            validate(baseDate, baseTime, "$nx", "$ny", "$minute")
+        fun toLocal(params: VilageFcstInfoService.Params): Local = with(params) {
+            validate(baseDate, baseTime, "$nx", "$ny")
 
             Local(
                 items = items.toImmutableList(),
                 baseDate = baseDate,
                 baseTime = baseTime,
                 nx = this.nx,
-                ny = this.ny,
-                minute = minute
+                ny = this.ny
             )
         }
     }

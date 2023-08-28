@@ -31,8 +31,8 @@ import wing.tree.bionda.data.model.State.Complete
 import wing.tree.bionda.data.model.flatMap
 import wing.tree.bionda.data.model.isSuccess
 import wing.tree.bionda.data.model.map
-import wing.tree.bionda.data.model.weather.MidLandFcstTa
-import wing.tree.bionda.data.model.weather.UltraSrtNcst
+import wing.tree.bionda.data.model.MidLandFcstTa
+import wing.tree.bionda.data.model.UltraSrtNcst
 import wing.tree.bionda.data.provider.LocationProvider
 import wing.tree.bionda.data.repository.AlarmRepository
 import wing.tree.bionda.data.repository.WeatherRepository
@@ -51,7 +51,7 @@ import wing.tree.bionda.view.state.HeaderState
 import wing.tree.bionda.view.state.MainState
 import wing.tree.bionda.view.state.WeatherState
 import javax.inject.Inject
-import wing.tree.bionda.data.model.weather.LCRiseSetInfo.Local as LCRiseSetInfo
+import wing.tree.bionda.data.model.LCRiseSetInfo.Local as LCRiseSetInfo
 
 @HiltViewModel
 class MainViewModel @Inject constructor(

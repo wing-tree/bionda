@@ -1,4 +1,4 @@
-package wing.tree.bionda.data.model.weather
+package wing.tree.bionda.data.model
 
 sealed interface CodeValue {
     val code: String?

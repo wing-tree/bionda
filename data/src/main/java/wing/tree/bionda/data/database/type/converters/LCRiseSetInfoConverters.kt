@@ -2,7 +2,7 @@ package wing.tree.bionda.data.database.type.converters
 
 import androidx.room.TypeConverter
 import kotlinx.serialization.json.Json
-import wing.tree.bionda.data.model.weather.LCRiseSetInfo.Item
+import wing.tree.bionda.data.model.LCRiseSetInfo.Item
 
 class LCRiseSetInfoConverters {
     private val json = Json {

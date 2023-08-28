@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
-import wing.tree.bionda.data.model.weather.LCRiseSetInfo.Local as LCRiseSetInfo
+import wing.tree.bionda.data.model.LCRiseSetInfo.Local as LCRiseSetInfo
 
 @Dao
 interface LCRiseSetInfoDao {

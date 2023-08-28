@@ -1,4 +1,4 @@
-package wing.tree.bionda.data.model.weather
+package wing.tree.bionda.data.model
 
 import kotlinx.serialization.Serializable
 import wing.tree.bionda.data.exception.OpenApiError

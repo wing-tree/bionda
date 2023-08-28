@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
-import wing.tree.bionda.data.model.weather.VilageFcst.Local as VilageFcst
+import wing.tree.bionda.data.model.VilageFcst.Local as VilageFcst
 
 @Dao
 interface VilageFcstDao {

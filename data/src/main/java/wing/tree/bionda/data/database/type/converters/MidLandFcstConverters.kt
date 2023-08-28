@@ -2,7 +2,7 @@ package wing.tree.bionda.data.database.type.converters
 
 import androidx.room.TypeConverter
 import kotlinx.serialization.json.Json
-import wing.tree.bionda.data.model.weather.MidLandFcst.Item
+import wing.tree.bionda.data.model.MidLandFcst.Item
 
 class MidLandFcstConverters {
     private val json = Json {

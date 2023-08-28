@@ -1,4 +1,4 @@
-package wing.tree.bionda.data.model.weather
+package wing.tree.bionda.data.model
 
 import androidx.room.Entity
 import androidx.room.Ignore

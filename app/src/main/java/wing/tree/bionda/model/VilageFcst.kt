@@ -7,9 +7,9 @@ import kotlinx.collections.immutable.PersistentList
 import wing.tree.bionda.data.extension.int
 import wing.tree.bionda.data.extension.isNonNegative
 import wing.tree.bionda.data.extension.oneHundred
-import wing.tree.bionda.data.model.weather.Category
-import wing.tree.bionda.data.model.weather.CodeValue
-import wing.tree.bionda.data.model.weather.LCRiseSetInfo
+import wing.tree.bionda.data.model.Category
+import wing.tree.bionda.data.model.CodeValue
+import wing.tree.bionda.data.model.LCRiseSetInfo
 import wing.tree.bionda.top.level.emptyPersistentMap
 
 data class VilageFcst(

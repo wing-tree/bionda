@@ -3,7 +3,7 @@ package wing.tree.bionda.data.service
 import retrofit2.http.GET
 import retrofit2.http.Query
 import wing.tree.bionda.data.constant.N
-import wing.tree.bionda.data.model.weather.LCRiseSetInfo
+import wing.tree.bionda.data.model.LCRiseSetInfo
 
 interface RiseSetInfoService {
     data class Params(

@@ -5,7 +5,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
-import wing.tree.bionda.data.model.weather.UltraSrtNcst.Item
+import wing.tree.bionda.data.model.UltraSrtNcst.Item
 
 class UltraSrtNcstConverters {
     private val json = Json {

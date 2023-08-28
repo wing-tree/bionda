@@ -15,7 +15,7 @@ import wing.tree.bionda.data.model.State
 import wing.tree.bionda.data.model.State.Complete
 import wing.tree.bionda.data.model.State.Loading
 import wing.tree.bionda.view.compose.composable.core.Loading
-import wing.tree.bionda.data.model.weather.LCRiseSetInfo.Local as LCRiseSetInfo
+import wing.tree.bionda.data.model.LCRiseSetInfo.Local as LCRiseSetInfo
 
 @Composable
 fun LCRiseSetInfo(

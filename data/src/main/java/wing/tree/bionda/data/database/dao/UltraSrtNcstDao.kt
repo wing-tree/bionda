@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
-import wing.tree.bionda.data.model.weather.UltraSrtNcst
+import wing.tree.bionda.data.model.UltraSrtNcst
 
 @Dao
 interface UltraSrtNcstDao {

@@ -3,10 +3,10 @@ package wing.tree.bionda.data
 import wing.tree.bionda.data.constant.PATTERN_TM_FC
 import wing.tree.bionda.data.extension.advanceHourOfDayBy
 import wing.tree.bionda.data.extension.isNull
-import wing.tree.bionda.data.model.weather.MidLandFcst
-import wing.tree.bionda.data.model.weather.MidTa
-import wing.tree.bionda.data.model.weather.UltraSrtNcst
-import wing.tree.bionda.data.model.weather.VilageFcst
+import wing.tree.bionda.data.model.MidLandFcst
+import wing.tree.bionda.data.model.MidTa
+import wing.tree.bionda.data.model.UltraSrtNcst
+import wing.tree.bionda.data.model.VilageFcst
 import wing.tree.bionda.data.service.VilageFcstInfoService
 import wing.tree.bionda.data.source.local.WeatherDataSource as LocalDataSource
 

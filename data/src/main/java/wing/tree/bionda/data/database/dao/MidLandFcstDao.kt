@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
-import wing.tree.bionda.data.model.weather.MidLandFcst.Local as MidLandFcst
+import wing.tree.bionda.data.model.MidLandFcst.Local as MidLandFcst
 
 @Dao
 interface MidLandFcstDao {

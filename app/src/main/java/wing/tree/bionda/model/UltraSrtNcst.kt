@@ -1,7 +1,7 @@
 package wing.tree.bionda.model
 
 import kotlinx.collections.immutable.ImmutableMap
-import wing.tree.bionda.data.model.weather.Category
+import wing.tree.bionda.data.model.Category
 
 data class UltraSrtNcst(
     val baseDate: String,

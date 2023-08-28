@@ -5,8 +5,8 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 import wing.tree.bionda.data.extension.baseDate
 import wing.tree.bionda.data.extension.baseTime
-import wing.tree.bionda.data.model.weather.UltraSrtNcst
-import wing.tree.bionda.data.model.weather.VilageFcst
+import wing.tree.bionda.data.model.UltraSrtNcst
+import wing.tree.bionda.data.model.VilageFcst
 
 interface VilageFcstInfoService {
     data class Params(

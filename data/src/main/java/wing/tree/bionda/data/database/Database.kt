@@ -16,11 +16,11 @@ import wing.tree.bionda.data.database.type.converters.MidTaConverters
 import wing.tree.bionda.data.database.type.converters.UltraSrtNcstConverters
 import wing.tree.bionda.data.database.type.converters.VilageFcstConverters
 import wing.tree.bionda.data.model.Alarm
-import wing.tree.bionda.data.model.weather.LCRiseSetInfo.Local as LCRiseSetInfo
-import wing.tree.bionda.data.model.weather.MidLandFcst.Local as MidLandFcst
-import wing.tree.bionda.data.model.weather.MidTa.Local as MidTa
-import wing.tree.bionda.data.model.weather.UltraSrtNcst.Local as UltraSrtNcst
-import wing.tree.bionda.data.model.weather.VilageFcst.Local as VilageFcst
+import wing.tree.bionda.data.model.LCRiseSetInfo.Local as LCRiseSetInfo
+import wing.tree.bionda.data.model.MidLandFcst.Local as MidLandFcst
+import wing.tree.bionda.data.model.MidTa.Local as MidTa
+import wing.tree.bionda.data.model.UltraSrtNcst.Local as UltraSrtNcst
+import wing.tree.bionda.data.model.VilageFcst.Local as VilageFcst
 
 @androidx.room.Database(
     entities = [
