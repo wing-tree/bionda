@@ -1,4 +1,4 @@
-package wing.tree.bionda.view.compose.composable.weather
+package wing.tree.bionda.view.compose.composable
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Column

@@ -11,6 +11,7 @@ import wing.tree.bionda.data.database.dao.AreaDao
 import wing.tree.bionda.data.database.dao.LCRiseSetInfoDao
 import wing.tree.bionda.data.database.dao.MidLandFcstDao
 import wing.tree.bionda.data.database.dao.MidTaDao
+import wing.tree.bionda.data.database.dao.UVIdxDao
 import wing.tree.bionda.data.database.dao.UltraSrtNcstDao
 import wing.tree.bionda.data.database.dao.VilageFcstDao
 import wing.tree.bionda.data.extension.double
@@ -18,8 +19,8 @@ import wing.tree.bionda.data.extension.`is`
 import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.radians
 import wing.tree.bionda.data.extension.two
-import wing.tree.bionda.data.model.LatLon
 import wing.tree.bionda.data.model.FcstZoneCd
+import wing.tree.bionda.data.model.LatLon
 import wing.tree.bionda.data.model.RegId
 import wing.tree.bionda.data.service.RiseSetInfoService
 import wing.tree.bionda.data.service.VilageFcstInfoService
@@ -31,6 +32,7 @@ import kotlin.math.sqrt
 import wing.tree.bionda.data.model.LCRiseSetInfo.Local as LCRiseSetInfo
 import wing.tree.bionda.data.model.MidLandFcst.Local as MidLandFcst
 import wing.tree.bionda.data.model.MidTa.Local as MidTa
+import wing.tree.bionda.data.model.UVIdx.Local as UVIdx
 import wing.tree.bionda.data.model.UltraSrtNcst.Local as UltraSrtNcst
 import wing.tree.bionda.data.model.VilageFcst.Local as VilageFcst
 
@@ -40,6 +42,7 @@ class WeatherDataSource(
     private val midLandFcstDao: MidLandFcstDao,
     private val midTaDao: MidTaDao,
     private val lcRiseSetInfoDao: LCRiseSetInfoDao,
+    private val uvIdxDao: UVIdxDao,
     private val ultraSrtNcstDao: UltraSrtNcstDao,
     private val vilageFcstDao: VilageFcstDao
 ) {
@@ -99,6 +102,12 @@ class WeatherDataSource(
         }
     }
 
+    fun cache(uvIdx: UVIdx) {
+        supervisorScope.launch {
+            uvIdxDao.clearAndInsert(uvIdx)
+        }
+    }
+
     fun cache(ultraSrtNcst: UltraSrtNcst) {
         supervisorScope.launch {
             ultraSrtNcstDao.clearAndInsert(ultraSrtNcst)
@@ -112,11 +121,10 @@ class WeatherDataSource(
     }
 
     suspend fun getAreaNo(location: Location): String {
-        val area = areaDao.load().minBy {
+        return areaDao.load().minBy {
             location.haversine(LatLon(lat = it.latitude, lon = it.longitude))
         }
-
-        return area.no
+            .no
     }
 
     suspend fun loadLCRiseSetInfo(
@@ -141,6 +149,10 @@ class WeatherDataSource(
             regId = regId,
             tmFc = tmFc
         )
+    }
+
+    suspend fun loadUVIdx(areaNo: String, time: String): UVIdx? {
+        return uvIdxDao.load(areaNo, time)
     }
 
     suspend fun loadUltraSrtNcst(

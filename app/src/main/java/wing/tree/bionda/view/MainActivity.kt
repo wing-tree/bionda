@@ -62,7 +62,7 @@ import wing.tree.bionda.top.level.noOperations
 import wing.tree.bionda.view.compose.composable.SingleChoiceSegmentedButtonRow
 import wing.tree.bionda.view.compose.composable.alarm.Alarm
 import wing.tree.bionda.view.compose.composable.core.VerticalSpacer
-import wing.tree.bionda.view.compose.composable.weather.Header
+import wing.tree.bionda.view.compose.composable.Header
 import wing.tree.bionda.view.compose.composable.weather.Weather
 import wing.tree.bionda.view.model.MainViewModel
 import wing.tree.bionda.view.state.AlarmState.Action

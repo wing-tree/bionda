@@ -99,6 +99,12 @@ class MainViewModel @Inject constructor(
     }
         .stateIn(initialValue = State.Loading)
 
+    private val uvIdx = location.map {
+        it.flatMap { location ->
+            weatherRepository.getUVIdx(location)
+        }
+    }
+
     private val vilageFcst = coordinate.map {
         it.flatMap { (nx, ny) ->
             weatherRepository.getVilageFcst(nx = nx, ny = ny).map { vilageFcst ->
@@ -154,11 +160,13 @@ class MainViewModel @Inject constructor(
     private val weatherState = combine(
         lcRiseSetInfo,
         midLandFcstTa,
+        uvIdx,
         vilageFcst
-    ) { lcRiseSetInfo, midLandFcstTa, vilageFcst ->
+    ) { lcRiseSetInfo, midLandFcstTa, uvIdx, vilageFcst ->
         WeatherState(
             lcRiseSetInfo = lcRiseSetInfo,
             midLandFcstTa = midLandFcstTa,
+            uvIdx = uvIdx,
             vilageFcst = vilageFcst.insertLCRiseSetInfo(lcRiseSetInfo)
         )
     }

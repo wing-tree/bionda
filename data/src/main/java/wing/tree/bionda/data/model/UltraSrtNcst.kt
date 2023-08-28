@@ -70,7 +70,8 @@ sealed interface UltraSrtNcst {
                     add("nx=${params.third()}")
                     add("ny=${params.fourth()}")
                     add("minute=${params.fifth()}")
-                }.joinToString("$COMMA$SPACE")
+                }
+                    .joinToString("$COMMA$SPACE")
 
                 throw OpenApiError(
                     errorCode = errorCode,

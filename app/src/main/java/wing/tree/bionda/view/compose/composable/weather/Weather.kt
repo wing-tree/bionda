@@ -43,5 +43,10 @@ fun Weather(
             state = state.lcRiseSetInfo,
             modifier = Modifier.fillMaxWidth()
         )
+
+        UVIdx(
+            state = state.uvIdx,
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }

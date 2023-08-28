@@ -22,6 +22,7 @@ import wing.tree.bionda.data.model.MidLandFcstTa
 import wing.tree.bionda.data.model.MidLandFcstTa.Companion.MidLandFcstTa
 import wing.tree.bionda.data.model.MidTa
 import wing.tree.bionda.data.model.RegId
+import wing.tree.bionda.data.model.UVIdx
 import wing.tree.bionda.data.model.UltraSrtNcst
 import wing.tree.bionda.data.model.VilageFcst
 import wing.tree.bionda.data.model.core.State.Complete
@@ -135,15 +136,25 @@ class WeatherRepository(
         }
     }
 
-    suspend fun getUVIdx(location: Location) {
-        try {
+    suspend fun getUVIdx(location: Location): Complete<UVIdx.Local> {
+        return try {
             val areaNo = localDataSource.getAreaNo(location)
             val time = koreaCalendar().uvIdxTime
 
-            remoteDataSource.getUVIdx(
+            val uvIdx = localDataSource.loadUVIdx(
                 areaNo = areaNo,
                 time = time
-            )
+            ) ?: remoteDataSource.getUVIdx(
+                areaNo = areaNo,
+                time = time
+            ).toLocal(
+                areaNo = areaNo,
+                time = time
+            ).also {
+                localDataSource.cache(it)
+            }
+
+            Complete.Success(uvIdx)
         } catch (throwable: Throwable) {
             Complete.Failure(throwable)
         }

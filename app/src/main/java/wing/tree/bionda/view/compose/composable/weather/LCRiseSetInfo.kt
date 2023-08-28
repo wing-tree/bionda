@@ -25,7 +25,7 @@ fun LCRiseSetInfo(
     ElevatedCard(modifier = modifier) {
         AnimatedContent(
             targetState = state,
-            modifier = modifier,
+            modifier = Modifier,
             transitionSpec = {
                 fadeIn() togetherWith fadeOut()
             },

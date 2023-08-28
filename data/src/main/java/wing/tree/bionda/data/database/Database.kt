@@ -7,18 +7,21 @@ import wing.tree.bionda.data.database.dao.AlarmDao
 import wing.tree.bionda.data.database.dao.LCRiseSetInfoDao
 import wing.tree.bionda.data.database.dao.MidLandFcstDao
 import wing.tree.bionda.data.database.dao.MidTaDao
+import wing.tree.bionda.data.database.dao.UVIdxDao
 import wing.tree.bionda.data.database.dao.UltraSrtNcstDao
 import wing.tree.bionda.data.database.dao.VilageFcstDao
 import wing.tree.bionda.data.database.type.converters.AlarmConverters
 import wing.tree.bionda.data.database.type.converters.LCRiseSetInfoConverters
 import wing.tree.bionda.data.database.type.converters.MidLandFcstConverters
 import wing.tree.bionda.data.database.type.converters.MidTaConverters
+import wing.tree.bionda.data.database.type.converters.UVIdxConverters
 import wing.tree.bionda.data.database.type.converters.UltraSrtNcstConverters
 import wing.tree.bionda.data.database.type.converters.VilageFcstConverters
 import wing.tree.bionda.data.model.Alarm
 import wing.tree.bionda.data.model.LCRiseSetInfo.Local as LCRiseSetInfo
 import wing.tree.bionda.data.model.MidLandFcst.Local as MidLandFcst
 import wing.tree.bionda.data.model.MidTa.Local as MidTa
+import wing.tree.bionda.data.model.UVIdx.Local as UVIdx
 import wing.tree.bionda.data.model.UltraSrtNcst.Local as UltraSrtNcst
 import wing.tree.bionda.data.model.VilageFcst.Local as VilageFcst
 
@@ -28,6 +31,7 @@ import wing.tree.bionda.data.model.VilageFcst.Local as VilageFcst
         LCRiseSetInfo::class,
         MidLandFcst::class,
         MidTa::class,
+        UVIdx::class,
         UltraSrtNcst::class,
         VilageFcst::class
     ],
@@ -39,6 +43,7 @@ import wing.tree.bionda.data.model.VilageFcst.Local as VilageFcst
     LCRiseSetInfoConverters::class,
     MidLandFcstConverters::class,
     MidTaConverters::class,
+    UVIdxConverters::class,
     UltraSrtNcstConverters::class,
     VilageFcstConverters::class
 )
@@ -47,6 +52,7 @@ abstract class Database : RoomDatabase() {
     abstract val midLandFcstDao: MidLandFcstDao
     abstract val midTaDao: MidTaDao
     abstract val lcRiseSetInfoDao: LCRiseSetInfoDao
+    abstract val uvIdxDao: UVIdxDao
     abstract val ultraSrtNcstDao: UltraSrtNcstDao
     abstract val vilageFcstDao: VilageFcstDao
 
