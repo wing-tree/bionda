@@ -1,3 +1,5 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
 plugins {
     id("com.android.application")
     id("com.google.dagger.hilt.android")
@@ -23,6 +25,20 @@ android {
         }
     }
 
+    signingConfigs {
+        val storeFile: String = gradleLocalProperties(rootDir).getProperty("storeFile")
+        val storePassword: String = gradleLocalProperties(rootDir).getProperty("storePassword")
+        val keyAlias: String = gradleLocalProperties(rootDir).getProperty("keyAlias")
+        val keyPassword: String = gradleLocalProperties(rootDir).getProperty("keyPassword")
+
+        create("release") {
+            this.keyAlias = keyAlias
+            this.keyPassword = keyPassword
+            this.storeFile = file(storeFile)
+            this.storePassword = storePassword
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -31,6 +47,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 
@@ -48,7 +65,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.3"
+        kotlinCompilerExtensionVersion = "1.4.7"
     }
 
     packaging {

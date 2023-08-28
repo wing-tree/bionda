@@ -40,6 +40,14 @@ android {
         jvmTarget = "17"
     }
 
+    buildFeatures {
+        compose = true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.4.7"
+    }
+
     ksp {
         arg("room.schemaLocation", "$projectDir/schemas")
     }
@@ -53,6 +61,7 @@ dependencies {
     api("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.5")
 
     implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("androidx.compose.runtime:runtime:1.5.0")
     implementation("androidx.core:core-ktx:1.10.1")
     implementation("androidx.room:room-ktx:2.5.2")
     implementation("androidx.room:room-runtime:2.5.2")
