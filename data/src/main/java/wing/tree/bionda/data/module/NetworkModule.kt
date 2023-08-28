@@ -18,6 +18,7 @@ import wing.tree.bionda.data.qualifier.Qualifier
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
+    private const val LIVING_WTHR_IDX_SERVICE_URL = "http://apis.data.go.kr/1360000/LivingWthrIdxServiceV4/"
     private const val MID_FCST_INFO_SERVICE_URL = "http://apis.data.go.kr/1360000/MidFcstInfoService/"
     private const val RISE_SET_INFO_SERVICE_URL = "http://apis.data.go.kr/B090041/openapi/service/RiseSetInfoService/"
     private const val VILAGE_FCST_INFO_SERVICE_URL = "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/"
@@ -37,6 +38,16 @@ object NetworkModule {
     @Provides
     fun providesOkHttpClient(): OkHttpClient = OkHttpClient.Builder()
         .addNetworkInterceptor(httpLoggingInterceptor)
+        .build()
+
+    @Provides
+    @Qualifier.LivingWthrIdxService
+    fun providesLivingWthrIdxServiceRetrofit(
+        okHttpClient: OkHttpClient
+    ): Retrofit = Retrofit.Builder()
+        .baseUrl(LIVING_WTHR_IDX_SERVICE_URL)
+        .client(okHttpClient)
+        .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
         .build()
 
     @Provides

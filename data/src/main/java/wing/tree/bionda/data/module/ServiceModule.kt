@@ -6,6 +6,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import wing.tree.bionda.data.qualifier.Qualifier
+import wing.tree.bionda.data.service.LivingWthrIdxService
 import wing.tree.bionda.data.service.MidFcstInfoService
 import wing.tree.bionda.data.service.RiseSetInfoService
 import wing.tree.bionda.data.service.VilageFcstInfoService
@@ -13,6 +14,13 @@ import wing.tree.bionda.data.service.VilageFcstInfoService
 @Module
 @InstallIn(SingletonComponent::class)
 object ServiceModule {
+    @Provides
+    fun providesLivingWthrIdxService(
+        @Qualifier.LivingWthrIdxService retrofit: Retrofit
+    ): LivingWthrIdxService {
+        return retrofit.create(LivingWthrIdxService::class.java)
+    }
+
     @Provides
     fun providesMidFcstInfoService(
         @Qualifier.MidFcstInfoService retrofit: Retrofit

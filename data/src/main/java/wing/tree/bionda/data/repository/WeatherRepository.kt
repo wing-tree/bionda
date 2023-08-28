@@ -12,10 +12,10 @@ import wing.tree.bionda.data.extension.minute
 import wing.tree.bionda.data.extension.roundDownToTens
 import wing.tree.bionda.data.extension.tmFc
 import wing.tree.bionda.data.extension.toDegreeMinute
+import wing.tree.bionda.data.extension.uvIdxTime
 import wing.tree.bionda.data.model.CalendarDecorator.Base
 import wing.tree.bionda.data.model.DegreeMinute.Type.LATITUDE
 import wing.tree.bionda.data.model.DegreeMinute.Type.LONGITUDE
-import wing.tree.bionda.data.model.core.State.Complete
 import wing.tree.bionda.data.model.LCRiseSetInfo
 import wing.tree.bionda.data.model.MidLandFcst
 import wing.tree.bionda.data.model.MidLandFcstTa
@@ -24,6 +24,7 @@ import wing.tree.bionda.data.model.MidTa
 import wing.tree.bionda.data.model.RegId
 import wing.tree.bionda.data.model.UltraSrtNcst
 import wing.tree.bionda.data.model.VilageFcst
+import wing.tree.bionda.data.model.core.State.Complete
 import wing.tree.bionda.data.service.RiseSetInfoService
 import wing.tree.bionda.data.service.VilageFcstInfoService
 import wing.tree.bionda.data.top.level.baseCalendar
@@ -129,6 +130,20 @@ class WeatherRepository(
             )
 
             Complete.Success(midLandFcstTa)
+        } catch (throwable: Throwable) {
+            Complete.Failure(throwable)
+        }
+    }
+
+    suspend fun getUVIdx(location: Location) {
+        try {
+            val areaNo = localDataSource.getAreaNo(location)
+            val time = koreaCalendar().uvIdxTime
+
+            remoteDataSource.getUVIdx(
+                areaNo = areaNo,
+                time = time
+            )
         } catch (throwable: Throwable) {
             Complete.Failure(throwable)
         }

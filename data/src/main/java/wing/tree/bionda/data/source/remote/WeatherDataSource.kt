@@ -12,12 +12,14 @@ import wing.tree.bionda.data.extension.three
 import wing.tree.bionda.data.extension.two
 import wing.tree.bionda.data.model.DataType
 import wing.tree.bionda.data.model.LCRiseSetInfo
+import wing.tree.bionda.data.service.LivingWthrIdxService
 import wing.tree.bionda.data.service.MidFcstInfoService
 import wing.tree.bionda.data.service.RiseSetInfoService
 import wing.tree.bionda.data.service.VilageFcstInfoService
 import kotlin.math.pow
 
 class WeatherDataSource(
+    private val livingWthrIdxService: LivingWthrIdxService,
     private val midFcstInfoService: MidFcstInfoService,
     private val riseSetInfoService: RiseSetInfoService,
     private val vilageFcstInfoService: VilageFcstInfoService
@@ -85,6 +87,22 @@ class WeatherDataSource(
             dataType = DataType.JSON,
             regId = regId,
             tmFc = tmFc
+        )
+    }
+
+    suspend fun getUVIdx(
+        numOfRows: Int = Int.one,
+        pageNo: Int = Int.one,
+        areaNo: String,
+        time: String
+    ) = retry {
+        livingWthrIdxService.getUVIdx(
+            serviceKey = BuildConfig.livingWthrIdxServiceKey,
+            numOfRows = numOfRows,
+            pageNo = pageNo,
+            dataType = DataType.JSON,
+            areaNo = areaNo,
+            time = time
         )
     }
 

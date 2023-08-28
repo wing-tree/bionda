@@ -8,6 +8,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import wing.tree.bionda.data.database.AreaDatabase
 import wing.tree.bionda.data.database.Database
+import wing.tree.bionda.data.service.LivingWthrIdxService
 import wing.tree.bionda.data.service.MidFcstInfoService
 import wing.tree.bionda.data.service.RiseSetInfoService
 import wing.tree.bionda.data.service.VilageFcstInfoService
@@ -44,11 +45,13 @@ object DataSourceModule {
 
     @Provides
     fun providesRemoteDataSource(
+        livingWthrIdxService: LivingWthrIdxService,
         midFcstInfoService: MidFcstInfoService,
         riseSetInfoService: RiseSetInfoService,
         vilageFcstInfoService: VilageFcstInfoService
     ): RemoteDataSource {
         return RemoteDataSource(
+            livingWthrIdxService = livingWthrIdxService,
             midFcstInfoService = midFcstInfoService,
             riseSetInfoService = riseSetInfoService,
             vilageFcstInfoService = vilageFcstInfoService
