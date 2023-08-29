@@ -36,8 +36,8 @@ import wing.tree.bionda.data.extension.empty
 import wing.tree.bionda.data.extension.float
 import wing.tree.bionda.data.extension.isNull
 import wing.tree.bionda.data.extension.julianDay
-import wing.tree.bionda.data.model.core.State
-import wing.tree.bionda.data.model.core.State.Complete
+import wing.tree.bionda.data.core.State
+import wing.tree.bionda.data.core.State.Complete
 import wing.tree.bionda.data.model.MidLandFcstTa
 import wing.tree.bionda.data.model.MidLandFcstTa.BothFailure
 import wing.tree.bionda.data.model.MidLandFcstTa.BothSuccess

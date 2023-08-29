@@ -21,7 +21,7 @@ import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.radians
 import wing.tree.bionda.data.extension.two
 import wing.tree.bionda.data.model.FcstZoneCd
-import wing.tree.bionda.data.model.LatLon
+import wing.tree.bionda.data.core.LatLon
 import wing.tree.bionda.data.model.RegId
 import wing.tree.bionda.data.service.RiseSetInfoService
 import wing.tree.bionda.data.service.VilageFcstInfoService

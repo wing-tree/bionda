@@ -4,7 +4,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import wing.tree.bionda.data.PostProcessor
+import wing.tree.bionda.data.core.PostProcessor
 import wing.tree.bionda.data.repository.AlarmRepository
 import wing.tree.bionda.data.repository.WeatherRepository
 import wing.tree.bionda.data.source.local.AlarmDataSource

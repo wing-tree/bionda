@@ -11,11 +11,11 @@ import wing.tree.bionda.data.exception.fifth
 import wing.tree.bionda.data.exception.fourth
 import wing.tree.bionda.data.exception.second
 import wing.tree.bionda.data.exception.third
-import wing.tree.bionda.data.extension.hourOfDay
+import wing.tree.bionda.data.extension.advanceHourOfDayBy
 import wing.tree.bionda.data.extension.string
 import wing.tree.bionda.data.extension.two
 import wing.tree.bionda.data.extension.zero
-import wing.tree.bionda.data.model.core.Response
+import wing.tree.bionda.data.core.Response
 import wing.tree.bionda.data.service.VilageFcstInfoService
 import wing.tree.bionda.data.top.level.koreaCalendar
 import wing.tree.bionda.data.validator.ResponseValidator
@@ -56,9 +56,7 @@ sealed interface UltraSrtFcst {
         val minute: Int
     ) : UltraSrtFcst {
         fun prepend(vilageFcst: Local?): Local {
-            val koreaCalendar = koreaCalendar.apply {
-                hourOfDay -= Int.two
-            }
+            val koreaCalendar = koreaCalendar.advanceHourOfDayBy(Int.two)
 
             return with(vilageFcst?.items ?: emptyList()) {
                 // TODO make 26 to const.

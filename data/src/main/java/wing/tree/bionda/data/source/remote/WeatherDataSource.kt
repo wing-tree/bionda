@@ -10,7 +10,7 @@ import wing.tree.bionda.data.extension.long
 import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.three
 import wing.tree.bionda.data.extension.two
-import wing.tree.bionda.data.model.DataType
+import wing.tree.bionda.data.core.DataType
 import wing.tree.bionda.data.model.LCRiseSetInfo
 import wing.tree.bionda.data.service.LivingWthrIdxService
 import wing.tree.bionda.data.service.MidFcstInfoService

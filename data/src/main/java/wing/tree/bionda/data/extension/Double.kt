@@ -1,6 +1,6 @@
 package wing.tree.bionda.data.extension
 
-import wing.tree.bionda.data.model.DegreeMinute
+import wing.tree.bionda.data.core.DegreeMinute
 import kotlin.math.abs
 import kotlin.math.sign
 

@@ -4,7 +4,7 @@ import android.location.Location
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
-import wing.tree.bionda.data.PostProcessor
+import wing.tree.bionda.data.core.PostProcessor
 import wing.tree.bionda.data.extension.awaitOrFailure
 import wing.tree.bionda.data.extension.julianDay
 import wing.tree.bionda.data.extension.locdate
@@ -14,8 +14,8 @@ import wing.tree.bionda.data.extension.tmFc
 import wing.tree.bionda.data.extension.toDegreeMinute
 import wing.tree.bionda.data.extension.uvIdxTime
 import wing.tree.bionda.data.model.CalendarDecorator.Base
-import wing.tree.bionda.data.model.DegreeMinute.Type.LATITUDE
-import wing.tree.bionda.data.model.DegreeMinute.Type.LONGITUDE
+import wing.tree.bionda.data.core.DegreeMinute.Type.LATITUDE
+import wing.tree.bionda.data.core.DegreeMinute.Type.LONGITUDE
 import wing.tree.bionda.data.model.LCRiseSetInfo
 import wing.tree.bionda.data.model.MidLandFcst
 import wing.tree.bionda.data.model.MidLandFcstTa
@@ -26,7 +26,7 @@ import wing.tree.bionda.data.model.UVIdx
 import wing.tree.bionda.data.model.UltraSrtFcst
 import wing.tree.bionda.data.model.UltraSrtNcst
 import wing.tree.bionda.data.model.VilageFcst
-import wing.tree.bionda.data.model.core.State.Complete
+import wing.tree.bionda.data.core.State.Complete
 import wing.tree.bionda.data.service.RiseSetInfoService
 import wing.tree.bionda.data.service.VilageFcstInfoService
 import wing.tree.bionda.data.top.level.baseCalendar

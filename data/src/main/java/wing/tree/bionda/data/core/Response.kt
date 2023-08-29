@@ -1,4 +1,4 @@
-package wing.tree.bionda.data.model.core
+package wing.tree.bionda.data.core
 
 import kotlinx.serialization.Serializable
 import wing.tree.bionda.data.exception.OpenApiError

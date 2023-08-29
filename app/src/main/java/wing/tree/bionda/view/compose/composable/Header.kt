@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import wing.tree.bionda.data.extension.empty
 import wing.tree.bionda.data.extension.isNotNull
 import wing.tree.bionda.data.extension.one
-import wing.tree.bionda.data.model.Address
+import wing.tree.bionda.data.core.Address
 import wing.tree.bionda.view.compose.composable.core.DegreeText
 import wing.tree.bionda.view.compose.composable.core.Loading
 import wing.tree.bionda.view.compose.composable.core.TextClock

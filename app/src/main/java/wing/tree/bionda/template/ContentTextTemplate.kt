@@ -4,8 +4,8 @@ import android.content.Context
 import android.icu.util.Calendar
 import androidx.annotation.StringRes
 import wing.tree.bionda.R
-import wing.tree.bionda.data.HangulJamo.consonants
-import wing.tree.bionda.data.HangulJamo.jamo
+import wing.tree.bionda.data.core.HangulJamo.consonants
+import wing.tree.bionda.data.core.HangulJamo.jamo
 import wing.tree.bionda.data.constant.COMMA
 import wing.tree.bionda.data.constant.NEWLINE
 import wing.tree.bionda.data.constant.SPACE

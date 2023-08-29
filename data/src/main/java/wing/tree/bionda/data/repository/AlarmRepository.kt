@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import wing.tree.bionda.data.extension.negativeOne
 import wing.tree.bionda.data.model.Alarm
-import wing.tree.bionda.data.model.core.State.Complete
+import wing.tree.bionda.data.core.State.Complete
 import wing.tree.bionda.data.source.local.AlarmDataSource
 
 class AlarmRepository(private val alarmDataSource: AlarmDataSource) {

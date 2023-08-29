@@ -1,4 +1,4 @@
-package wing.tree.bionda.data.model
+package wing.tree.bionda.data.core
 
 import wing.tree.bionda.data.extension.delta
 import wing.tree.bionda.data.extension.half

@@ -1,5 +1,6 @@
 package wing.tree.bionda.data.model
 
+import android.icu.util.Calendar
 import androidx.room.Entity
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
@@ -10,11 +11,12 @@ import wing.tree.bionda.data.exception.OpenApiError
 import wing.tree.bionda.data.exception.fourth
 import wing.tree.bionda.data.exception.second
 import wing.tree.bionda.data.exception.third
-import wing.tree.bionda.data.extension.hourOfDay
+import wing.tree.bionda.data.extension.advanceHourOfDayBy
+import wing.tree.bionda.data.extension.oneHundred
 import wing.tree.bionda.data.extension.string
 import wing.tree.bionda.data.extension.two
 import wing.tree.bionda.data.extension.zero
-import wing.tree.bionda.data.model.core.Response
+import wing.tree.bionda.data.core.Response
 import wing.tree.bionda.data.service.VilageFcstInfoService
 import wing.tree.bionda.data.top.level.koreaCalendar
 import wing.tree.bionda.data.validator.ResponseValidator
@@ -34,7 +36,14 @@ sealed interface VilageFcst {
         val fcstValue : String,
         val nx : Int,
         val ny : Int
-    )
+    ) {
+        val fcstCalendar: Calendar get() = koreaCalendar(
+            fcstDate.string,
+            fcstTime.string
+        )
+
+        val fcstHour: Int get() = fcstTime.div(Int.oneHundred)
+    }
 
     @Entity(
         tableName = "vilage_fcst",
@@ -53,16 +62,19 @@ sealed interface VilageFcst {
         val baseTime: String
     ) : VilageFcst {
         fun prepend(vilageFcst: Local?): Local {
-            val koreaCalendar = koreaCalendar.apply {
-                hourOfDay -= Int.two
-            }
+            val koreaCalendar = koreaCalendar.advanceHourOfDayBy(Int.two)
 
             return with(vilageFcst?.items ?: emptyList()) {
                 // TODO make 26 to const.
                 takeLast(26).filter {
-                    koreaCalendar < koreaCalendar(it.fcstDate.string, it.fcstTime.string)
+                    // 아이템이, 2시간전보다 최신이면,
+                    // 지금이 14시면, 12시 이후의 데이터들을 추출함.
+                    // 첫 번째 데이터 보다, 이전의 데이터여야함.
+                    koreaCalendar < it.fcstCalendar &&
+                            it.fcstCalendar < items.first().fcstCalendar
                 }.let {
-                    val items = items.plus(it).toImmutableList()
+                    println("pppppppp:$it")
+                    val items = it.plus(items).toImmutableList()
 
                     copy(items = items)
                 }

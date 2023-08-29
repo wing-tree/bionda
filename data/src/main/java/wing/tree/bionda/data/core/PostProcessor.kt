@@ -1,4 +1,4 @@
-package wing.tree.bionda.data
+package wing.tree.bionda.data.core
 
 import wing.tree.bionda.data.constant.PATTERN_TM_FC
 import wing.tree.bionda.data.extension.advanceHourOfDayBy

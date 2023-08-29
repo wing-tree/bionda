@@ -1,4 +1,4 @@
-package wing.tree.bionda.data
+package wing.tree.bionda.data.core
 
 object HangulJamo {
     private const val HANGUL_SYLLABLES_START = 44032

@@ -3,8 +3,8 @@ package wing.tree.bionda.data.model
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import wing.tree.bionda.data.extension.zero
-import wing.tree.bionda.data.model.core.State.Complete
-import wing.tree.bionda.data.model.core.isSuccess
+import wing.tree.bionda.data.core.State.Complete
+import wing.tree.bionda.data.core.isSuccess
 import wing.tree.bionda.data.model.MidLandFcst.Local as LandFcst
 import wing.tree.bionda.data.model.MidTa.Local as Ta
 

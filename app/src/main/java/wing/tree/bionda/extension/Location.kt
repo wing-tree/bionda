@@ -10,7 +10,7 @@ import wing.tree.bionda.data.extension.half
 import wing.tree.bionda.data.extension.int
 import wing.tree.bionda.data.extension.quarter
 import wing.tree.bionda.data.extension.ten
-import wing.tree.bionda.data.model.Address
+import wing.tree.bionda.data.core.Address
 import wing.tree.bionda.model.Coordinate
 import java.util.Locale
 import kotlin.coroutines.resume
