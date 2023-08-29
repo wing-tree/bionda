@@ -230,7 +230,7 @@ class MainActivity : AppCompatActivity(), PermissionChecker {
         }
     }
 
-    private fun onAddAlarmClick() = showMaterialTimePicker(koreaCalendar()) { hour, minute ->
+    private fun onAddAlarmClick() = showMaterialTimePicker(koreaCalendar) { hour, minute ->
         viewModel.add(hour, minute)
     }
 

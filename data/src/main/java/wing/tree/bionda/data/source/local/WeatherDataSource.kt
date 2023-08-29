@@ -12,6 +12,7 @@ import wing.tree.bionda.data.database.dao.LCRiseSetInfoDao
 import wing.tree.bionda.data.database.dao.MidLandFcstDao
 import wing.tree.bionda.data.database.dao.MidTaDao
 import wing.tree.bionda.data.database.dao.UVIdxDao
+import wing.tree.bionda.data.database.dao.UltraSrtFcstDao
 import wing.tree.bionda.data.database.dao.UltraSrtNcstDao
 import wing.tree.bionda.data.database.dao.VilageFcstDao
 import wing.tree.bionda.data.extension.double
@@ -33,6 +34,7 @@ import wing.tree.bionda.data.model.LCRiseSetInfo.Local as LCRiseSetInfo
 import wing.tree.bionda.data.model.MidLandFcst.Local as MidLandFcst
 import wing.tree.bionda.data.model.MidTa.Local as MidTa
 import wing.tree.bionda.data.model.UVIdx.Local as UVIdx
+import wing.tree.bionda.data.model.UltraSrtFcst.Local as UltraSrtFcst
 import wing.tree.bionda.data.model.UltraSrtNcst.Local as UltraSrtNcst
 import wing.tree.bionda.data.model.VilageFcst.Local as VilageFcst
 
@@ -43,6 +45,7 @@ class WeatherDataSource(
     private val midTaDao: MidTaDao,
     private val lcRiseSetInfoDao: LCRiseSetInfoDao,
     private val uvIdxDao: UVIdxDao,
+    private val ultraSrtFcstDao: UltraSrtFcstDao,
     private val ultraSrtNcstDao: UltraSrtNcstDao,
     private val vilageFcstDao: VilageFcstDao
 ) {
@@ -108,6 +111,12 @@ class WeatherDataSource(
         }
     }
 
+    fun cache(ultraSrtFcst: UltraSrtFcst) {
+        supervisorScope.launch {
+            ultraSrtFcstDao.clearAndInsert(ultraSrtFcst)
+        }
+    }
+
     fun cache(ultraSrtNcst: UltraSrtNcst) {
         supervisorScope.launch {
             ultraSrtNcstDao.clearAndInsert(ultraSrtNcst)
@@ -153,6 +162,19 @@ class WeatherDataSource(
 
     suspend fun loadUVIdx(areaNo: String, time: String): UVIdx? {
         return uvIdxDao.load(areaNo, time)
+    }
+
+    suspend fun loadUltraSrtFcst(
+        params: VilageFcstInfoService.Params,
+        minute: Int,
+    ): UltraSrtFcst? = with(params) {
+        ultraSrtFcstDao.load(
+            baseDate,
+            baseTime,
+            nx,
+            ny,
+            minute
+        )
     }
 
     suspend fun loadUltraSrtNcst(

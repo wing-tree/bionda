@@ -7,6 +7,7 @@ import kotlinx.serialization.Serializable
 import wing.tree.bionda.data.constant.COMMA
 import wing.tree.bionda.data.constant.SPACE
 import wing.tree.bionda.data.exception.OpenApiError
+import wing.tree.bionda.data.exception.fifth
 import wing.tree.bionda.data.exception.fourth
 import wing.tree.bionda.data.exception.second
 import wing.tree.bionda.data.exception.third
@@ -19,7 +20,7 @@ import wing.tree.bionda.data.service.VilageFcstInfoService
 import wing.tree.bionda.data.top.level.koreaCalendar
 import wing.tree.bionda.data.validator.ResponseValidator
 
-sealed interface VilageFcst {
+sealed interface UltraSrtFcst {
     val items: List<Item>
     val nx: Int
     val ny: Int
@@ -37,12 +38,13 @@ sealed interface VilageFcst {
     )
 
     @Entity(
-        tableName = "vilage_fcst",
+        tableName = "ultra_srt_fcst",
         primaryKeys = [
             "nx",
             "ny",
             "baseDate",
-            "baseTime"
+            "baseTime",
+            "minute"
         ]
     )
     data class Local(
@@ -50,8 +52,9 @@ sealed interface VilageFcst {
         override val nx: Int,
         override val ny: Int,
         val baseDate: String,
-        val baseTime: String
-    ) : VilageFcst {
+        val baseTime: String,
+        val minute: Int
+    ) : UltraSrtFcst {
         fun prepend(vilageFcst: Local?): Local {
             val koreaCalendar = koreaCalendar.apply {
                 hourOfDay -= Int.two
@@ -73,7 +76,7 @@ sealed interface VilageFcst {
     @Serializable
     data class Remote(
         override val response: Response<Item>
-    ) : VilageFcst, ResponseValidator {
+    ) : UltraSrtFcst, ResponseValidator {
         override val items: List<Item> get() = response.items
         override val nx: Int get() = items.firstOrNull()?.nx ?: Int.zero
         override val ny: Int get() = items.firstOrNull()?.ny ?: Int.zero
@@ -89,6 +92,7 @@ sealed interface VilageFcst {
                     add("baseTime=${params.second()}")
                     add("nx=${params.third()}")
                     add("ny=${params.fourth()}")
+                    add("minute=${params.fifth()}")
                 }.joinToString("$COMMA$SPACE")
 
                 throw OpenApiError(
@@ -98,15 +102,19 @@ sealed interface VilageFcst {
             }
         }
 
-        fun toLocal(params: VilageFcstInfoService.Params): Local = with(params) {
-            validate(baseDate, baseTime, "$nx", "$ny")
+        fun toLocal(
+            params: VilageFcstInfoService.Params,
+            minute: Int
+        ): Local = with(params) {
+            validate(baseDate, baseTime, "$nx", "$ny", "$minute")
 
             Local(
                 items = items.toImmutableList(),
                 baseDate = baseDate,
                 baseTime = baseTime,
                 nx = this.nx,
-                ny = this.ny
+                ny = this.ny,
+                minute = minute
             )
         }
     }

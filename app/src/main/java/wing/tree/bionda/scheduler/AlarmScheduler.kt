@@ -44,7 +44,7 @@ class AlarmScheduler(private val context: Context) {
                 )
             }
 
-        val triggerAtMillis = koreaCalendar().apply {
+        val triggerAtMillis = koreaCalendar.apply {
             clear(Calendar.SECOND)
             clear(Calendar.MILLISECOND)
 

@@ -108,7 +108,7 @@ private fun BothSuccess(
     modifier: Modifier = Modifier
 ) {
     val items = with(bothSuccess) {
-        val n = koreaCalendar()
+        val n = koreaCalendar
             .julianDay
             .minus(julianDay)
 
@@ -155,7 +155,7 @@ private fun OneOfSuccess(
         when(oneOfSuccess) {
             is OneOfSuccess.MidLandFcst -> {
                 val items = with(oneOfSuccess) {
-                    val n = koreaCalendar()
+                    val n = koreaCalendar
                         .julianDay
                         .minus(julianDay)
 
@@ -178,7 +178,7 @@ private fun OneOfSuccess(
 
             is OneOfSuccess.MidTa -> {
                 val items = with(oneOfSuccess) {
-                    val n = koreaCalendar()
+                    val n = koreaCalendar
                         .julianDay
                         .minus(julianDay)
 

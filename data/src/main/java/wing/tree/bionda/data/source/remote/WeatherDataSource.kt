@@ -106,6 +106,25 @@ class WeatherDataSource(
         )
     }
 
+    suspend fun getUltraSrtFcst(
+        numOfRows: Int,
+        pageNo: Int = Int.one,
+        params: VilageFcstInfoService.Params
+    ) = retry {
+        with(params) {
+            vilageFcstInfoService.getUltraSrtFcst(
+                serviceKey = BuildConfig.vilageFcstInfoServiceKey,
+                numOfRows = numOfRows,
+                pageNo = pageNo,
+                dataType = DataType.JSON,
+                baseDate = baseDate,
+                baseTime = baseTime,
+                nx = nx,
+                ny = ny
+            )
+        }
+    }
+
     suspend fun getUltraSrtNcst(
         numOfRows: Int = Int.eight,
         pageNo: Int = Int.one,

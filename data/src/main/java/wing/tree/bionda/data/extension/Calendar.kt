@@ -51,6 +51,10 @@ var Calendar.minute: Int
         set(Calendar.MINUTE, value)
     }
 
+fun Calendar.advanceHourOfDayBy(hourOfDay: Int) = apply {
+    this.hourOfDay -= hourOfDay
+}
+
 fun Calendar.cloneAsCalendar(): Calendar = with(clone()) {
     if (this is Calendar) {
         this
@@ -60,7 +64,3 @@ fun Calendar.cloneAsCalendar(): Calendar = with(clone()) {
 }
 
 fun Calendar.cloneAsBaseCalendar(base: CalendarDecorator.Base) = base(cloneAsCalendar())
-
-fun Calendar.advanceHourOfDayBy(hourOfDay: Int) = apply {
-    this.hourOfDay -= hourOfDay
-}

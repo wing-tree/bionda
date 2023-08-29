@@ -23,6 +23,7 @@ import wing.tree.bionda.data.model.MidLandFcstTa.Companion.MidLandFcstTa
 import wing.tree.bionda.data.model.MidTa
 import wing.tree.bionda.data.model.RegId
 import wing.tree.bionda.data.model.UVIdx
+import wing.tree.bionda.data.model.UltraSrtFcst
 import wing.tree.bionda.data.model.UltraSrtNcst
 import wing.tree.bionda.data.model.VilageFcst
 import wing.tree.bionda.data.model.core.State.Complete
@@ -51,7 +52,7 @@ class WeatherRepository(
                 tmFc = tmFc
             ).let {
                 with(postProcessor) {
-                    it.postProcess(regId = regId, tmFc = tmFc)
+                    it.process(regId = regId, tmFc = tmFc)
                 }
             }
 
@@ -71,7 +72,7 @@ class WeatherRepository(
                 tmFc = tmFc
             ).let {
                 with(postProcessor) {
-                    it.postProcess(regId = regId, tmFc = tmFc)
+                    it.process(regId = regId, tmFc = tmFc)
                 }
             }
 
@@ -86,7 +87,7 @@ class WeatherRepository(
             val longitude = "${location.latitude.toDegreeMinute(LATITUDE)}"
             val latitude = "${location.longitude.toDegreeMinute(LONGITUDE)}"
             val params = RiseSetInfoService.Params(
-                locdate = koreaCalendar().locdate,
+                locdate = koreaCalendar.locdate,
                 longitude = longitude,
                 latitude = latitude
             )
@@ -140,7 +141,7 @@ class WeatherRepository(
     suspend fun getUVIdx(location: Location): Complete<UVIdx.Local> {
         return try {
             val areaNo = localDataSource.getAreaNo(location)
-            val time = koreaCalendar().uvIdxTime
+            val time = koreaCalendar.uvIdxTime
 
             val uvIdx = localDataSource.loadUVIdx(
                 areaNo = areaNo,
@@ -161,15 +162,57 @@ class WeatherRepository(
         }
     }
 
+    suspend fun getUltraSrtFcst(
+        nx: Int,
+        ny: Int
+    ): Complete<UltraSrtFcst.Local> {
+        return try {
+            // TODO cleanup...
+            val minute = with(koreaCalendar) {
+                if (minute < 5) {
+                    55
+                } else {
+                    with(minute.plus(5).div(10)) {
+                        times(10).minus(5)
+                    }
+                }
+            }
+
+            val params = VilageFcstInfoService.Params(
+                baseCalendar = baseCalendar(Base.UltraSrtFcst),
+                nx = nx,
+                ny = ny
+            )
+
+            val ultraSrtFcst = localDataSource.loadUltraSrtFcst(
+                params = params,
+                minute = minute
+            ) ?: remoteDataSource.getUltraSrtFcst(
+                numOfRows = 60, // TODO check number, make const.
+                params = params
+            ).let {
+                with(postProcessor) {
+                    it.process(
+                        params = params,
+                        minute = minute
+                    )
+                }
+            }
+
+            Complete.Success(ultraSrtFcst)
+        } catch (throwable: Throwable) {
+            Complete.Failure(throwable)
+        }
+    }
+
     suspend fun getUltraSrtNcst(
         nx: Int,
         ny: Int
     ): Complete<UltraSrtNcst.Local> {
         return try {
-            val baseCalendar = baseCalendar(Base.UltraSrtNcst)
-            val minute = koreaCalendar().minute.roundDownToTens()
+            val minute = koreaCalendar.minute.roundDownToTens()
             val params = VilageFcstInfoService.Params(
-                baseCalendar = baseCalendar,
+                baseCalendar = baseCalendar(Base.UltraSrtNcst),
                 nx = nx,
                 ny = ny
             )
@@ -181,7 +224,7 @@ class WeatherRepository(
                 params = params
             ).let {
                 with(postProcessor) {
-                    it.postProcess(params, minute)
+                    it.process(params, minute)
                 }
             }
 
@@ -196,9 +239,8 @@ class WeatherRepository(
         ny: Int
     ): Complete<VilageFcst.Local> {
         return try {
-            val baseCalendar = baseCalendar(Base.VilageFcst)
             val params = VilageFcstInfoService.Params(
-                baseCalendar = baseCalendar,
+                baseCalendar = baseCalendar(Base.VilageFcst),
                 nx = nx,
                 ny = ny
             )
@@ -210,7 +252,7 @@ class WeatherRepository(
                 params = params
             ).let {
                 with(postProcessor) {
-                    it.postProcess(params)
+                    it.process(params)
                 }
             }
 
