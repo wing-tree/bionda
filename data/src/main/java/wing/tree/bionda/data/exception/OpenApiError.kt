@@ -6,5 +6,6 @@ data class OpenApiError(
 ) : Throwable(message = errorMsg) {
     companion object {
         const val ERROR_CODE_00 = "00"
+        const val ERROR_CODE_03 = "03"
     }
 }
