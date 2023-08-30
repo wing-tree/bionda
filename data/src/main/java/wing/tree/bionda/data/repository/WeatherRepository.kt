@@ -4,18 +4,20 @@ import android.location.Location
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import wing.tree.bionda.data.core.DegreeMinute.Type.LATITUDE
+import wing.tree.bionda.data.core.DegreeMinute.Type.LONGITUDE
 import wing.tree.bionda.data.core.PostProcessor
+import wing.tree.bionda.data.core.State.Complete
 import wing.tree.bionda.data.extension.awaitOrFailure
 import wing.tree.bionda.data.extension.julianDay
 import wing.tree.bionda.data.extension.locdate
 import wing.tree.bionda.data.extension.minute
 import wing.tree.bionda.data.extension.roundDownToTens
 import wing.tree.bionda.data.extension.tmFc
+import wing.tree.bionda.data.extension.toBin
 import wing.tree.bionda.data.extension.toDegreeMinute
 import wing.tree.bionda.data.extension.uvIdxTime
 import wing.tree.bionda.data.model.CalendarDecorator.Base
-import wing.tree.bionda.data.core.DegreeMinute.Type.LATITUDE
-import wing.tree.bionda.data.core.DegreeMinute.Type.LONGITUDE
 import wing.tree.bionda.data.model.LCRiseSetInfo
 import wing.tree.bionda.data.model.MidLandFcst
 import wing.tree.bionda.data.model.MidLandFcstTa
@@ -26,7 +28,6 @@ import wing.tree.bionda.data.model.UVIdx
 import wing.tree.bionda.data.model.UltraSrtFcst
 import wing.tree.bionda.data.model.UltraSrtNcst
 import wing.tree.bionda.data.model.VilageFcst
-import wing.tree.bionda.data.core.State.Complete
 import wing.tree.bionda.data.service.RiseSetInfoService
 import wing.tree.bionda.data.service.VilageFcstInfoService
 import wing.tree.bionda.data.top.level.baseCalendar
@@ -167,17 +168,8 @@ class WeatherRepository(
         ny: Int
     ): Complete<UltraSrtFcst.Local> {
         return try {
-            // TODO cleanup...
-            val minute = with(koreaCalendar) {
-                if (minute < 5) {
-                    55
-                } else {
-                    with(minute.plus(5).div(10)) {
-                        times(10).minus(5)
-                    }
-                }
-            }
-
+            // TODO make const.
+            val minute = koreaCalendar.minute.toBin(5..55, 10)
             val params = VilageFcstInfoService.Params(
                 baseCalendar = baseCalendar(Base.UltraSrtFcst),
                 nx = nx,

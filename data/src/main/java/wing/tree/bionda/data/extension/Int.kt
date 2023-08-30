@@ -38,3 +38,14 @@ fun Int.ifZero(defaultValue: Int) = if (this `is` Int.zero) {
 
 fun Int.isZero(): Boolean = `is`(Int.zero)
 fun Int.roundDownToTens() = times(Int.ten).div(Int.ten)
+fun Int.toBin(range: IntRange, step: Int): Int {
+    return if (this < range.first) {
+        range.last
+    } else {
+        step.minus(range.first).let {
+            with(plus(it).div(step)) {
+                times(step).minus(it)
+            }
+        }
+    }
+}

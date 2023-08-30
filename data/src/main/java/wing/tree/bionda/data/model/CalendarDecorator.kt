@@ -2,7 +2,6 @@ package wing.tree.bionda.data.model
 
 import android.icu.util.Calendar
 import wing.tree.bionda.data.extension.date
-import wing.tree.bionda.data.extension.dec
 import wing.tree.bionda.data.extension.halfAnHour
 import wing.tree.bionda.data.extension.hourOfDay
 import wing.tree.bionda.data.extension.inc
@@ -10,6 +9,7 @@ import wing.tree.bionda.data.extension.isZero
 import wing.tree.bionda.data.extension.minute
 import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.ten
+import wing.tree.bionda.data.extension.toBin
 import wing.tree.bionda.data.extension.zero
 
 sealed interface CalendarDecorator : (Calendar) -> Calendar {
@@ -42,13 +42,11 @@ sealed interface CalendarDecorator : (Calendar) -> Calendar {
                     }
                 }
 
-                hourOfDay = if (hourOfDay < 2) {
-                    date -= Int.one; 23
-                } else {
-                    with(hourOfDay.inc.div(3)) {
-                        times(3).dec
-                    }
+                if (hourOfDay < 2) {
+                    date -= Int.one
                 }
+
+                hourOfDay = hourOfDay.toBin(2..23, 3)
 
                 minute = Int.zero
             }
