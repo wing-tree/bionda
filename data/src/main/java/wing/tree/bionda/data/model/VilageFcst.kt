@@ -41,8 +41,6 @@ sealed interface VilageFcst {
             fcstDate.string,
             fcstTime.string
         )
-
-        val fcstHour: Int get() = fcstTime.div(Int.oneHundred)
     }
 
     @Entity(
