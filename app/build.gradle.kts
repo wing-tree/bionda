@@ -26,16 +26,22 @@ android {
     }
 
     signingConfigs {
-        val storeFile: String = gradleLocalProperties(rootDir).getProperty("storeFile")
-        val storePassword: String = gradleLocalProperties(rootDir).getProperty("storePassword")
-        val keyAlias: String = gradleLocalProperties(rootDir).getProperty("keyAlias")
-        val keyPassword: String = gradleLocalProperties(rootDir).getProperty("keyPassword")
-
         create("release") {
-            this.keyAlias = keyAlias
-            this.keyPassword = keyPassword
-            this.storeFile = file(storeFile)
-            this.storePassword = storePassword
+            gradleLocalProperties(rootDir).getProperty("keyAlias")?.let {
+                keyAlias = it
+            }
+
+            gradleLocalProperties(rootDir).getProperty("keyPassword")?.let {
+                keyPassword = it
+            }
+
+            gradleLocalProperties(rootDir).getProperty("storeFile")?.let {
+                storeFile = file(it)
+            }
+
+            gradleLocalProperties(rootDir).getProperty("storePassword")?.let {
+                storePassword = it
+            }
         }
     }
 
@@ -47,6 +53,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+
             signingConfig = signingConfigs.getByName("release")
         }
     }
@@ -100,7 +107,7 @@ dependencies {
     implementation("com.jakewharton.timber:timber:5.0.1")
     implementation(project(":data"))
 
-    kapt("com.google.dagger:hilt-android-compiler:2.44.2")
+    kapt("com.google.dagger:hilt-android-compiler:2.47")
 
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
