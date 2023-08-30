@@ -7,7 +7,6 @@ import kotlinx.serialization.Serializable
 import wing.tree.bionda.data.core.Response
 import wing.tree.bionda.data.exception.OpenApiError
 import wing.tree.bionda.data.extension.advanceHourOfDayBy
-import wing.tree.bionda.data.extension.string
 import wing.tree.bionda.data.extension.two
 import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.data.service.VilageFcstInfoService
@@ -39,7 +38,7 @@ sealed interface UltraSrtFcst : VilageFcst {
             return with(vilageFcst?.items ?: emptyList()) {
                 // TODO make 26 to const.
                 takeLast(26).filter {
-                    koreaCalendar < koreaCalendar(it.fcstDate.string, it.fcstTime.string)
+                    koreaCalendar < koreaCalendar(it.fcstDate, it.fcstTime)
                 }.let {
                     val items = items.plus(it).toImmutableList()
 

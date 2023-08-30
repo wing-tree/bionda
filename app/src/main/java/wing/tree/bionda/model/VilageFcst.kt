@@ -21,14 +21,14 @@ data class VilageFcst(
 ) {
     @Stable
     data class Item(
-        val fcstDate: Int,
-        val fcstTime: Int,
+        val fcstDate: String,
+        val fcstTime: String,
         val codeValues: ImmutableMap<String, String>,
         val type: Type = Type.VilageFcst
     ) {
         private val weatherIcons = WeatherIcons.Daytime
 
-        val fcstHour: Int get() = fcstTime.div(Int.oneHundred)
+        val fcstHour: Int get() = fcstTime.int.div(Int.oneHundred)
         val pcp = codeValues[Category.PCP]
         val pop = codeValues[Category.POP]
         val pty = CodeValue.Pty(code = codeValues[Category.PTY])
@@ -64,20 +64,24 @@ data class VilageFcst(
 
     fun insertLCRiseSetInfo(lcRiseSetInfo: LCRiseSetInfo.Local): VilageFcst = with(items) {
         val builder = builder()
-        val locdate = lcRiseSetInfo.locdate.trim().int
-        val sunrise = lcRiseSetInfo.sunrise.trim().int
-        val sunset = lcRiseSetInfo.sunset.trim().int
+        val locdate = lcRiseSetInfo.locdate.trim()
+        val sunrise = lcRiseSetInfo.sunrise.trim()
+        val sunset = lcRiseSetInfo.sunset.trim()
 
-        indexOfFirst {
-            val fcstHour = it.fcstHour.ifZero(defaultValue = 24)
+        first { item ->
+            val fcstHour = item.fcstHour.ifZero(defaultValue = 24)
 
-            when {
-                it.fcstDate not locdate -> false
-                fcstHour < sunrise.div(Int.oneHundred) -> false
-                else -> fcstHour.minus(sunrise.div(Int.oneHundred)) `is` Int.one
+            with(sunrise.int.div(Int.oneHundred)) {
+                when {
+                    item.fcstDate not locdate -> false
+                    fcstHour < this -> false
+                    else -> fcstHour.minus(this) `is` Int.one
+                }
             }
         }.let {
-            if (it.isNonNegative) {
+            val index = builder.indexOf(it)
+
+            if (index.isNonNegative) {
                 val item = Item(
                     fcstDate = locdate,
                     fcstTime = sunrise,
@@ -85,20 +89,24 @@ data class VilageFcst(
                     type = Item.Type.Sunrise
                 )
 
-                builder.add(it, item)
+                builder.add(index, item)
             }
         }
 
-        indexOfFirst {
-            val fcstHour = it.fcstHour.ifZero(defaultValue = 24)
+        first { item ->
+            val fcstHour = item.fcstHour.ifZero(defaultValue = 24)
 
-            when {
-                it.fcstDate not locdate -> false
-                fcstHour < sunset.div(Int.oneHundred) -> false
-                else -> fcstHour.minus(sunset.div(Int.oneHundred)) `is` Int.one
+            with(sunset.int.div(Int.oneHundred)) {
+                when {
+                    item.fcstDate not locdate -> false
+                    fcstHour < this -> false
+                    else -> fcstHour.minus(this) `is` Int.one
+                }
             }
         }.let {
-            if (it.isNonNegative) {
+            val index = builder.indexOf(it)
+
+            if (index.isNonNegative) {
                 val item = Item(
                     fcstDate = locdate,
                     fcstTime = sunset,
@@ -106,7 +114,7 @@ data class VilageFcst(
                     type = Item.Type.Sunset
                 )
 
-                builder.add(it, item)
+                builder.add(index, item)
             }
         }
 

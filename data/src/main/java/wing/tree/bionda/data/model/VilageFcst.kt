@@ -8,7 +8,6 @@ import kotlinx.serialization.Serializable
 import wing.tree.bionda.data.core.Response
 import wing.tree.bionda.data.exception.OpenApiError
 import wing.tree.bionda.data.extension.advanceHourOfDayBy
-import wing.tree.bionda.data.extension.string
 import wing.tree.bionda.data.extension.two
 import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.data.service.VilageFcstInfoService
@@ -22,18 +21,18 @@ sealed interface VilageFcst {
 
     @Serializable
     data class Item(
-        val baseDate: Int,
-        val baseTime: Int,
+        val baseDate: String,
+        val baseTime: String,
         val category: String,
-        val fcstDate : Int,
-        val fcstTime : Int,
+        val fcstDate : String,
+        val fcstTime : String,
         val fcstValue : String,
         val nx : Int,
         val ny : Int
     ) {
         val fcstCalendar: Calendar get() = koreaCalendar(
-            fcstDate.string,
-            fcstTime.string
+            fcstDate,
+            fcstTime
         )
     }
 
