@@ -8,11 +8,10 @@ import kotlinx.collections.immutable.toImmutableList
 import kotlinx.serialization.Serializable
 import wing.tree.bionda.data.constant.COMMA
 import wing.tree.bionda.data.constant.SPACE
+import wing.tree.bionda.data.core.Response
 import wing.tree.bionda.data.exception.OpenApiError
-import wing.tree.bionda.data.exception.second
 import wing.tree.bionda.data.extension.negativeOne
 import wing.tree.bionda.data.extension.zero
-import wing.tree.bionda.data.core.Response
 import wing.tree.bionda.data.validator.ResponseValidator
 
 sealed interface MidTa {
@@ -217,29 +216,30 @@ sealed interface MidTa {
     }
 
     @Serializable
-    data class Remote(override val response: Response<Item>) : MidTa, ResponseValidator {
+    data class Remote(
+        override val response: Response<Item>
+    ) : MidTa, ResponseValidator<Item, Remote> {
         override val item: Item get() = response.items.first()
 
-        override fun validate(vararg params: String) {
-            if (response.isUnsuccessful) {
-                val header = response.header
-                val errorCode = header.resultCode
-                val errorMsg = buildList {
-                    add("resultCode=${header.resultCode}")
-                    add("resultMsg=${header.resultMsg}")
-                    add("regId=${params.first()}")
-                    add("tmFc=${params.second()}")
-                }.joinToString("$COMMA$SPACE")
-
-                throw OpenApiError(
-                    errorCode = errorCode,
-                    errorMsg = errorMsg
-                )
-            }
+        override suspend fun validate(
+            errorMsg: (Response<Item>) -> String,
+            ifInvalid: (suspend (OpenApiError) -> Remote)?
+        ): Remote {
+            return validate(this, errorMsg, ifInvalid)
         }
 
-        fun toLocal(regId: String, tmFc: String): Local {
-            validate(regId, tmFc)
+        suspend fun toLocal(regId: String, tmFc: String): Local {
+            validate(
+                errorMsg = {
+                    buildList {
+                        add("resultCode=${it.header.resultCode}")
+                        add("resultMsg=${it.header.resultMsg}")
+                        add("regId=$regId")
+                        add("tmFc=$tmFc")
+                    }
+                        .joinToString("$COMMA$SPACE")
+                }
+            )
 
             return Local(
                 item = item,

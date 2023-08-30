@@ -10,8 +10,6 @@ import kotlinx.serialization.Serializable
 import wing.tree.bionda.data.constant.COMMA
 import wing.tree.bionda.data.constant.SPACE
 import wing.tree.bionda.data.exception.OpenApiError
-import wing.tree.bionda.data.exception.fifth
-import wing.tree.bionda.data.exception.fourth
 import wing.tree.bionda.data.exception.second
 import wing.tree.bionda.data.exception.third
 import wing.tree.bionda.data.extension.not
@@ -98,8 +96,6 @@ sealed interface LCRiseSetInfo {
                     add("locdate=${params.first()}")
                     add("longitude=${params.second()}")
                     add("latitude=${params.third()}")
-                    add("secondaryLongitude=${params.fourth()}")
-                    add("secondaryLatitude=${params.fifth()}")
                 }.joinToString("$COMMA$SPACE")
 
                 throw OpenApiError(
@@ -113,7 +109,7 @@ sealed interface LCRiseSetInfo {
             secondaryLongitude: String,
             secondaryLatitude: String
         ): Local = with(item) {
-            validate(locdate, longitude, latitude, secondaryLongitude, secondaryLatitude)
+            validate(locdate, longitude, latitude)
 
             return Local(
                 item = this,

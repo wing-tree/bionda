@@ -1,9 +1,33 @@
 package wing.tree.bionda.data.validator
 
 import wing.tree.bionda.data.core.Response
+import wing.tree.bionda.data.exception.OpenApiError
 
-interface ResponseValidator {
-    val response: Response<*>
+interface ResponseValidator<T, R> {
+    val response: Response<T>
 
-    fun validate(vararg params: String)
+    val errorCode: String get() = response.header.resultCode
+    val isUnsuccessful: Boolean get() = response.isUnsuccessful
+
+    suspend fun validate(
+        errorMsg: (Response<T>) -> String,
+        ifInvalid: (suspend (OpenApiError) -> R)? = null
+    ): R
+
+    suspend fun validate(
+        `this`: R,
+        errorMsg: (Response<T>) -> String,
+        ifInvalid: (suspend (OpenApiError) -> R)? = null
+    ): R {
+        if (isUnsuccessful) {
+            val openApiError = OpenApiError(
+                errorCode = errorCode,
+                errorMsg = errorMsg(response)
+            )
+
+            return ifInvalid?.invoke(openApiError) ?: throw openApiError
+        }
+
+        return `this`
+    }
 }

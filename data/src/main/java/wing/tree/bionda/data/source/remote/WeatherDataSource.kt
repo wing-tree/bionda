@@ -3,19 +3,29 @@ package wing.tree.bionda.data.source.remote
 import kotlinx.coroutines.delay
 import timber.log.Timber
 import wing.tree.bionda.data.BuildConfig
+import wing.tree.bionda.data.constant.COMMA
+import wing.tree.bionda.data.constant.SPACE
+import wing.tree.bionda.data.core.DataType
+import wing.tree.bionda.data.core.Response
+import wing.tree.bionda.data.extension.advanceHourOfDayBy
+import wing.tree.bionda.data.extension.cloneAsCalendar
 import wing.tree.bionda.data.extension.eight
 import wing.tree.bionda.data.extension.five
 import wing.tree.bionda.data.extension.hundreds
 import wing.tree.bionda.data.extension.long
 import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.two
-import wing.tree.bionda.data.core.DataType
+import wing.tree.bionda.data.extension.uvIdxTime
 import wing.tree.bionda.data.model.LCRiseSetInfo
+import wing.tree.bionda.data.model.UVIdx
+import wing.tree.bionda.data.model.VilageFcst
 import wing.tree.bionda.data.service.LivingWthrIdxService
 import wing.tree.bionda.data.service.MidFcstInfoService
 import wing.tree.bionda.data.service.RiseSetInfoService
 import wing.tree.bionda.data.service.VilageFcstInfoService
+import wing.tree.bionda.data.top.level.uvIdxCalendar
 import kotlin.math.pow
+import wing.tree.bionda.data.model.UltraSrtFcst.Remote as UltraSrtFcst
 
 class WeatherDataSource(
     private val livingWthrIdxService: LivingWthrIdxService,
@@ -28,7 +38,7 @@ class WeatherDataSource(
         initialDelay: Long = Long.five.hundreds,
         block: suspend () -> T
     ): T {
-        repeat(retries.dec()) { attempt ->
+        repeat(retries) { attempt ->
             try {
                 return block()
             } catch (cause: Throwable) {
@@ -94,33 +104,94 @@ class WeatherDataSource(
         pageNo: Int = Int.one,
         areaNo: String,
         time: String
-    ) = retry {
-        livingWthrIdxService.getUVIdx(
-            serviceKey = BuildConfig.livingWthrIdxServiceKey,
-            numOfRows = numOfRows,
-            pageNo = pageNo,
-            dataType = DataType.JSON,
-            areaNo = areaNo,
-            time = time
-        )
+    ): UVIdx.Remote {
+        fun block(areaNo: String, time: String) = suspend {
+            livingWthrIdxService.getUVIdx(
+                serviceKey = BuildConfig.livingWthrIdxServiceKey,
+                numOfRows = numOfRows,
+                pageNo = pageNo,
+                dataType = DataType.JSON,
+                areaNo = areaNo,
+                time = time
+            )
+        }
+
+        fun errorMsg(areaNo: String, time: String): (Response<UVIdx.Item>) -> String = {
+            buildList {
+                add("resultCode=${it.header.resultCode}")
+                add("resultMsg=${it.header.resultMsg}")
+                add("areaNo=$areaNo")
+                add("time=$time")
+            }
+                .joinToString("$COMMA$SPACE")
+        }
+
+        return retry(block = block(areaNo = areaNo, time = time)).validate(
+            errorMsg = errorMsg(areaNo = areaNo, time = time)
+        ) {
+            if (it.isErrorCode03) {
+                // TODO, set to const. time inverval ect.. uvIdx는 세 시간 주기.
+                val uvIdxCalendar = uvIdxCalendar(time).advanceHourOfDayBy(3)
+
+                with(uvIdxCalendar) {
+                    val errorMsg = errorMsg(areaNo = areaNo, time = uvIdxTime)
+
+                    block(areaNo = areaNo, time = uvIdxTime)
+                        .invoke()
+                        .validate(errorMsg = errorMsg, ifInvalid = null)
+                }
+            } else {
+                throw it
+            }
+        }
     }
 
     suspend fun getUltraSrtFcst(
         numOfRows: Int,
         pageNo: Int = Int.one,
         params: VilageFcstInfoService.Params
-    ) = retry {
-        with(params) {
-            vilageFcstInfoService.getUltraSrtFcst(
-                serviceKey = BuildConfig.vilageFcstInfoServiceKey,
-                numOfRows = numOfRows,
-                pageNo = pageNo,
-                dataType = DataType.JSON,
-                baseDate = baseDate,
-                baseTime = baseTime,
-                nx = nx,
-                ny = ny
-            )
+    ): UltraSrtFcst {
+        fun block(params: VilageFcstInfoService.Params) = suspend {
+            with(params) {
+                vilageFcstInfoService.getUltraSrtFcst(
+                    serviceKey = BuildConfig.vilageFcstInfoServiceKey,
+                    numOfRows = numOfRows,
+                    pageNo = pageNo,
+                    dataType = DataType.JSON,
+                    baseDate = baseDate,
+                    baseTime = baseTime,
+                    nx = nx,
+                    ny = ny
+                )
+            }
+        }
+
+        fun errorMsg(params: VilageFcstInfoService.Params): (Response<VilageFcst.Item>) -> String = {
+            buildList {
+                add("resultCode=${it.header.resultCode}")
+                add("resultMsg=${it.header.resultMsg}")
+                add("baseDate=${params.baseDate}")
+                add("baseTime=${params.baseTime}")
+                add("nx=${params.nx}")
+                add("ny=${params.ny}")
+            }
+                .joinToString("$COMMA$SPACE")
+        }
+
+        return retry(block = block(params)).validate(
+            errorMsg = errorMsg(params)
+        ) {
+            if (it.isErrorCode03) {
+                val baseCalendar = params.baseCalendar
+                    .cloneAsCalendar()
+                    .advanceHourOfDayBy(1) // TODO, set to const. time inverval ect..
+
+                with(params.copy(baseCalendar = baseCalendar)) {
+                    block(this).invoke().validate(errorMsg(this), null)
+                }
+            } else {
+                throw it
+            }
         }
     }
 
@@ -147,18 +218,48 @@ class WeatherDataSource(
         numOfRows: Int,
         pageNo: Int = Int.one,
         params: VilageFcstInfoService.Params
-    ) = retry {
-        with(params) {
-            vilageFcstInfoService.getVilageFcst(
-                serviceKey = BuildConfig.vilageFcstInfoServiceKey,
-                numOfRows = numOfRows,
-                pageNo = pageNo,
-                dataType = DataType.JSON,
-                baseDate = baseDate,
-                baseTime = baseTime,
-                nx = nx,
-                ny = ny
-            )
+    ): VilageFcst.Remote {
+        fun block(params: VilageFcstInfoService.Params) = suspend {
+            with(params) {
+                vilageFcstInfoService.getVilageFcst(
+                    serviceKey = BuildConfig.vilageFcstInfoServiceKey,
+                    numOfRows = numOfRows,
+                    pageNo = pageNo,
+                    dataType = DataType.JSON,
+                    baseDate = baseDate,
+                    baseTime = baseTime,
+                    nx = nx,
+                    ny = ny
+                )
+            }
+        }
+
+        fun errorMsg(params: VilageFcstInfoService.Params): (Response<VilageFcst.Item>) -> String = {
+            buildList {
+                add("resultCode=${it.header.resultCode}")
+                add("resultMsg=${it.header.resultMsg}")
+                add("baseDate=${params.baseDate}")
+                add("baseTime=${params.baseTime}")
+                add("nx=${params.nx}")
+                add("ny=${params.ny}")
+            }
+                .joinToString("$COMMA$SPACE")
+        }
+
+        return retry(block = block(params)).validate(
+            errorMsg = errorMsg(params)
+        ) {
+            if (it.isErrorCode03) {
+                val baseCalendar = params.baseCalendar
+                    .cloneAsCalendar()
+                    .advanceHourOfDayBy(3) // TODO, set to const. time inverval ect..
+
+                with(params.copy(baseCalendar = baseCalendar)) {
+                    block(this).invoke().validate(errorMsg(this), null)
+                }
+            } else {
+                throw it
+            }
         }
     }
 }

@@ -13,7 +13,7 @@ import wing.tree.bionda.data.service.VilageFcstInfoService
 import wing.tree.bionda.data.source.local.WeatherDataSource as LocalDataSource
 
 class PostProcessor(private val localDataSource: LocalDataSource) {
-    fun UltraSrtNcst.Remote.process(
+    suspend fun UltraSrtNcst.Remote.process(
         params: VilageFcstInfoService.Params,
         minute: Int
     ): UltraSrtNcst.Local {

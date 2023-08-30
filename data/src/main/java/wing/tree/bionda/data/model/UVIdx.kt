@@ -2,11 +2,8 @@ package wing.tree.bionda.data.model
 
 import androidx.room.Entity
 import kotlinx.serialization.Serializable
-import wing.tree.bionda.data.constant.COMMA
-import wing.tree.bionda.data.constant.SPACE
-import wing.tree.bionda.data.exception.OpenApiError
-import wing.tree.bionda.data.exception.second
 import wing.tree.bionda.data.core.Response
+import wing.tree.bionda.data.exception.OpenApiError
 import wing.tree.bionda.data.validator.ResponseValidator
 
 sealed interface UVIdx {
@@ -60,39 +57,23 @@ sealed interface UVIdx {
     @Serializable
     data class Remote(
         override val response: Response<Item>
-    ) : UVIdx, ResponseValidator {
+    ) : UVIdx, ResponseValidator<Item, Remote> {
         override val item: Item get() = response.items.first()
 
-        override fun validate(vararg params: String) {
-            if (response.isUnsuccessful) {
-                val header = response.header
-                val errorCode = header.resultCode
-                val errorMsg = buildList {
-                    add("resultCode=${header.resultCode}")
-                    add("resultMsg=${header.resultMsg}")
-                    add("areaNo=${params.first()}")
-                    add("time=${params.second()}")
-                }
-                    .joinToString("$COMMA$SPACE")
-
-                throw OpenApiError(
-                    errorCode = errorCode,
-                    errorMsg = errorMsg
-                )
-            }
+        override suspend fun validate(
+            errorMsg: (Response<Item>) -> String,
+            ifInvalid: (suspend (OpenApiError) -> Remote)?
+        ): Remote {
+            return validate(this, errorMsg, ifInvalid)
         }
 
         fun toLocal(
             areaNo: String,
             time: String
-        ): Local {
-            validate(areaNo, time)
-
-            return Local(
-                item = item,
-                areaNo = areaNo,
-                time = time
-            )
-        }
+        ): Local = Local(
+            item = item,
+            areaNo = areaNo,
+            time = time
+        )
     }
 }
