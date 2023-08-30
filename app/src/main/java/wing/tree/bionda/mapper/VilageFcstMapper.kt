@@ -2,7 +2,7 @@ package wing.tree.bionda.mapper
 
 import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.collections.immutable.toPersistentList
-import wing.tree.bionda.data.model.VilageFcst.Local as DataModel
+import wing.tree.bionda.data.model.VilageFcst as DataModel
 import wing.tree.bionda.model.VilageFcst as PresentationModel
 
 class VilageFcstMapper : DataModelMapper<DataModel, PresentationModel> {

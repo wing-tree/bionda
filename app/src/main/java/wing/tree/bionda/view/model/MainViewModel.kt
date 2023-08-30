@@ -20,17 +20,17 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import wing.tree.bionda.data.extension.fiveSecondsInMilliseconds
-import wing.tree.bionda.data.extension.ifTrue
-import wing.tree.bionda.data.extension.long
-import wing.tree.bionda.data.extension.negativeOne
 import wing.tree.bionda.data.core.Address
-import wing.tree.bionda.data.model.Alarm
 import wing.tree.bionda.data.core.State
 import wing.tree.bionda.data.core.State.Complete
 import wing.tree.bionda.data.core.flatMap
 import wing.tree.bionda.data.core.isSuccess
 import wing.tree.bionda.data.core.map
+import wing.tree.bionda.data.extension.fiveSecondsInMilliseconds
+import wing.tree.bionda.data.extension.ifTrue
+import wing.tree.bionda.data.extension.long
+import wing.tree.bionda.data.extension.negativeOne
+import wing.tree.bionda.data.model.Alarm
 import wing.tree.bionda.data.model.MidLandFcstTa
 import wing.tree.bionda.data.model.UltraSrtNcst
 import wing.tree.bionda.data.provider.LocationProvider
@@ -102,6 +102,14 @@ class MainViewModel @Inject constructor(
     private val uvIdx = location.map {
         it.flatMap { location ->
             weatherRepository.getUVIdx(location)
+        }
+    }
+
+    private val ultraSrtFcst = coordinate.map {
+        it.flatMap { (nx, ny) ->
+            weatherRepository.getUltraSrtFcst(nx = nx, ny = ny).map { ultraSrtFcst ->
+                vilageFcstMapper.toPresentationModel(ultraSrtFcst)
+            }
         }
     }
 

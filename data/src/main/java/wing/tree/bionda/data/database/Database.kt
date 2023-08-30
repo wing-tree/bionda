@@ -16,7 +16,6 @@ import wing.tree.bionda.data.database.type.converters.LCRiseSetInfoConverters
 import wing.tree.bionda.data.database.type.converters.MidLandFcstConverters
 import wing.tree.bionda.data.database.type.converters.MidTaConverters
 import wing.tree.bionda.data.database.type.converters.UVIdxConverters
-import wing.tree.bionda.data.database.type.converters.UltraSrtFcstConverters
 import wing.tree.bionda.data.database.type.converters.UltraSrtNcstConverters
 import wing.tree.bionda.data.database.type.converters.VilageFcstConverters
 import wing.tree.bionda.data.model.Alarm
@@ -48,7 +47,6 @@ import wing.tree.bionda.data.model.VilageFcst.Local as VilageFcst
     MidLandFcstConverters::class,
     MidTaConverters::class,
     UVIdxConverters::class,
-    UltraSrtFcstConverters::class,
     UltraSrtNcstConverters::class,
     VilageFcstConverters::class
 )

@@ -20,23 +20,7 @@ import wing.tree.bionda.data.service.VilageFcstInfoService
 import wing.tree.bionda.data.top.level.koreaCalendar
 import wing.tree.bionda.data.validator.ResponseValidator
 
-sealed interface UltraSrtFcst {
-    val items: List<Item>
-    val nx: Int
-    val ny: Int
-
-    @Serializable
-    data class Item(
-        val baseDate: Int,
-        val baseTime: Int,
-        val category: String,
-        val fcstDate : Int,
-        val fcstTime : Int,
-        val fcstValue : String,
-        val nx : Int,
-        val ny : Int
-    )
-
+sealed interface UltraSrtFcst : VilageFcst {
     @Entity(
         tableName = "ultra_srt_fcst",
         primaryKeys = [
@@ -48,7 +32,7 @@ sealed interface UltraSrtFcst {
         ]
     )
     data class Local(
-        override val items: ImmutableList<Item>,
+        override val items: ImmutableList<VilageFcst.Item>,
         override val nx: Int,
         override val ny: Int,
         val baseDate: String,
@@ -73,9 +57,9 @@ sealed interface UltraSrtFcst {
 
     @Serializable
     data class Remote(
-        override val response: Response<Item>
+        override val response: Response<VilageFcst.Item>
     ) : UltraSrtFcst, ResponseValidator {
-        override val items: List<Item> get() = response.items
+        override val items: List<VilageFcst.Item> get() = response.items
         override val nx: Int get() = items.firstOrNull()?.nx ?: Int.zero
         override val ny: Int get() = items.firstOrNull()?.ny ?: Int.zero
 
