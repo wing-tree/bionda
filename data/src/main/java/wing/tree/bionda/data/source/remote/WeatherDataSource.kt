@@ -8,7 +8,6 @@ import wing.tree.bionda.data.extension.five
 import wing.tree.bionda.data.extension.hundreds
 import wing.tree.bionda.data.extension.long
 import wing.tree.bionda.data.extension.one
-import wing.tree.bionda.data.extension.three
 import wing.tree.bionda.data.extension.two
 import wing.tree.bionda.data.core.DataType
 import wing.tree.bionda.data.model.LCRiseSetInfo
@@ -25,7 +24,7 @@ class WeatherDataSource(
     private val vilageFcstInfoService: VilageFcstInfoService
 ) {
     private suspend fun <T> retry(
-        retries: Int = Int.three,
+        retries: Int = Int.two,
         initialDelay: Long = Long.five.hundreds,
         block: suspend () -> T
     ): T {
