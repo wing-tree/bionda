@@ -8,6 +8,7 @@ import kotlinx.serialization.Serializable
 import wing.tree.bionda.data.core.Response
 import wing.tree.bionda.data.exception.OpenAPIError
 import wing.tree.bionda.data.extension.advanceHourOfDayBy
+import wing.tree.bionda.data.extension.three
 import wing.tree.bionda.data.extension.two
 import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.data.service.VilageFcstInfoService
@@ -98,5 +99,9 @@ sealed interface VilageFcst {
                 ny = this.ny
             )
         }
+    }
+
+    companion object : OpenAPI {
+        override val interval: Int = Int.three
     }
 }

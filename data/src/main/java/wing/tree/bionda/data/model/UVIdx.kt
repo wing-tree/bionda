@@ -4,6 +4,7 @@ import androidx.room.Entity
 import kotlinx.serialization.Serializable
 import wing.tree.bionda.data.core.Response
 import wing.tree.bionda.data.exception.OpenAPIError
+import wing.tree.bionda.data.extension.three
 import wing.tree.bionda.data.validator.ResponseValidator
 
 sealed interface UVIdx {
@@ -75,5 +76,9 @@ sealed interface UVIdx {
             areaNo = areaNo,
             time = time
         )
+    }
+
+    companion object : OpenAPI {
+        override val interval: Int = Int.three
     }
 }

@@ -18,6 +18,7 @@ import wing.tree.bionda.data.extension.two
 import wing.tree.bionda.data.extension.uvIdxTime
 import wing.tree.bionda.data.model.LCRiseSetInfo
 import wing.tree.bionda.data.model.UVIdx
+import wing.tree.bionda.data.model.UltraSrtFcst
 import wing.tree.bionda.data.model.VilageFcst
 import wing.tree.bionda.data.service.LivingWthrIdxService
 import wing.tree.bionda.data.service.MidFcstInfoService
@@ -25,7 +26,6 @@ import wing.tree.bionda.data.service.RiseSetInfoService
 import wing.tree.bionda.data.service.VilageFcstInfoService
 import wing.tree.bionda.data.top.level.uvIdxCalendar
 import kotlin.math.pow
-import wing.tree.bionda.data.model.UltraSrtFcst.Remote as UltraSrtFcst
 
 class WeatherDataSource(
     private val livingWthrIdxService: LivingWthrIdxService,
@@ -152,8 +152,8 @@ class WeatherDataSource(
             errorMsg = errorMsg(areaNo = areaNo, time = time)
         ) {
             if (it.isErrorCode03) {
-                // TODO set to const. time inverval ect.. uvIdx는 세 시간 주기.
-                val uvIdxCalendar = uvIdxCalendar(time).advanceHourOfDayBy(3)
+                val uvIdxCalendar = uvIdxCalendar(time)
+                    .advanceHourOfDayBy(UVIdx.interval)
 
                 with(uvIdxCalendar) {
                     val errorMsg = errorMsg(areaNo = areaNo, time = uvIdxTime)
@@ -172,7 +172,7 @@ class WeatherDataSource(
         numOfRows: Int,
         pageNo: Int = Int.one,
         params: VilageFcstInfoService.Params
-    ): UltraSrtFcst {
+    ): UltraSrtFcst.Remote {
         fun block(params: VilageFcstInfoService.Params) = suspend {
             with(params) {
                 vilageFcstInfoService.getUltraSrtFcst(
@@ -206,7 +206,7 @@ class WeatherDataSource(
             if (it.isErrorCode03) {
                 val baseCalendar = params.baseCalendar
                     .cloneAsCalendar()
-                    .advanceHourOfDayBy(1) // TODO set to const. time inverval ect..
+                    .advanceHourOfDayBy(UltraSrtFcst.interval)
 
                 with(params.copy(baseCalendar = baseCalendar)) {
                     block(this).invoke().validate(errorMsg(this))
@@ -287,7 +287,7 @@ class WeatherDataSource(
             if (it.isErrorCode03) {
                 val baseCalendar = params.baseCalendar
                     .cloneAsCalendar()
-                    .advanceHourOfDayBy(3) // TODO: set to const. time inverval ect..
+                    .advanceHourOfDayBy(VilageFcst.interval)
 
                 with(params.copy(baseCalendar = baseCalendar)) {
                     block(this).invoke().validate(errorMsg(this))
