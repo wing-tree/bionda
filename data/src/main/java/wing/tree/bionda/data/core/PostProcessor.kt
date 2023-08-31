@@ -13,7 +13,7 @@ import wing.tree.bionda.data.service.VilageFcstInfoService
 import wing.tree.bionda.data.source.local.WeatherDataSource as LocalDataSource
 
 class PostProcessor(private val localDataSource: LocalDataSource) {
-    suspend fun UltraSrtNcst.Remote.process(
+    fun UltraSrtNcst.Remote.process(
         params: VilageFcstInfoService.Params,
         minute: Int
     ): UltraSrtNcst.Local {
@@ -23,7 +23,7 @@ class PostProcessor(private val localDataSource: LocalDataSource) {
     }
 
     suspend fun MidLandFcst.Remote.process(regId: String, tmFc: String): MidLandFcst.Local {
-        return with(toLocal(regId = regId, tmFc = tmFc)) {
+        return with(toLocal(tmFc = tmFc)) {
             if (item.rnSt3Am.isNull()) {
                 localDataSource.loadMidLandFcst(
                     regId = regId,
@@ -40,7 +40,7 @@ class PostProcessor(private val localDataSource: LocalDataSource) {
     }
 
     suspend fun MidTa.Remote.process(regId: String, tmFc: String): MidTa.Local {
-        return with(toLocal(regId, tmFc)) {
+        return with(toLocal(tmFc = tmFc)) {
             if (item.taMin3.isNull()) {
                 localDataSource.loadMidTa(
                     regId = regId,

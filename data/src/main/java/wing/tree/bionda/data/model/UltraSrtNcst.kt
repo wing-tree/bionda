@@ -4,8 +4,6 @@ import androidx.room.Entity
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.serialization.Serializable
-import wing.tree.bionda.data.constant.COMMA
-import wing.tree.bionda.data.constant.SPACE
 import wing.tree.bionda.data.core.Response
 import wing.tree.bionda.data.exception.OpenApiError
 import wing.tree.bionda.data.extension.zero
@@ -61,24 +59,10 @@ sealed interface UltraSrtNcst {
             return validate(this, errorMsg, null)
         }
 
-        suspend fun toLocal(
+        fun toLocal(
             params: VilageFcstInfoService.Params,
             minute: Int
         ): Local = with(params) {
-            validate(
-                errorMsg = {
-                    buildList {
-                        add("resultCode=${it.header.resultCode}")
-                        add("resultMsg=${it.header.resultMsg}")
-                        add("baseDate=${params.baseDate}")
-                        add("baseTime=${params.baseTime}")
-                        add("nx=${params.nx}")
-                        add("ny=${params.ny}")
-                    }
-                        .joinToString("$COMMA$SPACE")
-                }
-            )
-
             Local(
                 items = items.toImmutableList(),
                 baseDate = baseDate,

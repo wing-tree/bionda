@@ -82,6 +82,17 @@ class WeatherDataSource(
             tmFc = tmFc
         )
     }
+        .validate(
+            errorMsg = {
+                buildList {
+                    add("resultCode=${it.header.resultCode}")
+                    add("resultMsg=${it.header.resultMsg}")
+                    add("regId=$regId")
+                    add("tmFc=$tmFc")
+                }
+                    .joinToString("$COMMA$SPACE")
+            }
+        )
 
     suspend fun getMidTa(
         numOfRows: Int = Int.one,
@@ -98,6 +109,17 @@ class WeatherDataSource(
             tmFc = tmFc
         )
     }
+        .validate(
+            errorMsg = {
+                buildList {
+                    add("resultCode=${it.header.resultCode}")
+                    add("resultMsg=${it.header.resultMsg}")
+                    add("regId=$regId")
+                    add("tmFc=$tmFc")
+                }
+                    .joinToString("$COMMA$SPACE")
+            }
+        )
 
     suspend fun getUVIdx(
         numOfRows: Int = Int.one,
@@ -213,6 +235,19 @@ class WeatherDataSource(
             )
         }
     }
+        .validate(
+            errorMsg = {
+                buildList {
+                    add("resultCode=${it.header.resultCode}")
+                    add("resultMsg=${it.header.resultMsg}")
+                    add("baseDate=${params.baseDate}")
+                    add("baseTime=${params.baseTime}")
+                    add("nx=${params.nx}")
+                    add("ny=${params.ny}")
+                }
+                    .joinToString("$COMMA$SPACE")
+            }
+        )
 
     suspend fun getVilageFcst(
         numOfRows: Int,

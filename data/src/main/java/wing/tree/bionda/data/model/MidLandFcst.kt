@@ -6,8 +6,6 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.serialization.Serializable
-import wing.tree.bionda.data.constant.COMMA
-import wing.tree.bionda.data.constant.SPACE
 import wing.tree.bionda.data.core.Response
 import wing.tree.bionda.data.exception.OpenApiError
 import wing.tree.bionda.data.extension.zero
@@ -191,19 +189,7 @@ sealed interface MidLandFcst {
             return validate(this, errorMsg, ifInvalid)
         }
 
-        suspend fun toLocal(regId: String, tmFc: String): Local {
-            validate(
-                errorMsg = {
-                    buildList {
-                        add("resultCode=${it.header.resultCode}")
-                        add("resultMsg=${it.header.resultMsg}")
-                        add("regId=$regId")
-                        add("tmFc=$tmFc")
-                    }
-                        .joinToString("$COMMA$SPACE")
-                }
-            )
-
+        fun toLocal(tmFc: String): Local {
             return Local(
                 item = item,
                 tmFc = tmFc
