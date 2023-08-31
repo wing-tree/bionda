@@ -2,7 +2,7 @@ package wing.tree.bionda.data.exception
 
 import wing.tree.bionda.data.extension.`is`
 
-data class OpenApiError(
+data class OpenAPIError(
     val errorCode: String,
     val errorMsg: String
 ) : Throwable(message = errorMsg) {

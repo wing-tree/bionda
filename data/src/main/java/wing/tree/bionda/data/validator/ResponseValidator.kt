@@ -1,7 +1,7 @@
 package wing.tree.bionda.data.validator
 
 import wing.tree.bionda.data.core.Response
-import wing.tree.bionda.data.exception.OpenApiError
+import wing.tree.bionda.data.exception.OpenAPIError
 
 interface ResponseValidator<T, R> {
     val response: Response<T>
@@ -11,16 +11,16 @@ interface ResponseValidator<T, R> {
 
     suspend fun validate(
         errorMsg: (Response<T>) -> String,
-        ifInvalid: (suspend (OpenApiError) -> R)? = null
+        ifInvalid: (suspend (OpenAPIError) -> R)? = null
     ): R
 
     suspend fun validate(
         `this`: R,
         errorMsg: (Response<T>) -> String,
-        ifInvalid: (suspend (OpenApiError) -> R)? = null
+        ifInvalid: (suspend (OpenAPIError) -> R)? = null
     ): R {
         if (isUnsuccessful) {
-            val openApiError = OpenApiError(
+            val openApiError = OpenAPIError(
                 errorCode = errorCode,
                 errorMsg = errorMsg(response)
             )

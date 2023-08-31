@@ -3,7 +3,7 @@ package wing.tree.bionda.data.model
 import androidx.room.Entity
 import kotlinx.serialization.Serializable
 import wing.tree.bionda.data.core.Response
-import wing.tree.bionda.data.exception.OpenApiError
+import wing.tree.bionda.data.exception.OpenAPIError
 import wing.tree.bionda.data.validator.ResponseValidator
 
 sealed interface UVIdx {
@@ -62,7 +62,7 @@ sealed interface UVIdx {
 
         override suspend fun validate(
             errorMsg: (Response<Item>) -> String,
-            ifInvalid: (suspend (OpenApiError) -> Remote)?
+            ifInvalid: (suspend (OpenAPIError) -> Remote)?
         ): Remote {
             return validate(this, errorMsg, ifInvalid)
         }

@@ -152,7 +152,7 @@ class WeatherDataSource(
             errorMsg = errorMsg(areaNo = areaNo, time = time)
         ) {
             if (it.isErrorCode03) {
-                // TODO, set to const. time inverval ect.. uvIdx는 세 시간 주기.
+                // TODO set to const. time inverval ect.. uvIdx는 세 시간 주기.
                 val uvIdxCalendar = uvIdxCalendar(time).advanceHourOfDayBy(3)
 
                 with(uvIdxCalendar) {
@@ -206,7 +206,7 @@ class WeatherDataSource(
             if (it.isErrorCode03) {
                 val baseCalendar = params.baseCalendar
                     .cloneAsCalendar()
-                    .advanceHourOfDayBy(1) // TODO, set to const. time inverval ect..
+                    .advanceHourOfDayBy(1) // TODO set to const. time inverval ect..
 
                 with(params.copy(baseCalendar = baseCalendar)) {
                     block(this).invoke().validate(errorMsg(this), null)
@@ -287,7 +287,7 @@ class WeatherDataSource(
             if (it.isErrorCode03) {
                 val baseCalendar = params.baseCalendar
                     .cloneAsCalendar()
-                    .advanceHourOfDayBy(3) // TODO, set to const. time inverval ect..
+                    .advanceHourOfDayBy(3) // TODO: set to const. time inverval ect..
 
                 with(params.copy(baseCalendar = baseCalendar)) {
                     block(this).invoke().validate(errorMsg(this), null)

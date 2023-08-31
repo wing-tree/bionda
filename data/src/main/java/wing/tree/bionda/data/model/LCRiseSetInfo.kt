@@ -9,7 +9,7 @@ import com.tickaroo.tikxml.annotation.Xml
 import kotlinx.serialization.Serializable
 import wing.tree.bionda.data.constant.COMMA
 import wing.tree.bionda.data.constant.SPACE
-import wing.tree.bionda.data.exception.OpenApiError
+import wing.tree.bionda.data.exception.OpenAPIError
 import wing.tree.bionda.data.exception.second
 import wing.tree.bionda.data.exception.third
 import wing.tree.bionda.data.extension.not
@@ -98,7 +98,7 @@ sealed interface LCRiseSetInfo {
                     add("latitude=${params.third()}")
                 }.joinToString("$COMMA$SPACE")
 
-                throw OpenApiError(
+                throw OpenAPIError(
                     errorCode = errorCode,
                     errorMsg = errorMsg
                 )
@@ -129,7 +129,7 @@ sealed interface LCRiseSetInfo {
         @Element
         val body: Body
     ) {
-        val isUnsuccessful: Boolean get() = header.resultCode not OpenApiError.ERROR_CODE_00
+        val isUnsuccessful: Boolean get() = header.resultCode not OpenAPIError.ERROR_CODE_00
         val items: Items get() = body.items
     }
 

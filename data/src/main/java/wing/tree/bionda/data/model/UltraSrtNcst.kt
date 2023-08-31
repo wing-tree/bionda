@@ -5,7 +5,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.serialization.Serializable
 import wing.tree.bionda.data.core.Response
-import wing.tree.bionda.data.exception.OpenApiError
+import wing.tree.bionda.data.exception.OpenAPIError
 import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.data.service.VilageFcstInfoService
 import wing.tree.bionda.data.validator.ResponseValidator
@@ -54,7 +54,7 @@ sealed interface UltraSrtNcst {
 
         override suspend fun validate(
             errorMsg: (Response<Item>) -> String,
-            ifInvalid: (suspend (OpenApiError) -> Remote)?
+            ifInvalid: (suspend (OpenAPIError) -> Remote)?
         ): Remote {
             return validate(this, errorMsg, null)
         }

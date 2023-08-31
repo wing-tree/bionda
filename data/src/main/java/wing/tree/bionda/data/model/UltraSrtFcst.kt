@@ -5,7 +5,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.serialization.Serializable
 import wing.tree.bionda.data.core.Response
-import wing.tree.bionda.data.exception.OpenApiError
+import wing.tree.bionda.data.exception.OpenAPIError
 import wing.tree.bionda.data.extension.advanceHourOfDayBy
 import wing.tree.bionda.data.extension.two
 import wing.tree.bionda.data.extension.zero
@@ -58,7 +58,7 @@ sealed interface UltraSrtFcst : VilageFcst {
 
         override suspend fun validate(
             errorMsg: (Response<VilageFcst.Item>) -> String,
-            ifInvalid: (suspend (OpenApiError) -> Remote)?
+            ifInvalid: (suspend (OpenAPIError) -> Remote)?
         ): Remote {
             return validate(this, errorMsg, ifInvalid)
         }

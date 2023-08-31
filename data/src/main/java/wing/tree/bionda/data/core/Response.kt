@@ -1,7 +1,7 @@
 package wing.tree.bionda.data.core
 
 import kotlinx.serialization.Serializable
-import wing.tree.bionda.data.exception.OpenApiError
+import wing.tree.bionda.data.exception.OpenAPIError
 import wing.tree.bionda.data.extension.empty
 import wing.tree.bionda.data.extension.not
 import wing.tree.bionda.data.extension.zero
@@ -11,7 +11,7 @@ data class Response<T>(
     val header: Header = Header(),
     val body: Body<T> = Body()
 ) {
-    val isUnsuccessful: Boolean get() = header.resultCode not OpenApiError.ERROR_CODE_00
+    val isUnsuccessful: Boolean get() = header.resultCode not OpenAPIError.ERROR_CODE_00
     val items: Items<T> get() = body.items
 }
 
