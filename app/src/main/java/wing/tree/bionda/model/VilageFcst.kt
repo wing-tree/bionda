@@ -68,7 +68,7 @@ data class VilageFcst(
         val sunrise = lcRiseSetInfo.sunrise.trim()
         val sunset = lcRiseSetInfo.sunset.trim()
 
-        first { item ->
+        firstOrNull { item ->
             val fcstHour = item.fcstHour.ifZero(defaultValue = 24)
 
             with(sunrise.int.div(Int.oneHundred)) {
@@ -78,7 +78,7 @@ data class VilageFcst(
                     else -> fcstHour.minus(this) `is` Int.one
                 }
             }
-        }.let {
+        }?.let {
             val index = builder.indexOf(it)
 
             if (index.isNonNegative) {
@@ -93,7 +93,7 @@ data class VilageFcst(
             }
         }
 
-        first { item ->
+        firstOrNull { item ->
             val fcstHour = item.fcstHour.ifZero(defaultValue = 24)
 
             with(sunset.int.div(Int.oneHundred)) {
@@ -103,7 +103,7 @@ data class VilageFcst(
                     else -> fcstHour.minus(this) `is` Int.one
                 }
             }
-        }.let {
+        }?.let {
             val index = builder.indexOf(it)
 
             if (index.isNonNegative) {
