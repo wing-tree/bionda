@@ -6,7 +6,6 @@ import kotlinx.collections.immutable.toImmutableList
 import kotlinx.serialization.Serializable
 import wing.tree.bionda.data.core.Response
 import wing.tree.bionda.data.exception.OpenAPIError
-import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.data.service.VilageFcstInfoService
 import wing.tree.bionda.data.validator.ResponseValidator
@@ -23,7 +22,7 @@ sealed interface UltraSrtNcst {
         val category: String,
         val nx: Int,
         val ny: Int,
-        val obsrValue: Double
+        val obsrValue: Double,
     )
 
     @Entity(
@@ -42,12 +41,12 @@ sealed interface UltraSrtNcst {
         override val ny: Int,
         val baseDate: String,
         val baseTime: String,
-        val minute: Int
+        val minute: Int,
     ) : UltraSrtNcst
 
     @Serializable
     data class Remote(
-        override val response: Response<Item>
+        override val response: Response<Item>,
     ) : UltraSrtNcst, ResponseValidator<Item, Remote> {
         override val items: List<Item> get() = response.items
         override val nx: Int get() = items.firstOrNull()?.nx ?: Int.zero
@@ -55,14 +54,14 @@ sealed interface UltraSrtNcst {
 
         override suspend fun validate(
             errorMsg: (Response<Item>) -> String,
-            ifInvalid: (suspend (OpenAPIError) -> Remote)?
+            ifInvalid: (suspend (OpenAPIError) -> Remote)?,
         ): Remote {
             return validate(this, errorMsg, null)
         }
 
         fun toLocal(
             params: VilageFcstInfoService.Params,
-            minute: Int
+            minute: Int,
         ): Local = with(params) {
             Local(
                 items = items.toImmutableList(),
@@ -73,9 +72,5 @@ sealed interface UltraSrtNcst {
                 minute = minute
             )
         }
-    }
-
-    companion object : OpenAPI {
-        override val interval: Int = Int.one
     }
 }

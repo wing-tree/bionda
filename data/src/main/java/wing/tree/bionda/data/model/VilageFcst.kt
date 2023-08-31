@@ -8,7 +8,6 @@ import kotlinx.serialization.Serializable
 import wing.tree.bionda.data.core.Response
 import wing.tree.bionda.data.exception.OpenAPIError
 import wing.tree.bionda.data.extension.advanceHourOfDayBy
-import wing.tree.bionda.data.extension.three
 import wing.tree.bionda.data.extension.two
 import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.data.service.VilageFcstInfoService
@@ -25,16 +24,17 @@ sealed interface VilageFcst {
         val baseDate: String,
         val baseTime: String,
         val category: String,
-        val fcstDate : String,
-        val fcstTime : String,
-        val fcstValue : String,
-        val nx : Int,
-        val ny : Int
+        val fcstDate: String,
+        val fcstTime: String,
+        val fcstValue: String,
+        val nx: Int,
+        val ny: Int,
     ) {
-        val fcstCalendar: Calendar get() = koreaCalendar(
-            fcstDate,
-            fcstTime
-        )
+        val fcstCalendar: Calendar
+            get() = koreaCalendar(
+                fcstDate,
+                fcstTime
+            )
     }
 
     @Entity(
@@ -51,7 +51,7 @@ sealed interface VilageFcst {
         override val nx: Int,
         override val ny: Int,
         val baseDate: String,
-        val baseTime: String
+        val baseTime: String,
     ) : VilageFcst {
         fun prepend(vilageFcst: Local?): Local {
             val koreaCalendar = koreaCalendar.advanceHourOfDayBy(Int.two)
@@ -77,7 +77,7 @@ sealed interface VilageFcst {
 
     @Serializable
     data class Remote(
-        override val response: Response<Item>
+        override val response: Response<Item>,
     ) : VilageFcst, ResponseValidator<Item, Remote> {
         override val items: List<Item> get() = response.items
         override val nx: Int get() = items.firstOrNull()?.nx ?: Int.zero
@@ -85,7 +85,7 @@ sealed interface VilageFcst {
 
         override suspend fun validate(
             errorMsg: (Response<Item>) -> String,
-            ifInvalid: (suspend (OpenAPIError) -> Remote)?
+            ifInvalid: (suspend (OpenAPIError) -> Remote)?,
         ): Remote {
             return validate(this, errorMsg, ifInvalid)
         }
@@ -99,9 +99,5 @@ sealed interface VilageFcst {
                 ny = this.ny
             )
         }
-    }
-
-    companion object : OpenAPI {
-        override val interval: Int = Int.three
     }
 }
