@@ -160,7 +160,7 @@ class WeatherDataSource(
 
                     block(areaNo = areaNo, time = uvIdxTime)
                         .invoke()
-                        .validate(errorMsg = errorMsg, ifInvalid = null)
+                        .validate(errorMsg = errorMsg)
                 }
             } else {
                 throw it
@@ -209,7 +209,7 @@ class WeatherDataSource(
                     .advanceHourOfDayBy(1) // TODO set to const. time inverval ect..
 
                 with(params.copy(baseCalendar = baseCalendar)) {
-                    block(this).invoke().validate(errorMsg(this), null)
+                    block(this).invoke().validate(errorMsg(this))
                 }
             } else {
                 throw it
@@ -290,7 +290,7 @@ class WeatherDataSource(
                     .advanceHourOfDayBy(3) // TODO: set to const. time inverval ect..
 
                 with(params.copy(baseCalendar = baseCalendar)) {
-                    block(this).invoke().validate(errorMsg(this), null)
+                    block(this).invoke().validate(errorMsg(this))
                 }
             } else {
                 throw it
