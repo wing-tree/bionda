@@ -7,7 +7,6 @@ import kotlinx.collections.immutable.PersistentList
 import wing.tree.bionda.data.extension.ifZero
 import wing.tree.bionda.data.extension.int
 import wing.tree.bionda.data.extension.`is`
-import wing.tree.bionda.data.extension.isNonNegative
 import wing.tree.bionda.data.extension.not
 import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.oneHundred
@@ -79,18 +78,14 @@ data class VilageFcst(
                 }
             }
         }?.let {
-            val index = builder.indexOf(it)
+            val item = Item(
+                fcstDate = locdate,
+                fcstTime = sunrise,
+                codeValues = emptyPersistentMap(),
+                type = Item.Type.Sunrise
+            )
 
-            if (index.isNonNegative) {
-                val item = Item(
-                    fcstDate = locdate,
-                    fcstTime = sunrise,
-                    codeValues = emptyPersistentMap(),
-                    type = Item.Type.Sunrise
-                )
-
-                builder.add(index, item)
-            }
+            builder.add(builder.indexOf(it), item)
         }
 
         firstOrNull { item ->
@@ -104,18 +99,14 @@ data class VilageFcst(
                 }
             }
         }?.let {
-            val index = builder.indexOf(it)
+            val item = Item(
+                fcstDate = locdate,
+                fcstTime = sunset,
+                codeValues = emptyPersistentMap(),
+                type = Item.Type.Sunset
+            )
 
-            if (index.isNonNegative) {
-                val item = Item(
-                    fcstDate = locdate,
-                    fcstTime = sunset,
-                    codeValues = emptyPersistentMap(),
-                    type = Item.Type.Sunset
-                )
-
-                builder.add(index, item)
-            }
+            builder.add(builder.indexOf(it), item)
         }
 
         copy(items = builder.build())
