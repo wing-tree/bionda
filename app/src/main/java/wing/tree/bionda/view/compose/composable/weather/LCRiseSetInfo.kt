@@ -5,21 +5,23 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import wing.tree.bionda.data.extension.empty
+import kotlinx.collections.immutable.ImmutableList
 import wing.tree.bionda.data.core.State
 import wing.tree.bionda.data.core.State.Complete
 import wing.tree.bionda.data.core.State.Loading
+import wing.tree.bionda.data.extension.empty
 import wing.tree.bionda.view.compose.composable.core.Loading
 import wing.tree.bionda.data.model.LCRiseSetInfo.Local as LCRiseSetInfo
 
 @Composable
 fun LCRiseSetInfo(
-    state: State<LCRiseSetInfo>,
+    state: State<ImmutableList<LCRiseSetInfo>>,
     modifier: Modifier = Modifier
 ) {
     ElevatedCard(modifier = modifier) {
@@ -47,16 +49,20 @@ fun LCRiseSetInfo(
 
 @Composable
 private fun Content(
-    lcRiseSetInfo: LCRiseSetInfo,
+    lcRiseSetInfo: ImmutableList<LCRiseSetInfo>,
     modifier: Modifier = Modifier
 ) {
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.SpaceEvenly
-    ) {
-        with(lcRiseSetInfo) {
-            Text(text = sunrise)
-            Text(text = sunset)
+    Column(modifier = modifier) {
+        lcRiseSetInfo.forEach {
+            Row(
+                modifier = Modifier,
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                with(it) {
+                    Text(text = sunrise)
+                    Text(text = sunset)
+                }
+            }
         }
     }
 }

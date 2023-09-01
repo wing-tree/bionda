@@ -13,7 +13,7 @@ import wing.tree.bionda.data.core.PostProcessor
 import wing.tree.bionda.data.core.State.Complete
 import wing.tree.bionda.data.exception.MultipleExceptions
 import wing.tree.bionda.data.extension.awaitOrFailure
-import wing.tree.bionda.data.extension.delayHourOfDayBy
+import wing.tree.bionda.data.extension.delayDateBy
 import wing.tree.bionda.data.extension.exceptions
 import wing.tree.bionda.data.extension.failed
 import wing.tree.bionda.data.extension.isSingle
@@ -113,13 +113,13 @@ class WeatherRepository(
     }
 
     suspend fun getLCRiseSetInfo(location: Location): Complete<ImmutableList<LCRiseSetInfo.Local>> {
-        val longitude = "${location.latitude.toDegreeMinute(LATITUDE)}"
-        val latitude = "${location.longitude.toDegreeMinute(LONGITUDE)}"
+        val longitude = "${location.longitude.toDegreeMinute(LONGITUDE)}"
+        val latitude = "${location.latitude.toDegreeMinute(LATITUDE)}"
 
         return coroutineScope {
             List(Int.three) {
                 val params = RiseSetInfoService.Params(
-                    locdate = koreaCalendar.delayHourOfDayBy(it).locdate,
+                    locdate = koreaCalendar.delayDateBy(it).locdate,
                     longitude = longitude,
                     latitude = latitude
                 )
