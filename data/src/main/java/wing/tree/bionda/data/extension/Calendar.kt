@@ -64,3 +64,7 @@ fun Calendar.cloneAsCalendar(): Calendar = with(clone()) {
 }
 
 fun Calendar.cloneAsBaseCalendar(decorator: Decorator.Calendar) = decorator(cloneAsCalendar())
+
+fun Calendar.delayHourOfDayBy(hourOfDay: Int) = apply {
+    this.hourOfDay += hourOfDay
+}
