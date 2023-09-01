@@ -10,6 +10,9 @@ val <T> Collection<State.Complete.Success<T>>.values: List<T> get() = map {
     it.value
 }
 
+fun Collection<*>.isSingle() = size == Int.single
+fun Collection<*>.isPair() = size == Int.pair
+
 fun <T> Collection<T>.containsAny(elements: Collection<T>): Boolean {
     return elements.any {
         contains(it)

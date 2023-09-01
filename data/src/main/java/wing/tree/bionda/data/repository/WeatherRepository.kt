@@ -1,22 +1,33 @@
 package wing.tree.bionda.data.repository
 
 import android.location.Location
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import wing.tree.bionda.data.core.DegreeMinute.Type.LATITUDE
 import wing.tree.bionda.data.core.DegreeMinute.Type.LONGITUDE
+import wing.tree.bionda.data.core.PartialSuccess
 import wing.tree.bionda.data.core.PostProcessor
 import wing.tree.bionda.data.core.State.Complete
+import wing.tree.bionda.data.exception.MultipleExceptions
 import wing.tree.bionda.data.extension.awaitOrFailure
+import wing.tree.bionda.data.extension.delayHourOfDayBy
+import wing.tree.bionda.data.extension.exceptions
+import wing.tree.bionda.data.extension.failed
+import wing.tree.bionda.data.extension.isSingle
 import wing.tree.bionda.data.extension.julianDay
 import wing.tree.bionda.data.extension.locdate
 import wing.tree.bionda.data.extension.minute
 import wing.tree.bionda.data.extension.roundDownToTens
+import wing.tree.bionda.data.extension.succeeded
+import wing.tree.bionda.data.extension.three
 import wing.tree.bionda.data.extension.tmFc
 import wing.tree.bionda.data.extension.toBin
 import wing.tree.bionda.data.extension.toDegreeMinute
 import wing.tree.bionda.data.extension.uvIdxTime
+import wing.tree.bionda.data.extension.values
 import wing.tree.bionda.data.model.Decorator
 import wing.tree.bionda.data.model.LCRiseSetInfo
 import wing.tree.bionda.data.model.MidLandFcst
@@ -42,6 +53,24 @@ class WeatherRepository(
     private val postProcessor: PostProcessor
 ) {
     private val ioDispatcher = Dispatchers.IO
+
+    private suspend fun getLCRiseSetInfo(params: RiseSetInfoService.Params): Complete<LCRiseSetInfo.Local> {
+        return try {
+            val lcRiseSetInfo = localDataSource.loadLCRiseSetInfo(
+                params = params
+            ) ?: remoteDataSource.getLCRiseSetInfo(
+                params = params
+            ).toLocal(
+                params = params
+            ).also {
+                localDataSource.cache(it)
+            }
+
+            Complete.Success(lcRiseSetInfo)
+        } catch (throwable: Throwable) {
+            Complete.Failure(throwable)
+        }
+    }
 
     private suspend fun getMidLandFcst(regId: String, tmFc: String): Complete<MidLandFcst.Local> {
         return try {
@@ -83,30 +112,40 @@ class WeatherRepository(
         }
     }
 
-    suspend fun getLCRiseSetInfo(location: Location): Complete<LCRiseSetInfo.Local> {
-        return try {
-            val longitude = "${location.latitude.toDegreeMinute(LATITUDE)}"
-            val latitude = "${location.longitude.toDegreeMinute(LONGITUDE)}"
-            val params = RiseSetInfoService.Params(
-                locdate = koreaCalendar.locdate,
-                longitude = longitude,
-                latitude = latitude
-            )
+    suspend fun getLCRiseSetInfo(location: Location): Complete<ImmutableList<LCRiseSetInfo.Local>> {
+        val longitude = "${location.latitude.toDegreeMinute(LATITUDE)}"
+        val latitude = "${location.longitude.toDegreeMinute(LONGITUDE)}"
 
-            val lcRiseSetInfo = localDataSource.loadLCRiseSetInfo(
-                params = params
-            ) ?: remoteDataSource.getLCRiseSetInfo(
-                params = params
-            ).toLocal(
-                secondaryLongitude = longitude,
-                secondaryLatitude = latitude
-            ).also {
-                localDataSource.cache(it)
+        return coroutineScope {
+            List(Int.three) {
+                val params = RiseSetInfoService.Params(
+                    locdate = koreaCalendar.delayHourOfDayBy(it).locdate,
+                    longitude = longitude,
+                    latitude = latitude
+                )
+
+                async {
+                    getLCRiseSetInfo(params = params)
+                }
+            }.map {
+                it.await()
+            }.run {
+                succeeded().values.toImmutableList() to failed().exceptions
+            }.let { (succeeded, failed) ->
+                when {
+                    failed.isEmpty() -> Complete.Success(succeeded)
+                    succeeded.isNotEmpty() -> PartialSuccess(
+                        succeeded,
+                        if (failed.isSingle()) {
+                            failed.single()
+                        } else {
+                            MultipleExceptions(failed)
+                        }
+                    )
+
+                    else -> Complete.Failure(MultipleExceptions(failed))
+                }
             }
-
-            Complete.Success(lcRiseSetInfo)
-        } catch (throwable: Throwable) {
-            Complete.Failure(throwable)
         }
     }
 

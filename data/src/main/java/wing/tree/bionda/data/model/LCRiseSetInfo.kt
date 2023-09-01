@@ -1,6 +1,5 @@
 package wing.tree.bionda.data.model
 
-import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Ignore
 import com.tickaroo.tikxml.annotation.Element
@@ -13,6 +12,7 @@ import wing.tree.bionda.data.exception.OpenAPIError
 import wing.tree.bionda.data.exception.second
 import wing.tree.bionda.data.exception.third
 import wing.tree.bionda.data.extension.not
+import wing.tree.bionda.data.service.RiseSetInfoService
 
 sealed interface LCRiseSetInfo {
     val item: Item
@@ -62,17 +62,15 @@ sealed interface LCRiseSetInfo {
         tableName = "lc_rise_set_info",
         primaryKeys = [
             "locdate",
-            "primaryLongitude",
-            "primaryLatitude"
+            "longitude",
+            "latitude"
         ]
     )
     data class Local(
         override val item: Item,
         val locdate: String,
-        @ColumnInfo(name = "primaryLongitude") val longitude: String,
-        @ColumnInfo(name = "primaryLatitude")  val latitude: String,
-        val secondaryLongitude: String,
-        val secondaryLatitude: String
+        val longitude: String,
+        val latitude: String
     ) : LCRiseSetInfo {
         @Ignore
         val sunrise = item.sunrise
@@ -105,19 +103,14 @@ sealed interface LCRiseSetInfo {
             }
         }
 
-        fun toLocal(
-            secondaryLongitude: String,
-            secondaryLatitude: String
-        ): Local = with(item) {
+        fun toLocal(params: RiseSetInfoService.Params): Local = with(params) {
             validate(locdate, longitude, latitude)
 
             return Local(
-                item = this,
+                item = item,
                 locdate = locdate,
                 longitude = longitude,
-                latitude = latitude,
-                secondaryLongitude = secondaryLongitude,
-                secondaryLatitude = secondaryLatitude
+                latitude = latitude
             )
         }
     }

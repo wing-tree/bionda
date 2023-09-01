@@ -74,7 +74,7 @@ data class VilageFcst(
         }
     }
 
-    fun insertLCRiseSetInfo(lcRiseSetInfo: LCRiseSetInfo.Local): VilageFcst = with(items) {
+    private fun insertLCRiseSetInfo(lcRiseSetInfo: LCRiseSetInfo.Local): VilageFcst = with(items) {
         val builder = builder()
         val locdate = lcRiseSetInfo.locdate.trim()
         val sunrise = lcRiseSetInfo.sunrise.trim()
@@ -125,6 +125,14 @@ data class VilageFcst(
         builder.updateTimesOfDay()
 
         copy(items = builder.build())
+    }
+
+    fun insertLCRiseSetInfo(lcRiseSetInfo: List<LCRiseSetInfo.Local>): VilageFcst {
+        val initial = lcRiseSetInfo.firstOrNull() ?: return this
+
+        return lcRiseSetInfo.fold(insertLCRiseSetInfo(initial)) { acc, element ->
+            acc.insertLCRiseSetInfo(element)
+        }
     }
 
     private fun PersistentList.Builder<Item>.updateTimesOfDay() {

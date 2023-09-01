@@ -2,9 +2,9 @@
 
 package wing.tree.bionda.data.core
 
-import wing.tree.bionda.data.extension.isNull
 import wing.tree.bionda.data.core.State.Complete
 import wing.tree.bionda.data.core.State.Loading
+import wing.tree.bionda.data.extension.isNull
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
@@ -12,14 +12,18 @@ import kotlin.contracts.contract
 sealed class State<out R> {
     object Loading : State<Nothing>()
     sealed class Complete<out R> : State<R>() {
-        data class Success<out T>(val value: T) : Complete<T>()
-        data class Failure(val throwable: Throwable) : Complete<Nothing>()
+        open class Success<out T>(val value: T) : Complete<T>()
+        open class Failure(val throwable: Throwable) : Complete<Nothing>()
     }
 
     val isSuccess: Boolean get() = this is Complete.Success
     val isFailure: Boolean get() = this is Complete.Failure
 }
 
+class PartialSuccess<T>(
+    value: T,
+    val exception: Throwable,
+) : Complete.Success<T>(value)
 
 inline fun <R, T> State<T>.flatMap(transform: (T) -> State<R>): State<R> {
     return when (this) {

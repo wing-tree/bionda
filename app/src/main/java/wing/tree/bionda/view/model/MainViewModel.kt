@@ -6,6 +6,7 @@ import androidx.compose.animation.core.AnimationConstants.DefaultDurationMillis
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
@@ -85,7 +86,7 @@ class MainViewModel @Inject constructor(
     }
         .stateIn(initialValue = HeaderState.initialValue)
 
-    private val lcRiseSetInfo: StateFlow<State<LCRiseSetInfo>> = location.map {
+    private val lcRiseSetInfo: StateFlow<State<ImmutableList<LCRiseSetInfo>>> = location.map {
         it.flatMap { location ->
             weatherRepository.getLCRiseSetInfo(location)
         }
@@ -301,7 +302,7 @@ class MainViewModel @Inject constructor(
     }
 
     private fun State<VilageFcst>.insertLCRiseSetInfo(
-        lcRiseSetInfo: State<LCRiseSetInfo>
+        lcRiseSetInfo: State<ImmutableList<LCRiseSetInfo>>
     ) = map {
         with(lcRiseSetInfo) {
             if (isSuccess()) {

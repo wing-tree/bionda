@@ -15,8 +15,8 @@ interface LCRiseSetInfoDao {
         """
             SELECT * FROM lc_rise_set_info 
             WHERE locdate = :locdate
-            AND ((primaryLongitude = :longitude AND primaryLatitude = :latitude)
-            OR (secondaryLongitude = :longitude AND secondaryLatitude = :latitude))
+            AND longitude = :longitude 
+            AND latitude = :latitude
         """
     )
     suspend fun load(

@@ -4,8 +4,8 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 import wing.tree.bionda.data.core.Address
-import wing.tree.bionda.data.model.Alarm
 import wing.tree.bionda.data.core.State
+import wing.tree.bionda.data.model.Alarm
 import wing.tree.bionda.data.model.MidLandFcstTa
 import wing.tree.bionda.data.model.UVIdx
 import wing.tree.bionda.model.UltraSrtNcst
@@ -78,7 +78,7 @@ sealed interface AlarmState {
 }
 
 data class WeatherState(
-    val lcRiseSetInfo: State<LCRiseSetInfo>,
+    val lcRiseSetInfo: State<ImmutableList<LCRiseSetInfo>>,
     val midLandFcstTa: State<MidLandFcstTa>,
     val uvIdx: State<UVIdx>,
     val vilageFcst: State<VilageFcst>
