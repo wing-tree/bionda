@@ -7,13 +7,13 @@ import wing.tree.bionda.data.extension.hourOfDay
 import wing.tree.bionda.data.extension.minute
 import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.zero
-import wing.tree.bionda.data.model.CalendarDecorator
+import wing.tree.bionda.data.model.Decorator
 import java.util.Date
 import java.util.Locale
 
 val koreaCalendar: Calendar get() = koreaCalendar()
 
-fun baseCalendar(base: CalendarDecorator.Base): Calendar = koreaCalendar.cloneAsBaseCalendar(base)
+fun baseCalendar(decorator: Decorator.Calendar): Calendar = koreaCalendar.cloneAsBaseCalendar(decorator)
 fun fcstCalendar(hourOfDay: Int): Calendar = koreaCalendar.apply {
     this.hourOfDay = hourOfDay
 }

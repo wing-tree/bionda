@@ -1,7 +1,7 @@
 package wing.tree.bionda.data.extension
 
 import android.icu.util.Calendar
-import wing.tree.bionda.data.model.CalendarDecorator
+import wing.tree.bionda.data.model.Decorator
 import wing.tree.bionda.data.top.level.baseDateFormat
 import wing.tree.bionda.data.top.level.baseTimeFormat
 import wing.tree.bionda.data.top.level.koreaCalendarOf
@@ -63,4 +63,4 @@ fun Calendar.cloneAsCalendar(): Calendar = with(clone()) {
     }
 }
 
-fun Calendar.cloneAsBaseCalendar(base: CalendarDecorator.Base) = base(cloneAsCalendar())
+fun Calendar.cloneAsBaseCalendar(decorator: Decorator.Calendar) = decorator(cloneAsCalendar())

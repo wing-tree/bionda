@@ -17,7 +17,7 @@ import wing.tree.bionda.data.extension.tmFc
 import wing.tree.bionda.data.extension.toBin
 import wing.tree.bionda.data.extension.toDegreeMinute
 import wing.tree.bionda.data.extension.uvIdxTime
-import wing.tree.bionda.data.model.CalendarDecorator.Base
+import wing.tree.bionda.data.model.Decorator
 import wing.tree.bionda.data.model.LCRiseSetInfo
 import wing.tree.bionda.data.model.MidLandFcst
 import wing.tree.bionda.data.model.MidLandFcstTa
@@ -142,7 +142,7 @@ class WeatherRepository(
     suspend fun getUVIdx(location: Location): Complete<UVIdx.Local> {
         return try {
             val areaNo = localDataSource.getAreaNo(location)
-            val time = koreaCalendar.uvIdxTime
+            val time = baseCalendar(Decorator.Calendar.UvIdx).uvIdxTime
 
             val uvIdx = localDataSource.loadUVIdx(
                 areaNo = areaNo,
@@ -171,7 +171,7 @@ class WeatherRepository(
             // TODO make const.
             val minute = koreaCalendar.minute.toBin(5..55, 10)
             val params = VilageFcstInfoService.Params(
-                baseCalendar = baseCalendar(Base.UltraSrtFcst),
+                baseCalendar = baseCalendar(Decorator.Calendar.UltraSrtFcst),
                 nx = nx,
                 ny = ny
             )
@@ -204,7 +204,7 @@ class WeatherRepository(
         return try {
             val minute = koreaCalendar.minute.roundDownToTens()
             val params = VilageFcstInfoService.Params(
-                baseCalendar = baseCalendar(Base.UltraSrtNcst),
+                baseCalendar = baseCalendar(Decorator.Calendar.UltraSrtNcst),
                 nx = nx,
                 ny = ny
             )
@@ -232,7 +232,7 @@ class WeatherRepository(
     ): Complete<VilageFcst.Local> {
         return try {
             val params = VilageFcstInfoService.Params(
-                baseCalendar = baseCalendar(Base.VilageFcst),
+                baseCalendar = baseCalendar(Decorator.Calendar.VilageFcst),
                 nx = nx,
                 ny = ny
             )
