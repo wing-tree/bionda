@@ -13,6 +13,8 @@ import wing.tree.bionda.data.extension.oneHundred
 import wing.tree.bionda.data.model.Category
 import wing.tree.bionda.data.model.CodeValue
 import wing.tree.bionda.data.model.LCRiseSetInfo
+import wing.tree.bionda.data.model.TimesOfDay
+import wing.tree.bionda.model.VilageFcst.Item.Type.RiseSet
 import wing.tree.bionda.top.level.emptyPersistentMap
 
 data class VilageFcst(
@@ -23,9 +25,13 @@ data class VilageFcst(
         val fcstDate: String,
         val fcstTime: String,
         val codeValues: ImmutableMap<String, String>,
+        val timesOfDay: TimesOfDay = TimesOfDay.DAYTIME,
         val type: Type = Type.VilageFcst
     ) {
-        private val weatherIcons = WeatherIcons.Daytime
+        private val weatherIcons = when (timesOfDay) {
+            TimesOfDay.DAYTIME -> WeatherIcons.Daytime
+            TimesOfDay.NIGHTTIME -> WeatherIcons.Nighttime
+        }
 
         val fcstHour: Int get() = fcstTime.int.div(Int.oneHundred)
         val pcp = codeValues[Category.PCP]
@@ -51,12 +57,19 @@ data class VilageFcst(
                 }
             }
 
-            object Sunrise : Type {
-                override fun getWeatherIcon(item: Item) = item.weatherIcons.sunrise
-            }
+            sealed interface RiseSet : Type {
+                operator fun not() = when(this) {
+                    Sunrise -> Sunset
+                    Sunset -> Sunrise
+                }
 
-            object Sunset : Type {
-                override fun getWeatherIcon(item: Item): Int = item.weatherIcons.sunset
+                object Sunrise : RiseSet {
+                    override fun getWeatherIcon(item: Item) = item.weatherIcons.sunrise
+                }
+
+                object Sunset : RiseSet {
+                    override fun getWeatherIcon(item: Item): Int = item.weatherIcons.sunset
+                }
             }
         }
     }
@@ -82,7 +95,7 @@ data class VilageFcst(
                 fcstDate = locdate,
                 fcstTime = sunrise,
                 codeValues = emptyPersistentMap(),
-                type = Item.Type.Sunrise
+                type = RiseSet.Sunrise
             )
 
             builder.add(builder.indexOf(it), item)
@@ -103,12 +116,37 @@ data class VilageFcst(
                 fcstDate = locdate,
                 fcstTime = sunset,
                 codeValues = emptyPersistentMap(),
-                type = Item.Type.Sunset
+                type = RiseSet.Sunset
             )
 
             builder.add(builder.indexOf(it), item)
         }
 
+        builder.updateTimesOfDay()
+
         copy(items = builder.build())
+    }
+
+    private fun PersistentList.Builder<Item>.updateTimesOfDay() {
+        var type = map {
+            it.type
+        }
+            .filterIsInstance<RiseSet>()
+            .firstOrNull()
+            ?.not()
+            ?: return
+
+        forEachIndexed { index, item ->
+            if (item.type is RiseSet) {
+                type = item.type
+            } else {
+                val timesOfDay = when (type) {
+                    RiseSet.Sunrise -> TimesOfDay.DAYTIME
+                    RiseSet.Sunset -> TimesOfDay.NIGHTTIME
+                }
+
+                set(index, item.copy(timesOfDay = timesOfDay))
+            }
+        }
     }
 }
