@@ -31,6 +31,7 @@ import wing.tree.bionda.data.extension.isBlankOrZero
 import wing.tree.bionda.data.extension.timeRange
 import wing.tree.bionda.data.model.UVIdx
 import wing.tree.bionda.data.top.level.koreaCalendar
+import wing.tree.bionda.data.top.level.uvIdxTimeFormat
 import wing.tree.bionda.theme.LightGray
 import wing.tree.bionda.theme.Orange
 import wing.tree.bionda.theme.Purple
@@ -68,10 +69,15 @@ private fun Content(
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.padding(16.dp)) {
-        Text(text = uvIdx.item.date) // TODO Remove,
+        val date = uvIdx.item.date
+
+        Text(text = date) // TODO Remove,
         LazyRow(modifier = Modifier.fillMaxWidth()) {
-            items(uvIdx.item) {
-                Item(item = it)
+            items(uvIdx.item) { item ->
+                Item(
+                    item = item,
+                    date = date
+                )
             }
         }
     }
@@ -80,10 +86,11 @@ private fun Content(
 @Composable
 private fun Item(
     item: UVIdx.H,
+    date: String,
     modifier: Modifier = Modifier
 ) {
     val (n, h) = item
-    val koreaCalendar = koreaCalendar.delayHourOfDayBy(n)
+    val koreaCalendar = koreaCalendar(uvIdxTimeFormat.parse(date)).delayHourOfDayBy(n)
     val hourOfDay = koreaCalendar.hourOfDay
 
     when {
@@ -91,7 +98,10 @@ private fun Item(
         h.isBlankOrZero() -> false
         else -> true
     }.ifTrue {
-        Column(modifier = modifier) {
+        Column(
+            modifier = modifier,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             Text(text = koreaCalendar.timeRange)
             H(h.intOrZero.coerceIn(0..11))
         }
