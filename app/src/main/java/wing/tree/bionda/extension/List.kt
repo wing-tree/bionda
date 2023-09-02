@@ -10,7 +10,7 @@ import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.model.style.ChartStyle
 import wing.tree.bionda.model.VilageFcst
 
-fun List<VilageFcst.Item>.toTmpOffsets(
+fun List<VilageFcst.Item>.offsets(
     density: Float,
     style: ChartStyle
 ): List<Offset> {

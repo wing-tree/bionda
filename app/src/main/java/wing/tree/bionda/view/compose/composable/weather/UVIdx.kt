@@ -7,9 +7,9 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import wing.tree.bionda.data.core.State
 import wing.tree.bionda.data.extension.empty
 import wing.tree.bionda.data.model.UVIdx
-import wing.tree.bionda.data.core.State
 import wing.tree.bionda.view.compose.composable.core.Loading
 
 @Composable
