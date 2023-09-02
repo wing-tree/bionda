@@ -65,5 +65,5 @@ fun tmFcCalendar() = koreaCalendar(minute = Int.zero).apply {
 }
 
 fun uvIdxCalendar(time: String): Calendar = koreaCalendar(
-    uvIdxTimeFormat.parse(time)
+    timeFormat.parse(time)
 )

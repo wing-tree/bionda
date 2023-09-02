@@ -31,7 +31,7 @@ import wing.tree.bionda.data.extension.isBlankOrZero
 import wing.tree.bionda.data.extension.timeRange
 import wing.tree.bionda.data.model.UVIdx
 import wing.tree.bionda.data.top.level.koreaCalendar
-import wing.tree.bionda.data.top.level.uvIdxTimeFormat
+import wing.tree.bionda.data.top.level.timeFormat
 import wing.tree.bionda.theme.LightGray
 import wing.tree.bionda.theme.Orange
 import wing.tree.bionda.theme.Purple
@@ -90,7 +90,7 @@ private fun Item(
     modifier: Modifier = Modifier
 ) {
     val (n, h) = item
-    val koreaCalendar = koreaCalendar(uvIdxTimeFormat.parse(date)).delayHourOfDayBy(n)
+    val koreaCalendar = koreaCalendar(timeFormat.parse(date)).delayHourOfDayBy(n)
     val hourOfDay = koreaCalendar.hourOfDay
 
     when {

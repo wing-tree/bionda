@@ -23,10 +23,10 @@ import wing.tree.bionda.data.extension.minute
 import wing.tree.bionda.data.extension.roundDownToTens
 import wing.tree.bionda.data.extension.succeeded
 import wing.tree.bionda.data.extension.three
+import wing.tree.bionda.data.extension.time
 import wing.tree.bionda.data.extension.tmFc
 import wing.tree.bionda.data.extension.toBin
 import wing.tree.bionda.data.extension.toDegreeMinute
-import wing.tree.bionda.data.extension.uvIdxTime
 import wing.tree.bionda.data.extension.values
 import wing.tree.bionda.data.model.Decorator
 import wing.tree.bionda.data.model.LCRiseSetInfo
@@ -181,7 +181,7 @@ class WeatherRepository(
     suspend fun getUVIdx(location: Location): Complete<UVIdx.Local> {
         return try {
             val areaNo = localDataSource.getAreaNo(location)
-            val time = baseCalendar(Decorator.Calendar.UvIdx).uvIdxTime
+            val time = baseCalendar(Decorator.Calendar.UvIdx).time()
 
             val uvIdx = localDataSource.loadUVIdx(
                 areaNo = areaNo,

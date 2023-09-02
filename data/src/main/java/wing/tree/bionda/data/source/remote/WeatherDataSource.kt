@@ -14,8 +14,8 @@ import wing.tree.bionda.data.extension.five
 import wing.tree.bionda.data.extension.hundreds
 import wing.tree.bionda.data.extension.long
 import wing.tree.bionda.data.extension.one
+import wing.tree.bionda.data.extension.time
 import wing.tree.bionda.data.extension.two
-import wing.tree.bionda.data.extension.uvIdxTime
 import wing.tree.bionda.data.model.LCRiseSetInfo
 import wing.tree.bionda.data.model.UVIdx
 import wing.tree.bionda.data.model.UltraSrtFcst
@@ -156,9 +156,9 @@ class WeatherDataSource(
                 val uvIdxCalendar = uvIdxCalendar(time).advanceHourOfDayBy(3)
 
                 with(uvIdxCalendar) {
-                    val errorMsg = errorMsg(areaNo = areaNo, time = uvIdxTime)
+                    val errorMsg = errorMsg(areaNo = areaNo, time = time())
 
-                    block(areaNo = areaNo, time = uvIdxTime)
+                    block(areaNo = areaNo, time = time())
                         .invoke()
                         .validate(errorMsg = errorMsg)
                 }

@@ -6,16 +6,15 @@ import wing.tree.bionda.data.top.level.baseDateFormat
 import wing.tree.bionda.data.top.level.baseTimeFormat
 import wing.tree.bionda.data.top.level.koreaCalendarOf
 import wing.tree.bionda.data.top.level.locdateFormat
+import wing.tree.bionda.data.top.level.timeFormat
 import wing.tree.bionda.data.top.level.timeRangeFirstFormat
 import wing.tree.bionda.data.top.level.timeRangeLastFormat
 import wing.tree.bionda.data.top.level.tmFcFormat
-import wing.tree.bionda.data.top.level.uvIdxTimeFormat
 
 val Calendar.baseDate: String get() = baseDateFormat.format(this)
 val Calendar.baseTime: String get() = baseTimeFormat.format(this)
 val Calendar.locdate: String get() = locdateFormat.format(this)
 val Calendar.tmFc: String get() = tmFcFormat.format(this)
-val Calendar.uvIdxTime: String get() = uvIdxTimeFormat.format(this)
 val Calendar.timeRange: String get() = buildString {
     append(timeRangeFirstFormat.format(cloneAsCalendar()))
     append(timeRangeLastFormat.format(cloneAsCalendar().delayHourOfDayBy(3))) // TODO make to const. or property
@@ -78,3 +77,5 @@ fun Calendar.delayDateBy(date: Int) = apply {
 fun Calendar.delayHourOfDayBy(hourOfDay: Int) = apply {
     this.hourOfDay += hourOfDay
 }
+
+fun Calendar.time(): String = timeFormat.format(this)
