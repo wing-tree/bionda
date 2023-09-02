@@ -95,16 +95,6 @@ inline fun <T> Complete<T>.ifFailure(defaultValue: (throwable: Throwable) -> Com
 }
 
 @OptIn(ExperimentalContracts::class)
-fun <T> Complete<T>.isFailure(): Boolean {
-    contract {
-        returns(true) implies (this@isFailure is Complete.Failure)
-        returns(false) implies (this@isFailure is Complete.Success<T>)
-    }
-
-    return this is Complete.Failure
-}
-
-@OptIn(ExperimentalContracts::class)
 inline fun <T> Complete<T>.ifNull(defaultValue: () -> Complete<T>): Complete<T> {
     contract {
         callsInPlace(defaultValue, InvocationKind.AT_MOST_ONCE)
@@ -117,6 +107,23 @@ inline fun <T> Complete<T>.ifNull(defaultValue: () -> Complete<T>): Complete<T> 
     }
 
     return this
+}
+
+inline fun <R, T> Complete<T>.map(transform: (T) -> R): Complete<R> {
+    return when (this) {
+        is Complete.Success -> Complete.Success(transform(value))
+        is Complete.Failure -> Complete.Failure(exception)
+    }
+}
+
+@OptIn(ExperimentalContracts::class)
+fun <T> Complete<T>.isFailure(): Boolean {
+    contract {
+        returns(true) implies (this@isFailure is Complete.Failure)
+        returns(false) implies (this@isFailure is Complete.Success<T>)
+    }
+
+    return this is Complete.Failure
 }
 
 @OptIn(ExperimentalContracts::class)

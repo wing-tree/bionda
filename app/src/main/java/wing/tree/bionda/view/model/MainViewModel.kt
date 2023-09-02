@@ -248,9 +248,7 @@ class MainViewModel @Inject constructor(
             checkSelfPermission(it)
         }.ifTrue {
             viewModelScope.launch {
-                location.value = locationProvider.getLocation().map {
-                    it ?: Location("") // TODO set default location, and set error message.
-                }
+                location.value = locationProvider.getLocation()
             }
         }
     }

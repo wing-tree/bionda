@@ -14,11 +14,13 @@ import com.google.android.gms.location.LocationSettingsResponse
 import com.google.android.gms.location.Priority
 import kotlinx.coroutines.suspendCancellableCoroutine
 import timber.log.Timber
-import wing.tree.bionda.data.exception.OnCanceledException
-import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.data.core.State
 import wing.tree.bionda.data.core.ifFailure
 import wing.tree.bionda.data.core.ifNull
+import wing.tree.bionda.data.core.map
+import wing.tree.bionda.data.exception.OnCanceledException
+import wing.tree.bionda.data.extension.empty
+import wing.tree.bionda.data.extension.zero
 import kotlin.coroutines.resume
 
 class LocationProvider(private val context: Context)  {
@@ -42,7 +44,7 @@ class LocationProvider(private val context: Context)  {
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION])
-    suspend fun getLocation(): State.Complete<Location?> {
+    suspend fun getLocation(): State.Complete<Location> {
         val currentLocation = getCurrentLocation()
             .ifNull {
                 getCurrentLocation(currentLocationRequest)
@@ -72,6 +74,8 @@ class LocationProvider(private val context: Context)  {
                         getLastLocation(lastLocationRequest)
                     }
             }
+        }.map {
+            it ?: seoul
         }
     }
 
@@ -162,6 +166,13 @@ class LocationProvider(private val context: Context)  {
                 }.addOnSuccessListener { location ->
                     it.resume(State.Complete.Success(location))
                 }
+        }
+    }
+
+    companion object {
+        val seoul = Location(String.empty).apply {
+            latitude = 37.5635694444444
+            longitude = 126.980008333333
         }
     }
 }
