@@ -9,6 +9,7 @@ val String.Companion.empty: String get() = ""
 val String.Companion.minusSign: String get() = "-"
 val String.Companion.zero: String get() = "0"
 val String.floatOrNull: Float? get() = toFloatOrNull()
+val String.floatOrZero: Float get() = toFloatOrNull() ?: Float.zero
 val String.int: Int get() = toInt()
 
 fun String.advanceHourOfDayBy(hourOfDay: Int, pattern: String): String {

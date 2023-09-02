@@ -98,7 +98,7 @@ private fun Content(
                 .fillMaxWidth()
                 .height(180.dp) // todo, style에서 계산 필요. or requireHeight 등도 확인.
         ) {
-            Chart(
+            TmpChart(
                 items = vilageFcst.items,
                 modifier = Modifier
                     .fillMaxSize()
@@ -108,9 +108,8 @@ private fun Content(
     }
 }
 
-
 @Composable
-private fun Chart(
+private fun TmpChart(
     items: ImmutableList<VilageFcst.Item>,
     modifier: Modifier = Modifier,
     style: ChartStyle = ChartStyle.defaultValue,
@@ -180,7 +179,9 @@ private fun Chart(
 
                 drawTmpChart(
                     index = index,
-                    tmpOffsets = offsets,
+                    offsets = offsets.map {
+                        it.copy(y = it.y.plus(pointF.y))
+                    },
                     path = path,
                     pointF = pointF,
                     style = style.tmpChart,

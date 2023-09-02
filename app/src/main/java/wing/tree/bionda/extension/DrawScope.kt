@@ -125,18 +125,15 @@ fun DrawScope.drawTmp(
 
 fun DrawScope.drawTmpChart(
     index: Int,
-    tmpOffsets: List<Offset>,
+    offsets: List<Offset>,
     path: Path,
     pointF: PointF,
     style: ChartStyle.TmpChart
 ) {
     val height = style.height.toPx()
-    val offsets = tmpOffsets.ifEmpty {
-        pointF.y += height
 
-        return
-    }.map {
-        it.copy(y = it.y.plus(pointF.y))
+    if (offsets.isEmpty()) {
+        pointF.y += height; return
     }
 
     if (index.isZero()) {
