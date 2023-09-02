@@ -7,6 +7,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
+import wing.tree.bionda.data.core.LatLon
 import wing.tree.bionda.data.database.dao.AreaDao
 import wing.tree.bionda.data.database.dao.LCRiseSetInfoDao
 import wing.tree.bionda.data.database.dao.MidLandFcstDao
@@ -20,8 +21,8 @@ import wing.tree.bionda.data.extension.`is`
 import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.radians
 import wing.tree.bionda.data.extension.two
+import wing.tree.bionda.data.model.Area
 import wing.tree.bionda.data.model.FcstZoneCd
-import wing.tree.bionda.data.core.LatLon
 import wing.tree.bionda.data.model.RegId
 import wing.tree.bionda.data.service.RiseSetInfoService
 import wing.tree.bionda.data.service.VilageFcstInfoService
@@ -66,6 +67,8 @@ class WeatherDataSource(
     }
 
     private val supervisorScope = CoroutineScope(Dispatchers.IO.plus(SupervisorJob()))
+
+    private var areas: List<Area>? = null
 
     fun getRegId(location: Location, regId: RegId): String {
         val item = fcstZoneCd.items.minBy {
@@ -130,7 +133,11 @@ class WeatherDataSource(
     }
 
     suspend fun getAreaNo(location: Location): String {
-        return areaDao.load().minBy {
+        val areas = areas ?: areaDao.load().also {
+            areas = it
+        }
+
+        return areas.minBy {
             location.haversine(LatLon(lat = it.latitude, lon = it.longitude))
         }
             .no
