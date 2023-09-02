@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package wing.tree.bionda.data.extension
 
 import android.icu.text.SimpleDateFormat
@@ -11,6 +13,7 @@ val String.Companion.zero: String get() = "0"
 val String.floatOrNull: Float? get() = toFloatOrNull()
 val String.floatOrZero: Float get() = toFloatOrNull() ?: Float.zero
 val String.int: Int get() = toInt()
+val String.intOrZero: Int get() = toIntOrNull() ?: Int.zero
 
 fun String.advanceHourOfDayBy(hourOfDay: Int, pattern: String): String {
     val simpleDateFormat = SimpleDateFormat(pattern, Locale.KOREA)
@@ -27,3 +30,5 @@ fun String.ifZero(defaultValue: () -> String) = if (this `is` String.zero) {
 } else {
     this
 }
+
+fun String.isBlankOrZero(): Boolean = isBlank() || `is`(String.zero)
