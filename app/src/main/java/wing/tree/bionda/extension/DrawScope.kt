@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.unit.Dp
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
+import wing.tree.bionda.data.extension.dec
 import wing.tree.bionda.data.extension.degree
 import wing.tree.bionda.data.extension.half
 import wing.tree.bionda.data.extension.int
@@ -146,16 +147,10 @@ fun DrawScope.drawTmpChart(
                 offsets
             )
 
-            if (index `is` offsets.lastIndex.dec()) {
+            if (index `is` offsets.lastIndex.dec) {
                 quadraticBezierTo(
                     index.inc(),
                     offsets
-                )
-
-                drawPath(
-                    path = path,
-                    color = style.color,
-                    style = Stroke(width = Dp.one.toPx())
                 )
 
                 fillGradient(path, pointF, style)
@@ -217,6 +212,12 @@ fun DrawScope.fillGradient(
     pointF: PointF,
     style: ChartStyle.TmpChart
 ) {
+    drawPath(
+        path = path,
+        color = style.color,
+        style = Stroke(width = Dp.one.toPx())
+    )
+
     val height = style.height.toPx()
     val y = pointF.y.plus(height.plus(height.half))
     val fillPath = android.graphics.Path(path.asAndroidPath())
