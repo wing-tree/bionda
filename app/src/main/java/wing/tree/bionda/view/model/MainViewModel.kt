@@ -81,7 +81,7 @@ class MainViewModel @Inject constructor(
                 ultraSrtNcst.asState(address)
             }
 
-            is Complete.Failure -> HeaderState.Error(it.throwable)
+            is Complete.Failure -> HeaderState.Error(it.exception)
         }
     }
         .stateIn(initialValue = HeaderState.initialValue)
@@ -160,7 +160,7 @@ class MainViewModel @Inject constructor(
 
             is Complete.Failure -> AlarmState.Error(
                 requestPermissions = requestPermissions,
-                throwable = alarm.throwable
+                throwable = alarm.exception
             )
         }
     }
@@ -298,7 +298,7 @@ class MainViewModel @Inject constructor(
             ultraSrtNcst = ultraSrtNcstMapper.toPresentationModel(value)
         )
 
-        is Complete.Failure -> HeaderState.Error(throwable)
+        is Complete.Failure -> HeaderState.Error(exception)
     }
 
     private fun State<VilageFcst>.insertLCRiseSetInfo(

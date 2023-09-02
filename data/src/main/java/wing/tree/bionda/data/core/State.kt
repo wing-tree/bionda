@@ -13,7 +13,7 @@ sealed class State<out R> {
     object Loading : State<Nothing>()
     sealed class Complete<out R> : State<R>() {
         open class Success<out T>(val value: T) : Complete<T>()
-        open class Failure(val throwable: Throwable) : Complete<Nothing>()
+        open class Failure(val exception: Throwable) : Complete<Nothing>()
     }
 
     val isSuccess: Boolean get() = this is Complete.Success
@@ -30,7 +30,7 @@ inline fun <R, T> State<T>.flatMap(transform: (T) -> State<R>): State<R> {
         Loading -> Loading
         is Complete -> when (this) {
             is Complete.Success -> transform(value)
-            is Complete.Failure -> Complete.Failure(throwable)
+            is Complete.Failure -> Complete.Failure(exception)
         }
     }
 }
@@ -40,7 +40,7 @@ inline fun <R, T> State<T>.map(transform: (T) -> R): State<R> {
         Loading -> Loading
         is Complete -> when (this) {
             is Complete.Success -> Complete.Success(transform(value))
-            is Complete.Failure -> Complete.Failure(throwable)
+            is Complete.Failure -> Complete.Failure(exception)
         }
     }
 }
@@ -75,7 +75,7 @@ inline fun <T> State<T>.onFailure(action: (throwable: Throwable) -> Unit): State
     }
 
     if (this is Complete.Failure) {
-        action(throwable)
+        action(exception)
     }
 
     return this
@@ -88,7 +88,7 @@ inline fun <T> Complete<T>.ifFailure(defaultValue: (throwable: Throwable) -> Com
     }
 
     if (this is Complete.Failure) {
-        return defaultValue(throwable)
+        return defaultValue(exception)
     }
 
     return this

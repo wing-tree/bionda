@@ -56,7 +56,7 @@ fun UVIdx(
                 State.Loading -> Loading(modifier = Modifier)
                 is State.Complete -> when (it) {
                     is State.Complete.Success -> Content(uvIdx = it.value)
-                    is State.Complete.Failure -> Text(it.throwable.message ?: "${it.throwable}")
+                    is State.Complete.Failure -> Text(it.exception.message ?: "${it.exception}")
                 }
             }
         }

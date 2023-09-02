@@ -63,7 +63,7 @@ class LocationProvider(private val context: Context)  {
                         }
                 }
             is State.Complete.Failure -> {
-                Timber.e(currentLocation.throwable)
+                Timber.e(currentLocation.exception)
                 getLastLocation()
                     .ifNull {
                         getLastLocation(lastLocationRequest)

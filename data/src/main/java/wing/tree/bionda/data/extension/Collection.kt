@@ -1,9 +1,11 @@
+@file:Suppress("unused")
+
 package wing.tree.bionda.data.extension
 
 import wing.tree.bionda.data.core.State
 
 val Collection<State.Complete.Failure>.exceptions: List<Throwable> get() = map {
-    it.throwable
+    it.exception
 }
 
 val <T> Collection<State.Complete.Success<T>>.values: List<T> get() = map {

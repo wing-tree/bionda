@@ -125,7 +125,7 @@ class AlarmService : Service(), PermissionChecker {
 
                     else -> {
                         if (location is Complete.Failure) {
-                            Timber.e(location.throwable)
+                            Timber.e(location.exception)
                         }
 
                         stopSelf()

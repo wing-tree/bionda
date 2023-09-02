@@ -47,18 +47,18 @@ sealed interface MidLandFcstTa {
     }
 
     sealed interface OneOfSuccess : MidLandFcstTa {
-        val throwable: Throwable
+        val exception: Throwable
 
         data class MidLandFcst(
             override val tmFc: String,
-            override val throwable: Throwable,
+            override val exception: Throwable,
             val julianDay: Int,
             val midLandFcst: LandFcst
         ) : OneOfSuccess
 
         data class MidTa(
             override val tmFc: String,
-            override val throwable: Throwable,
+            override val exception: Throwable,
             val julianDay: Int,
             val midTa: Ta
         ) : OneOfSuccess
@@ -89,7 +89,7 @@ sealed interface MidLandFcstTa {
                     else -> OneOfSuccess.MidLandFcst(
                         tmFc = tmFc,
                         julianDay = julianDay,
-                        throwable = midTa.throwable,
+                        exception = midTa.exception,
                         midLandFcst = midLandFcst.value
                     )
                 }
@@ -98,14 +98,14 @@ sealed interface MidLandFcstTa {
                     midTa.isSuccess() -> OneOfSuccess.MidTa(
                         tmFc = tmFc,
                         julianDay = julianDay,
-                        throwable = midLandFcst.throwable,
+                        exception = midLandFcst.exception,
                         midTa = midTa.value
                     )
 
                     else -> BothFailure(
                         tmFc = tmFc,
-                        midLandFcst = midLandFcst.throwable,
-                        midTa = midTa.throwable
+                        midLandFcst = midLandFcst.exception,
+                        midTa = midTa.exception
                     )
                 }
             }

@@ -73,7 +73,7 @@ fun VilageFcst(
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                is Complete.Failure -> Text(text = "${it.throwable}")
+                is Complete.Failure -> Text(text = "${it.exception}")
             }
         }
     }

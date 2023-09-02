@@ -80,7 +80,7 @@ fun MidLandFcstTa(
             State.Loading -> Loading(modifier = Modifier)
             is Complete -> when (it) {
                 is Complete.Success -> Content(content = it.value)
-                is Complete.Failure -> Text("${it.throwable}")
+                is Complete.Failure -> Text("${it.exception}")
             }
         }
     }
@@ -208,7 +208,7 @@ private fun OneOfSuccess(
             }
         }
 
-        Text(text = oneOfSuccess.throwable.message ?: "${oneOfSuccess.throwable}")
+        Text(text = oneOfSuccess.exception.message ?: "${oneOfSuccess.exception}")
     }
 }
 

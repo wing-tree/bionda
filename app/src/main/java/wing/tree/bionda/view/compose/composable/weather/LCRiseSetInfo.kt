@@ -40,7 +40,7 @@ fun LCRiseSetInfo(
                 Loading -> Loading(modifier = Modifier)
                 is Complete -> when (it) {
                     is Complete.Success -> Content(lcRiseSetInfo = it.value)
-                    is Complete.Failure -> Text(text = it.throwable.message ?: "${it.throwable}")
+                    is Complete.Failure -> Text(text = it.exception.message ?: "${it.exception}")
                 }
             }
         }
