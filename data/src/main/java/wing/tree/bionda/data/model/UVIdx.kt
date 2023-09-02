@@ -9,6 +9,8 @@ import wing.tree.bionda.data.validator.ResponseValidator
 sealed interface UVIdx {
     val item: Item
 
+    data class H(val n: Int, val h: String)
+
     @Serializable
     data class Item(
         val code: String,
@@ -40,11 +42,16 @@ sealed interface UVIdx {
         val h69: String,
         val h72: String,
         val h75: String
-    ) : List<String> by listOf(
-        h0, h3, h6, h9, h12, h15, h18, h21,
-        h24, h27, h30, h33, h36, h39, h42, h45,
-        h48, h51, h54, h57, h60, h63, h66, h69,
-        h72, h75
+    ) : List<H> by listOf(
+        H(0, h0), H(3, h3), H(6, h6),
+        H(9, h9), H(12, h12), H(15, h15),
+        H(18, h18), H(21, h21), H(24, h24),
+        H(27, h27), H(30, h30), H(33, h33),
+        H(36, h36), H(39, h39), H(42, h42),
+        H(45, h45), H(48, h48), H(51, h51),
+        H(54, h54), H(57, h57), H(60, h60),
+        H(63, h63), H(66, h66), H(69, h69),
+        H(72, h72), H(75, h75)
     )
 
     @Entity(tableName = "uv_idx", primaryKeys = ["areaNo", "time"])
