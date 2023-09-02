@@ -10,12 +10,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.LinearGradientShader
 import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.PaintingStyle
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.asAndroidPath
 import androidx.compose.ui.graphics.asComposePath
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.unit.Dp
@@ -24,13 +24,14 @@ import androidx.core.graphics.drawable.toBitmap
 import wing.tree.bionda.data.extension.dec
 import wing.tree.bionda.data.extension.degree
 import wing.tree.bionda.data.extension.half
+import wing.tree.bionda.data.extension.inc
 import wing.tree.bionda.data.extension.int
 import wing.tree.bionda.data.extension.`is`
 import wing.tree.bionda.data.extension.isZero
 import wing.tree.bionda.data.extension.quarter
 import wing.tree.bionda.data.extension.zero
-import wing.tree.bionda.model.style.ChartStyle
 import wing.tree.bionda.model.VilageFcst
+import wing.tree.bionda.model.style.ChartStyle
 
 val DrawScope.nativeCanvas: Canvas get() = drawContext.canvas.nativeCanvas
 
@@ -149,9 +150,27 @@ fun DrawScope.drawTmpChart(
 
             if (index `is` offsets.lastIndex.dec) {
                 quadraticBezierTo(
-                    index.inc(),
+                    index.inc,
                     offsets
                 )
+
+                drawIntoCanvas {
+                    val paint = Paint().apply {
+                        this.style = PaintingStyle.Stroke
+
+                        strokeWidth = Dp.one.toPx()
+                        shader = LinearGradientShader(
+                            colors = listOf(
+                                style.color,
+                                style.color.copy(alpha = Float.half)
+                            ),
+                            from = Offset(Float.zero, pointF.y),
+                            to = Offset(Float.zero, pointF.y.plus(style.height.toPx()))
+                        )
+                    }
+
+                    it.drawPath(path, paint)
+                }
 
                 fillGradient(path, pointF, style)
             }
@@ -212,12 +231,6 @@ fun DrawScope.fillGradient(
     pointF: PointF,
     style: ChartStyle.TmpChart
 ) {
-    drawPath(
-        path = path,
-        color = style.color,
-        style = Stroke(width = Dp.one.toPx())
-    )
-
     val height = style.height.toPx()
     val y = pointF.y.plus(height.plus(height.half))
     val fillPath = android.graphics.Path(path.asAndroidPath())
@@ -231,8 +244,8 @@ fun DrawScope.fillGradient(
     val paint = Paint().apply {
         shader = LinearGradientShader(
             colors = listOf(
-                style.color.copy(alpha = Float.half),
-                Color.Transparent,
+                style.color.copy(alpha = Float.quarter),
+                Color.Transparent
             ),
             from = Offset(Float.zero, pointF.y),
             to = Offset(Float.zero, y)

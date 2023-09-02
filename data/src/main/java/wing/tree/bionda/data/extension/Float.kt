@@ -2,6 +2,7 @@ package wing.tree.bionda.data.extension
 
 val Float.Companion.half: Float get() = 0.5F
 val Float.Companion.one: Float get() = 1.0F
+val Float.Companion.quarter: Float get() = 0.25F
 val Float.Companion.threeQuarters: Float get() = 0.75F
 val Float.Companion.zero: Float get() = 0.0F
 val Float.complement: Float get() = run {

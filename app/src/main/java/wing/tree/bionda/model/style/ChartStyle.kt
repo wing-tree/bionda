@@ -8,6 +8,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import wing.tree.bionda.extension.toTextPaint
+import wing.tree.bionda.theme.YellowOrange
 
 data class ChartStyle(
     val segment: Segment,
@@ -95,7 +96,7 @@ data class ChartStyle(
             reh = Reh,
             tmp = Tmp,
             tmpChart = TmpChart(
-                color = Color.Cyan,
+                color = YellowOrange,
                 height = 16.dp
             ),
             weatherIcon = WeatherIcon(
