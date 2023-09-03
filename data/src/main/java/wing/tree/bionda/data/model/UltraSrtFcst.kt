@@ -3,11 +3,13 @@ package wing.tree.bionda.data.model
 import android.icu.util.Calendar
 import androidx.room.Entity
 import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.mutate
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.serialization.Serializable
 import wing.tree.bionda.data.core.Response
 import wing.tree.bionda.data.exception.OpenAPIError
 import wing.tree.bionda.data.extension.advanceHourOfDayBy
+import wing.tree.bionda.data.extension.firstIndex
 import wing.tree.bionda.data.extension.hourOfDay
 import wing.tree.bionda.data.extension.two
 import wing.tree.bionda.data.extension.zero
@@ -41,19 +43,22 @@ sealed interface UltraSrtFcst : VilageFcst {
                 // TODO make 26 to const.
                 takeLast(26).filter {
                     koreaCalendar < koreaCalendar(it.fcstDate, it.fcstTime)
-                }.let {
-                    val items = it.plus(items)
-
-                    copy(items = items.toPersistentList())
+                }.let { elements ->
+                    copy(
+                        items = items.mutate {
+                            it.addAll(Int.firstIndex, elements)
+                        }
+                    )
                 }
             }
         }
 
         fun takeAfter(`when`: Calendar): Local = copy(
-            items = items.filter {
-                it.fcstCalendar.hourOfDay >= `when`.hourOfDay
+            items = items.mutate {
+                it.removeAll { item ->
+                    item.fcstCalendar.hourOfDay < `when`.hourOfDay
+                }
             }
-                .toPersistentList()
         )
     }
 
