@@ -36,18 +36,18 @@ data class VilageFcst(
         }
 
         val fcstHour: Int get() = fcstTime.int.div(Int.oneHundred)
-        val pcp = codeValues[Category.PCP]
-        val pop = codeValues[Category.POP]
-        val pty = CodeValue.Pty(code = codeValues[Category.PTY])
-        val rn1 = codeValues[Category.RN1]
-        val reh = when (type) {
+        val pcp: String? get() = when (type) {
             is Type.UltraSrtFcst -> rn1
             else -> codeValues[Category.REH]
         }
 
+        val pop = codeValues[Category.POP]
+        val pty = CodeValue.Pty(code = codeValues[Category.PTY])
+        val reh = codeValues[Category.REH]
+        val rn1 = codeValues[Category.RN1]
         val sky = CodeValue.Sky(code = codeValues[Category.SKY])
         val t1h = codeValues[Category.T1H]
-        val tmp = when (type) {
+        val tmp: String? get() = when (type) {
             is Type.UltraSrtFcst -> t1h
             else -> codeValues[Category.TMP]
         }
