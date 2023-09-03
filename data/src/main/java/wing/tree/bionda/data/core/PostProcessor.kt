@@ -10,6 +10,7 @@ import wing.tree.bionda.data.model.UltraSrtFcst
 import wing.tree.bionda.data.model.UltraSrtNcst
 import wing.tree.bionda.data.model.VilageFcst
 import wing.tree.bionda.data.service.VilageFcstInfoService
+import wing.tree.bionda.data.top.level.koreaCalendar
 import wing.tree.bionda.data.source.local.WeatherDataSource as LocalDataSource
 
 class PostProcessor(private val localDataSource: LocalDataSource) {
@@ -67,9 +68,12 @@ class PostProcessor(private val localDataSource: LocalDataSource) {
                 params = params.copy(baseCalendar =  it)
             )
         }.let {
-            toLocal(params, minute).prepend(it).also { ultraSrtFcst ->
-                localDataSource.cache(ultraSrtFcst)
-            }
+            toLocal(params, minute)
+                .prepend(it)
+                .takeAfter(koreaCalendar)
+                .also { ultraSrtFcst ->
+                    localDataSource.cache(ultraSrtFcst)
+                }
         }
     }
 
@@ -81,9 +85,12 @@ class PostProcessor(private val localDataSource: LocalDataSource) {
         return baseCalendar.advanceHourOfDayBy(3).let {
             localDataSource.loadVilageFcst(params.copy(baseCalendar =  it))
         }.let {
-            toLocal(params).prepend(it).also { vilageFcst ->
-                localDataSource.cache(vilageFcst)
-            }
+            toLocal(params)
+                .prepend(it)
+                .takeAfter(koreaCalendar)
+                .also { vilageFcst ->
+                    localDataSource.cache(vilageFcst)
+                }
         }
     }
 }
