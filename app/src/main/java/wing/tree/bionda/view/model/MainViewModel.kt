@@ -114,10 +114,21 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private val vilageFcst = coordinate.map {
-        it.flatMap { (nx, ny) ->
+    private val vilageFcst = combine(
+        coordinate,
+        ultraSrtFcst
+    ) { coordinate, ultraSrtFcst ->
+        coordinate.flatMap { (nx, ny) ->
             weatherRepository.getVilageFcst(nx = nx, ny = ny).map { vilageFcst ->
-                vilageFcstMapper.toPresentationModel(vilageFcst)
+                vilageFcstMapper
+                    .toPresentationModel(vilageFcst)
+                    .run {
+                        if (ultraSrtFcst.isSuccess()) {
+                            overwrite(ultraSrtFcst.value)
+                        } else {
+                            this
+                        }
+                    }
             }
         }
     }

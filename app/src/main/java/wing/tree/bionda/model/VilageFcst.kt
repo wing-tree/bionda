@@ -4,9 +4,11 @@ import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Stable
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.PersistentList
+import wing.tree.bionda.data.extension.Builder.replaceAt
 import wing.tree.bionda.data.extension.ifZero
 import wing.tree.bionda.data.extension.int
 import wing.tree.bionda.data.extension.`is`
+import wing.tree.bionda.data.extension.isNonNegative
 import wing.tree.bionda.data.extension.not
 import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.oneHundred
@@ -82,6 +84,26 @@ data class VilageFcst(
         items.updateTimesOfDay()
 
         return copy(items = items.build())
+    }
+
+    fun overwrite(vilageFcst: VilageFcst): VilageFcst {
+        val builder = items.builder()
+
+        vilageFcst.items.forEach { item ->
+            builder.indexOfFirst {
+                when {
+                    it.fcstDate not item.fcstDate -> false
+                    it.fcstTime not item.fcstTime -> false
+                    else -> true
+                }
+            }.let { index ->
+                if (index.isNonNegative) {
+                    builder.replaceAt(index, item)
+                }
+            }
+        }
+
+        return copy(items = builder.build())
     }
 
     private fun PersistentList.Builder<Item>.insertLCRiseSetInfo(
