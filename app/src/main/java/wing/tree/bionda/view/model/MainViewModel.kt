@@ -262,7 +262,9 @@ class MainViewModel @Inject constructor(
             checkSelfPermission(it)
         }.ifTrue {
             viewModelScope.launch {
-                location.value = locationProvider.getLocation()
+                location.value = locationProvider.getLocation().map {
+                    it ?: LocationProvider.seoul
+                }
             }
         }
     }

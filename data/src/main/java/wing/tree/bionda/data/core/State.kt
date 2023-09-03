@@ -69,7 +69,7 @@ inline fun <T> State<T>.onSuccess(action: (value: T) -> Unit): State<T> {
 }
 
 @OptIn(ExperimentalContracts::class)
-inline fun <T> State<T>.onFailure(action: (throwable: Throwable) -> Unit): State<T> {
+inline fun <T> State<T>.onFailure(action: (exception: Throwable) -> Unit): State<T> {
     contract {
         callsInPlace(action, InvocationKind.AT_MOST_ONCE)
     }

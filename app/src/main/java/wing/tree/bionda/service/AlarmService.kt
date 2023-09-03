@@ -12,15 +12,17 @@ import androidx.core.app.NotificationManagerCompat
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import wing.tree.bionda.data.constant.EXTRA_ALARM_ID
-import wing.tree.bionda.data.extension.negativeOne
-import wing.tree.bionda.data.model.Alarm
 import wing.tree.bionda.data.core.State.Complete
+import wing.tree.bionda.data.core.isSuccess
 import wing.tree.bionda.data.core.map
 import wing.tree.bionda.data.core.onFailure
 import wing.tree.bionda.data.core.onSuccess
+import wing.tree.bionda.data.extension.negativeOne
+import wing.tree.bionda.data.model.Alarm
 import wing.tree.bionda.data.provider.LocationProvider
 import wing.tree.bionda.data.repository.AlarmRepository
 import wing.tree.bionda.data.repository.WeatherRepository
@@ -71,8 +73,6 @@ class AlarmService : Service(), PermissionChecker {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         intent ?: return START_NOT_STICKY
 
-        val context = this
-
         coroutineScope.launch {
             val alarmId = intent.getLongExtra(EXTRA_ALARM_ID, Long.negativeOne)
             val alarm = alarmRepository.get(alarmId) ?: return@launch
@@ -91,11 +91,24 @@ class AlarmService : Service(), PermissionChecker {
                 when (val location = locationProvider.getLocation()) {
                     is Complete.Success -> {
                         location.value?.toCoordinate()?.let { (nx, ny) ->
+                            val ultraSrtFcst = async {
+                                weatherRepository.getUltraSrtFcst(
+                                    nx = nx,
+                                    ny = ny
+                                )
+                            }
+
                             weatherRepository.getVilageFcst(
                                 nx = nx,
                                 ny = ny
                             ).map {
-                                vilageFcstMapper.toPresentationModel(it)
+                                vilageFcstMapper.toPresentationModel(it).run {
+                                    if (ultraSrtFcst.await().isSuccess()) {
+                                        overwrite(vilageFcstMapper.toPresentationModel(it))
+                                    } else {
+                                        this
+                                    }
+                                }
                             }.onSuccess { forecast ->
                                 stopForeground(STOP_FOREGROUND_REMOVE)
 

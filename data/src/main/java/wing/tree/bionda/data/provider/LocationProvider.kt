@@ -17,7 +17,6 @@ import timber.log.Timber
 import wing.tree.bionda.data.core.State
 import wing.tree.bionda.data.core.ifFailure
 import wing.tree.bionda.data.core.ifNull
-import wing.tree.bionda.data.core.map
 import wing.tree.bionda.data.exception.OnCanceledException
 import wing.tree.bionda.data.extension.empty
 import wing.tree.bionda.data.extension.zero
@@ -44,7 +43,7 @@ class LocationProvider(private val context: Context)  {
     }
 
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION])
-    suspend fun getLocation(): State.Complete<Location> {
+    suspend fun getLocation(): State.Complete<Location?> {
         val currentLocation = getCurrentLocation()
             .ifNull {
                 getCurrentLocation(currentLocationRequest)
@@ -74,8 +73,6 @@ class LocationProvider(private val context: Context)  {
                         getLastLocation(lastLocationRequest)
                     }
             }
-        }.map {
-            it ?: seoul
         }
     }
 
