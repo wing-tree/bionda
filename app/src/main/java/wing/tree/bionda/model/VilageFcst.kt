@@ -39,9 +39,19 @@ data class VilageFcst(
         val pcp = codeValues[Category.PCP]
         val pop = codeValues[Category.POP]
         val pty = CodeValue.Pty(code = codeValues[Category.PTY])
-        val reh = codeValues[Category.REH]
+        val rn1 = codeValues[Category.RN1]
+        val reh = when (type) {
+            is Type.UltraSrtFcst -> rn1
+            else -> codeValues[Category.REH]
+        }
+
         val sky = CodeValue.Sky(code = codeValues[Category.SKY])
-        val tmp = codeValues[Category.TMP]
+        val t1h = codeValues[Category.T1H]
+        val tmp = when (type) {
+            is Type.UltraSrtFcst -> t1h
+            else -> codeValues[Category.TMP]
+        }
+
         val tmn = codeValues[Category.TMN]
         val tmx = codeValues[Category.TMX]
         val weatherIcon: Int? @DrawableRes get() = type.getWeatherIcon(this)
@@ -50,6 +60,14 @@ data class VilageFcst(
         sealed interface Type {
             @DrawableRes
             fun getWeatherIcon(item: Item): Int?
+
+            object UltraSrtFcst : Type {
+                override fun getWeatherIcon(item: Item) = with(item) {
+                    weatherIcons.let {
+                        it.pty[pty.code] ?: it.sky[sky.code]
+                    }
+                }
+            }
 
             object VilageFcst : Type {
                 override fun getWeatherIcon(item: Item) = with(item) {
