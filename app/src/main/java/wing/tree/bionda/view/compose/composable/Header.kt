@@ -47,7 +47,6 @@ fun Header(
                     modifier = Modifier.weight(Float.one),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(text = ultraSrtNcst.baseTime) // TODO remove...
                     TextClock()
                     VerticalSpacer(height = 8.dp)
                     Address(address = address)
