@@ -60,6 +60,12 @@ fun Calendar.advanceHourOfDayBy(hourOfDay: Int) = apply {
     this.hourOfDay -= hourOfDay
 }
 
+fun Calendar.clearBelowHour(): Calendar = apply {
+    clear(Calendar.MINUTE)
+    clear(Calendar.SECOND)
+    clear(Calendar.MILLISECOND)
+}
+
 fun Calendar.cloneAsCalendar(): Calendar = with(clone()) {
     if (this is Calendar) {
         this
