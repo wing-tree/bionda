@@ -3,8 +3,10 @@ package wing.tree.bionda.extension
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.Dp
 import wing.tree.bionda.data.extension.complement
+import wing.tree.bionda.data.extension.dec
 import wing.tree.bionda.data.extension.floatOrNull
 import wing.tree.bionda.data.extension.half
+import wing.tree.bionda.data.extension.ifZero
 import wing.tree.bionda.data.extension.inc
 import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.model.style.ChartStyle
@@ -30,8 +32,15 @@ fun List<VilageFcst.Item>.offsets(
 
     fun Dp.toPx() = value.times(density)
 
-    return map {
-        it.tmp?.floatOrNull ?: Float.zero
+    return mapIndexed { index, item ->
+        val tmp = item.tmp?.floatOrNull ?: Float.zero
+
+        tmp.ifZero {
+            val previous = getOrNull(index.dec)?.tmp?.floatOrNull ?: Float.zero
+            val next = getOrNull(index.inc)?.tmp?.floatOrNull ?: Float.zero
+
+            previous.plus(next).half
+        }
     }.let {
         buildList {
             add(it.first())

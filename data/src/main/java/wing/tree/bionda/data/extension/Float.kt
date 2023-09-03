@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package wing.tree.bionda.data.extension
 
 val Float.Companion.half: Float get() = 0.5F
@@ -14,3 +16,9 @@ val Float.complement: Float get() = run {
 val Float.half: Float get() = div(2.0F)
 val Float.int: Int get() = toInt()
 val Float.quarter: Float get() = div(4.0F)
+
+fun Float.ifZero(defaultValue: () -> Float) = if (this `is` Float.zero) {
+    defaultValue()
+} else {
+    this
+}
