@@ -173,14 +173,21 @@ class WeatherDataSource(
 
     suspend fun loadUltraSrtFcst(
         params: VilageFcstInfoService.Params,
-        minute: Int,
+        minute: Int? = null,
     ): UltraSrtFcst? = with(params) {
-        ultraSrtFcstDao.load(
+        minute?.let {
+            ultraSrtFcstDao.load(
+                baseDate,
+                baseTime,
+                nx,
+                ny,
+                it
+            )
+        } ?: ultraSrtFcstDao.load(
             baseDate,
             baseTime,
             nx,
-            ny,
-            minute
+            ny
         )
     }
 

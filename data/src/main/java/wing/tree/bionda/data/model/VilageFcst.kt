@@ -2,8 +2,8 @@ package wing.tree.bionda.data.model
 
 import android.icu.util.Calendar
 import androidx.room.Entity
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.serialization.Serializable
 import wing.tree.bionda.data.core.Response
 import wing.tree.bionda.data.exception.OpenAPIError
@@ -47,7 +47,7 @@ sealed interface VilageFcst {
         ]
     )
     data class Local(
-        override val items: ImmutableList<Item>,
+        override val items: PersistentList<Item>,
         override val nx: Int,
         override val ny: Int,
         val baseDate: String,
@@ -67,9 +67,9 @@ sealed interface VilageFcst {
                             it.fcstCalendar < items.first().fcstCalendar
                 }.let {
                     println("pppppppp:$it")
-                    val items = it.plus(items).toImmutableList()
+                    val items = it.plus(items)
 
-                    copy(items = items)
+                    copy(items = items.toPersistentList())
                 }
             }
         }
@@ -92,7 +92,7 @@ sealed interface VilageFcst {
 
         fun toLocal(params: VilageFcstInfoService.Params): Local = with(params) {
             Local(
-                items = items.toImmutableList(),
+                items = items.toPersistentList(),
                 baseDate = baseDate,
                 baseTime = baseTime,
                 nx = this.nx,

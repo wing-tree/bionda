@@ -18,6 +18,22 @@ interface UltraSrtFcstDao {
             AND baseTime = :baseTime 
             AND nx = :nx 
             AND ny = :ny
+        """
+    )
+    suspend fun load(
+        baseDate : String,
+        baseTime : String,
+        nx: Int,
+        ny: Int
+    ): UltraSrtFcst?
+
+    @Query(
+        """
+            SELECT * FROM ultra_srt_fcst 
+            WHERE baseDate = :baseDate 
+            AND baseTime = :baseTime 
+            AND nx = :nx 
+            AND ny = :ny
             AND minute = :minute
         """
     )

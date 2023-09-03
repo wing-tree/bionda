@@ -64,8 +64,7 @@ class PostProcessor(private val localDataSource: LocalDataSource) {
 
         return baseCalendar.advanceHourOfDayBy(1).let {
             localDataSource.loadUltraSrtFcst(
-                params = params.copy(baseCalendar =  it),
-                minute = minute
+                params = params.copy(baseCalendar =  it)
             )
         }.let {
             toLocal(params, minute).prepend(it).also { ultraSrtFcst ->

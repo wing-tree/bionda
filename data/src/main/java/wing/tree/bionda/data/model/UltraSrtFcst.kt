@@ -1,8 +1,8 @@
 package wing.tree.bionda.data.model
 
 import androidx.room.Entity
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.serialization.Serializable
 import wing.tree.bionda.data.core.Response
 import wing.tree.bionda.data.exception.OpenAPIError
@@ -25,7 +25,7 @@ sealed interface UltraSrtFcst : VilageFcst {
         ]
     )
     data class Local(
-        override val items: ImmutableList<VilageFcst.Item>,
+        override val items: PersistentList<VilageFcst.Item>,
         override val nx: Int,
         override val ny: Int,
         val baseDate: String,
@@ -40,9 +40,9 @@ sealed interface UltraSrtFcst : VilageFcst {
                 takeLast(26).filter {
                     koreaCalendar < koreaCalendar(it.fcstDate, it.fcstTime)
                 }.let {
-                    val items = items.plus(it).toImmutableList()
+                    val items = it.plus(items)
 
-                    copy(items = items)
+                    copy(items = items.toPersistentList())
                 }
             }
         }
@@ -68,7 +68,7 @@ sealed interface UltraSrtFcst : VilageFcst {
             minute: Int
         ): Local = with(params) {
             Local(
-                items = items.toImmutableList(),
+                items = items.toPersistentList(),
                 baseDate = baseDate,
                 baseTime = baseTime,
                 nx = nx,
