@@ -9,6 +9,7 @@ import kotlinx.serialization.Serializable
 import wing.tree.bionda.data.core.Response
 import wing.tree.bionda.data.exception.OpenAPIError
 import wing.tree.bionda.data.extension.advanceHourOfDayBy
+import wing.tree.bionda.data.extension.baseDate
 import wing.tree.bionda.data.extension.firstIndex
 import wing.tree.bionda.data.extension.hourOfDay
 import wing.tree.bionda.data.extension.two
@@ -56,7 +57,11 @@ sealed interface UltraSrtFcst : VilageFcst {
         fun takeAfter(`when`: Calendar): Local = copy(
             items = items.mutate {
                 it.removeAll { item ->
-                    item.fcstCalendar.hourOfDay < `when`.hourOfDay
+                    when {
+                        item.fcstDate > `when`.baseDate -> false
+                        item.fcstHour >= `when`.hourOfDay -> false
+                        else -> true
+                    }
                 }
             }
         )

@@ -230,7 +230,7 @@ class WeatherRepository(
                 }
             }
 
-            Complete.Success(ultraSrtFcst)
+            Complete.Success(ultraSrtFcst.takeAfter(koreaCalendar))
         } catch (throwable: Throwable) {
             Complete.Failure(throwable)
         }
@@ -287,7 +287,7 @@ class WeatherRepository(
                 }
             }
 
-            Complete.Success(vilageFcst)
+            Complete.Success(vilageFcst.takeAfter(koreaCalendar))
         } catch (throwable: Throwable) {
             Complete.Failure(throwable)
         }

@@ -9,9 +9,12 @@ import kotlinx.serialization.Serializable
 import wing.tree.bionda.data.core.Response
 import wing.tree.bionda.data.exception.OpenAPIError
 import wing.tree.bionda.data.extension.advanceHourOfDayBy
+import wing.tree.bionda.data.extension.baseDate
 import wing.tree.bionda.data.extension.firstIndex
 import wing.tree.bionda.data.extension.hourOfDay
-import wing.tree.bionda.data.extension.two
+import wing.tree.bionda.data.extension.int
+import wing.tree.bionda.data.extension.one
+import wing.tree.bionda.data.extension.oneHundred
 import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.data.service.VilageFcstInfoService
 import wing.tree.bionda.data.top.level.koreaCalendar
@@ -38,6 +41,8 @@ sealed interface VilageFcst {
                 fcstDate,
                 fcstTime
             )
+
+        val fcstHour: Int get() = fcstTime.int.div(Int.oneHundred)
     }
 
     @Entity(
@@ -57,11 +62,11 @@ sealed interface VilageFcst {
         val baseTime: String,
     ) : VilageFcst {
         fun prepend(vilageFcst: Local?): Local {
-            val koreaCalendar = koreaCalendar.advanceHourOfDayBy(Int.two)
+            val koreaCalendar = koreaCalendar.advanceHourOfDayBy(Int.one)
 
             return with(vilageFcst?.items ?: emptyList()) {
                 // TODO make 26 to const.!
-                takeLast(26).filter {
+                filter {
                     // 아이템이, 2시간전보다 최신이면,
                     // 지금이 14시면, 12시 이후의 데이터들을 추출함.
                     // 첫 번째 데이터 보다, 이전의 데이터여야함.
@@ -83,7 +88,11 @@ sealed interface VilageFcst {
         fun takeAfter(`when`: Calendar): Local = copy(
             items = items.mutate {
                 it.removeAll { item ->
-                    item.fcstCalendar.hourOfDay < `when`.hourOfDay
+                    when {
+                        item.fcstDate > `when`.baseDate -> false
+                        item.fcstHour >= `when`.hourOfDay -> false
+                        else -> true
+                    }
                 }
             }
         )
