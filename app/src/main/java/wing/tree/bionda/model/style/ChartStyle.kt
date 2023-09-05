@@ -4,8 +4,8 @@ import android.text.TextPaint
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
@@ -24,16 +24,17 @@ data class ChartStyle(
     val tmpChart: TmpChart,
     val weatherIcon: WeatherIcon
 ) {
-    @Composable
-    fun height(density: Density): Dp = with(density) {
-        fcstHour.textPaint.height.toDp()
-            .plus(reh.textPaint.height.toDp())
-            .plus(pcp.textPaint.height.toDp())
-            .plus(pop.textPaint.height.toDp())
-            .plus(tmp.textPaint.height.toDp())
-            .plus(tmpChart.height)
-            .plus(weatherIcon.height)
-    }
+    val height: Dp
+        @Composable
+        get() = with(LocalDensity.current) {
+            fcstHour.textPaint.height.toDp()
+                .plus(reh.textPaint.height.toDp())
+                .plus(pcp.textPaint.height.toDp())
+                .plus(pop.textPaint.height.toDp())
+                .plus(tmp.textPaint.height.toDp())
+                .plus(tmpChart.height)
+                .plus(weatherIcon.height)
+        }
 
     @JvmInline
     value class Segment(val width: Dp)
