@@ -17,7 +17,7 @@ import wing.tree.bionda.data.extension.oneHundred
 import wing.tree.bionda.data.model.Category
 import wing.tree.bionda.data.model.CodeValue
 import wing.tree.bionda.data.model.LCRiseSetInfo
-import wing.tree.bionda.data.model.TimesOfDay
+import wing.tree.bionda.data.core.TimesOfDay
 import wing.tree.bionda.model.VilageFcst.Item.Type.RiseSet
 import wing.tree.bionda.top.level.emptyPersistentMap
 
