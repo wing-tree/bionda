@@ -9,7 +9,6 @@ import kotlinx.coroutines.coroutineScope
 import wing.tree.bionda.data.core.DegreeMinute.Type.LATITUDE
 import wing.tree.bionda.data.core.DegreeMinute.Type.LONGITUDE
 import wing.tree.bionda.data.core.PartialSuccess
-import wing.tree.bionda.data.processor.PostProcessor
 import wing.tree.bionda.data.core.State.Complete
 import wing.tree.bionda.data.exception.MultipleExceptions
 import wing.tree.bionda.data.extension.awaitOrFailure
@@ -30,15 +29,16 @@ import wing.tree.bionda.data.extension.toDegreeMinute
 import wing.tree.bionda.data.extension.values
 import wing.tree.bionda.data.model.Decorator
 import wing.tree.bionda.data.model.LCRiseSetInfo
+import wing.tree.bionda.data.model.LivingWthrIdx.UVIdx
 import wing.tree.bionda.data.model.MidLandFcst
 import wing.tree.bionda.data.model.MidLandFcstTa
 import wing.tree.bionda.data.model.MidLandFcstTa.Companion.MidLandFcstTa
 import wing.tree.bionda.data.model.MidTa
 import wing.tree.bionda.data.model.RegId
-import wing.tree.bionda.data.model.UVIdx
 import wing.tree.bionda.data.model.UltraSrtFcst
 import wing.tree.bionda.data.model.UltraSrtNcst
 import wing.tree.bionda.data.model.VilageFcst
+import wing.tree.bionda.data.processor.PostProcessor
 import wing.tree.bionda.data.service.RiseSetInfoService
 import wing.tree.bionda.data.service.VilageFcstInfoService
 import wing.tree.bionda.data.top.level.baseCalendar

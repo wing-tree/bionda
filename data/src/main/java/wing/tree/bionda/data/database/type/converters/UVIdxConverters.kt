@@ -2,7 +2,7 @@ package wing.tree.bionda.data.database.type.converters
 
 import androidx.room.TypeConverter
 import kotlinx.serialization.json.Json
-import wing.tree.bionda.data.model.UVIdx.Item
+import wing.tree.bionda.data.model.LivingWthrIdx.Item
 
 class UVIdxConverters {
     private val json = Json {

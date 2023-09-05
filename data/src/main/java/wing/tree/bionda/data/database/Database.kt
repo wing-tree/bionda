@@ -20,9 +20,9 @@ import wing.tree.bionda.data.database.type.converters.UltraSrtNcstConverters
 import wing.tree.bionda.data.database.type.converters.VilageFcstConverters
 import wing.tree.bionda.data.model.Alarm
 import wing.tree.bionda.data.model.LCRiseSetInfo.Local as LCRiseSetInfo
+import wing.tree.bionda.data.model.LivingWthrIdx.UVIdx.Local as UVIdx
 import wing.tree.bionda.data.model.MidLandFcst.Local as MidLandFcst
 import wing.tree.bionda.data.model.MidTa.Local as MidTa
-import wing.tree.bionda.data.model.UVIdx.Local as UVIdx
 import wing.tree.bionda.data.model.UltraSrtFcst.Local as UltraSrtFcst
 import wing.tree.bionda.data.model.UltraSrtNcst.Local as UltraSrtNcst
 import wing.tree.bionda.data.model.VilageFcst.Local as VilageFcst

@@ -32,9 +32,9 @@ import kotlin.math.pow
 import kotlin.math.sin
 import kotlin.math.sqrt
 import wing.tree.bionda.data.model.LCRiseSetInfo.Local as LCRiseSetInfo
+import wing.tree.bionda.data.model.LivingWthrIdx.UVIdx.Local as UVIdx
 import wing.tree.bionda.data.model.MidLandFcst.Local as MidLandFcst
 import wing.tree.bionda.data.model.MidTa.Local as MidTa
-import wing.tree.bionda.data.model.UVIdx.Local as UVIdx
 import wing.tree.bionda.data.model.UltraSrtFcst.Local as UltraSrtFcst
 import wing.tree.bionda.data.model.UltraSrtNcst.Local as UltraSrtNcst
 import wing.tree.bionda.data.model.VilageFcst.Local as VilageFcst

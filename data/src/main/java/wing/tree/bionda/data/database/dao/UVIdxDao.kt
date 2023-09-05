@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
-import wing.tree.bionda.data.model.UVIdx.Local as UVIdx
+import wing.tree.bionda.data.model.LivingWthrIdx.UVIdx.Local as UVIdx
 
 @Dao
 interface UVIdxDao {

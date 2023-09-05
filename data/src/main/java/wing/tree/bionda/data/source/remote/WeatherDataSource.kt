@@ -1,7 +1,5 @@
 package wing.tree.bionda.data.source.remote
 
-import kotlinx.coroutines.delay
-import timber.log.Timber
 import wing.tree.bionda.data.BuildConfig
 import wing.tree.bionda.data.constant.COMMA
 import wing.tree.bionda.data.constant.SPACE
@@ -10,14 +8,11 @@ import wing.tree.bionda.data.core.Response
 import wing.tree.bionda.data.extension.advanceHourOfDayBy
 import wing.tree.bionda.data.extension.cloneAsCalendar
 import wing.tree.bionda.data.extension.eight
-import wing.tree.bionda.data.extension.five
-import wing.tree.bionda.data.extension.hundreds
-import wing.tree.bionda.data.extension.long
 import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.time
-import wing.tree.bionda.data.extension.two
 import wing.tree.bionda.data.model.LCRiseSetInfo
-import wing.tree.bionda.data.model.UVIdx
+import wing.tree.bionda.data.model.LivingWthrIdx
+import wing.tree.bionda.data.model.LivingWthrIdx.UVIdx
 import wing.tree.bionda.data.model.UltraSrtFcst
 import wing.tree.bionda.data.model.VilageFcst
 import wing.tree.bionda.data.service.LivingWthrIdxService
@@ -25,32 +20,13 @@ import wing.tree.bionda.data.service.MidFcstInfoService
 import wing.tree.bionda.data.service.RiseSetInfoService
 import wing.tree.bionda.data.service.VilageFcstInfoService
 import wing.tree.bionda.data.top.level.uvIdxCalendar
-import kotlin.math.pow
 
 class WeatherDataSource(
     private val livingWthrIdxService: LivingWthrIdxService,
     private val midFcstInfoService: MidFcstInfoService,
     private val riseSetInfoService: RiseSetInfoService,
     private val vilageFcstInfoService: VilageFcstInfoService
-) {
-    private suspend fun <T> retry(
-        retries: Int = Int.two,
-        initialDelay: Long = Long.five.hundreds,
-        block: suspend () -> T
-    ): T {
-        repeat(retries) { attempt ->
-            try {
-                return block()
-            } catch (cause: Throwable) {
-                Timber.e(cause)
-            }
-
-            delay(initialDelay.times(Double.two.pow(attempt)).long)
-        }
-
-        return block()
-    }
-
+) : DataSource() {
     suspend fun getLCRiseSetInfo(
         params: RiseSetInfoService.Params
     ) = retry {
@@ -138,7 +114,7 @@ class WeatherDataSource(
             )
         }
 
-        fun errorMsg(areaNo: String, time: String): (Response<UVIdx.Item>) -> String = {
+        fun errorMsg(areaNo: String, time: String): (Response<LivingWthrIdx.Item>) -> String = {
             buildList {
                 add("resultCode=${it.header.resultCode}")
                 add("resultMsg=${it.header.resultMsg}")

@@ -29,7 +29,8 @@ import wing.tree.bionda.data.extension.ifTrue
 import wing.tree.bionda.data.extension.intOrZero
 import wing.tree.bionda.data.extension.isBlankOrZero
 import wing.tree.bionda.data.extension.timeRange
-import wing.tree.bionda.data.model.UVIdx
+import wing.tree.bionda.data.model.LivingWthrIdx
+import wing.tree.bionda.data.model.LivingWthrIdx.UVIdx
 import wing.tree.bionda.data.top.level.koreaCalendar
 import wing.tree.bionda.data.top.level.timeFormat
 import wing.tree.bionda.theme.LightGray
@@ -85,7 +86,7 @@ private fun Content(
 
 @Composable
 private fun Item(
-    item: UVIdx.H,
+    item: LivingWthrIdx.H,
     date: String,
     modifier: Modifier = Modifier
 ) {

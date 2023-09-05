@@ -6,8 +6,8 @@ import kotlinx.collections.immutable.persistentSetOf
 import wing.tree.bionda.data.core.Address
 import wing.tree.bionda.data.core.State
 import wing.tree.bionda.data.model.Alarm
+import wing.tree.bionda.data.model.LivingWthrIdx.UVIdx
 import wing.tree.bionda.data.model.MidLandFcstTa
-import wing.tree.bionda.data.model.UVIdx
 import wing.tree.bionda.model.UltraSrtNcst
 import wing.tree.bionda.model.VilageFcst
 import wing.tree.bionda.data.model.LCRiseSetInfo.Local as LCRiseSetInfo
