@@ -4,6 +4,7 @@ import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Stable
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.PersistentMap
+import kotlinx.collections.immutable.mutate
 import wing.tree.bionda.data.extension.Builder.replaceAt
 import wing.tree.bionda.data.extension.empty
 import wing.tree.bionda.data.extension.ifZero
@@ -43,10 +44,10 @@ data class VilageFcst(
         }
 
         val pop = codeValues[Category.POP]
-        val pty = CodeValue.Pty(code = codeValues[Category.PTY])
+        val pty: CodeValue.Pty get() = CodeValue.Pty(code = codeValues[Category.PTY])
         val reh = codeValues[Category.REH]
         val rn1 = codeValues[Category.RN1]
-        val sky = CodeValue.Sky(code = codeValues[Category.SKY])
+        val sky: CodeValue.Sky get() = CodeValue.Sky(code = codeValues[Category.SKY])
         val t1h = codeValues[Category.T1H]
         val tmp: String? get() = when (type) {
             is Type.UltraSrtFcst -> t1h
@@ -117,14 +118,20 @@ data class VilageFcst(
                 }
             }.let { index ->
                 if (index.isNonNegative) {
-                    val pop = builder[index].pop ?: String.empty
-
-                    item.apply {
-                        builder.replaceAt(
-                            index,
-                            copy(codeValues = codeValues.put(Category.POP, pop))
+                    builder.replaceAt(
+                        index,
+                        item.copy(
+                            codeValues = item.codeValues.mutate {
+                                with(builder[index]) {
+                                    it.putIfAbsent(Category.POP, pop ?: String.empty)
+                                    it.putIfAbsent(Category.PTY, pty.code ?: String.empty)
+                                    it.putIfAbsent(Category.REH, reh ?: String.empty)
+                                    it.putIfAbsent(Category.SKY, sky.code ?: String.empty)
+                                    it.putIfAbsent(Category.TMP, tmp ?: String.empty)
+                                }
+                            }
                         )
-                    }
+                    )
                 }
             }
         }
