@@ -12,7 +12,7 @@ import wing.tree.bionda.data.extension.advanceHourOfDayBy
 import wing.tree.bionda.data.extension.baseDate
 import wing.tree.bionda.data.extension.firstIndex
 import wing.tree.bionda.data.extension.hourOfDay
-import wing.tree.bionda.data.extension.two
+import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.data.service.VilageFcstInfoService
 import wing.tree.bionda.data.top.level.koreaCalendar
@@ -38,7 +38,7 @@ sealed interface UltraSrtFcst : VilageFcst {
         val minute: Int
     ) : UltraSrtFcst {
         fun prepend(vilageFcst: Local?): Local {
-            val koreaCalendar = koreaCalendar.advanceHourOfDayBy(Int.two)
+            val koreaCalendar = koreaCalendar.advanceHourOfDayBy(Int.one)
 
             return with(vilageFcst?.items ?: emptyList()) {
                 // TODO make 26 to const.
