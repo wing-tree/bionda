@@ -9,6 +9,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
 import wing.tree.bionda.extension.height
 import wing.tree.bionda.extension.toTextPaint
 import wing.tree.bionda.extension.zero
@@ -24,17 +26,14 @@ data class ChartStyle(
     val tmpChart: TmpChart,
     val weatherIcon: WeatherIcon
 ) {
-    val height: Dp
-        @Composable
-        get() = with(LocalDensity.current) {
-            fcstHour.textPaint.height.toDp()
-                .plus(reh.textPaint.height.toDp())
-                .plus(pcp.textPaint.height.toDp())
-                .plus(pop.textPaint.height.toDp())
-                .plus(tmp.textPaint.height.toDp())
-                .plus(tmpChart.height)
-                .plus(weatherIcon.height)
-        }
+    private val elements = persistentListOf(
+        reh, pcp, pop, tmp, tmpChart, weatherIcon
+    )
+
+    @Composable
+    fun calculateHeight() = elements.sumOf {
+        it.paddedHeight
+    }
 
     @JvmInline
     value class Segment(val width: Dp)
@@ -42,11 +41,20 @@ data class ChartStyle(
     data class VerticalPaddingValues(
         val top: Dp = Dp.zero,
         val bottom: Dp = Dp.zero
-    )
+    ) {
+        fun sum() = top.plus(bottom)
+    }
 
     sealed class Element {
         open val textPaint: TextPaint?
             @Composable get() = null
+
+        open val paddedHeight: Dp
+            @Composable
+            get() = with(LocalDensity.current) {
+                textPaint?.height?.toDp() ?: Dp.zero
+            }
+                .plus(verticalPaddingValues.sum())
 
         open val verticalPaddingValues: VerticalPaddingValues =
             VerticalPaddingValues()
@@ -95,7 +103,14 @@ data class ChartStyle(
     data class TmpChart(
         val color: Color,
         val height: Dp
-    ) : Element()
+    ) : Element() {
+        override val paddedHeight: Dp
+            @Composable
+            get() = height.plus(verticalPaddingValues.sum())
+
+        override val verticalPaddingValues: VerticalPaddingValues
+            get() = VerticalPaddingValues(4.dp, 4.dp) // TODO calculate nice value.
+    }
 
     data class WeatherIcon(
         val size: DpSize,
@@ -103,6 +118,24 @@ data class ChartStyle(
     ) : Element() {
         val width: Dp = size.width
         val height: Dp = size.height
+
+        override val paddedHeight: Dp
+            @Composable
+            get() = height.plus(verticalPaddingValues.sum())
+
+        override val verticalPaddingValues: VerticalPaddingValues
+            get() = VerticalPaddingValues(4.dp, 4.dp) // TODO calculate nice value.
+    }
+
+    @Composable
+    private fun PersistentList<Element>.sumOf(selector: @Composable (Element) -> Dp): Dp {
+        var sum: Dp = Dp.zero
+
+        for (element in this) {
+            sum += selector(element)
+        }
+
+        return sum
     }
 
     companion object {

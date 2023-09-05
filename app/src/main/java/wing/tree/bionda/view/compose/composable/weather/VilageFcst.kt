@@ -98,10 +98,14 @@ private fun Content(
                 .fillMaxWidth()
                 .height(180.dp) // todo, style에서 계산 필요. or requireHeight 등도 확인.
         ) {
+            val style = ChartStyle.defaultValue
+
             TmpChart(
                 items = vilageFcst.items,
+                style = style,
                 modifier = Modifier
                     .fillMaxSize()
+                    .height(style.calculateHeight())
                     .padding(vertical = 12.dp)
             )
         }
@@ -111,8 +115,8 @@ private fun Content(
 @Composable
 private fun TmpChart(
     items: ImmutableList<VilageFcst.Item>,
-    modifier: Modifier = Modifier,
-    style: ChartStyle = ChartStyle.defaultValue,
+    style: ChartStyle,
+    modifier: Modifier = Modifier
 ) {
     val contentColor = LocalContentColor.current
     val context = LocalContext.current
