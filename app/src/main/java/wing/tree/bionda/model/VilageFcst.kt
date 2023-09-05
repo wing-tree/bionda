@@ -120,9 +120,10 @@ data class VilageFcst(
                     val pop = builder[index].pop ?: String.empty
 
                     item.apply {
-                        codeValues.put(Category.POP, pop)
-
-                        builder.replaceAt(index, this)
+                        builder.replaceAt(
+                            index,
+                            copy(codeValues = codeValues.put(Category.POP, pop))
+                        )
                     }
                 }
             }
