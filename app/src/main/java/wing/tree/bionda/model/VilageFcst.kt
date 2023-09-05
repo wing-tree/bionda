@@ -2,9 +2,10 @@ package wing.tree.bionda.model
 
 import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Stable
-import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.PersistentMap
 import wing.tree.bionda.data.extension.Builder.replaceAt
+import wing.tree.bionda.data.extension.empty
 import wing.tree.bionda.data.extension.ifZero
 import wing.tree.bionda.data.extension.int
 import wing.tree.bionda.data.extension.`is`
@@ -26,7 +27,7 @@ data class VilageFcst(
     data class Item(
         val fcstDate: String,
         val fcstTime: String,
-        val codeValues: ImmutableMap<String, String>,
+        val codeValues: PersistentMap<String, String>,
         val timesOfDay: TimesOfDay = TimesOfDay.DAYTIME,
         val type: Type = Type.VilageFcst
     ) {
@@ -38,7 +39,7 @@ data class VilageFcst(
         val fcstHour: Int get() = fcstTime.int.div(Int.oneHundred)
         val pcp: String? get() = when (type) {
             is Type.UltraSrtFcst -> rn1
-            else -> codeValues[Category.REH]
+            else -> codeValues[Category.PCP]
         }
 
         val pop = codeValues[Category.POP]
@@ -116,7 +117,13 @@ data class VilageFcst(
                 }
             }.let { index ->
                 if (index.isNonNegative) {
-                    builder.replaceAt(index, item)
+                    val pop = builder[index].pop ?: String.empty
+
+                    item.apply {
+                        codeValues.put(Category.POP, pop)
+
+                        builder.replaceAt(index, this)
+                    }
                 }
             }
         }
