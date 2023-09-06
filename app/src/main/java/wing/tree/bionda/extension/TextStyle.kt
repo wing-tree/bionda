@@ -83,6 +83,7 @@ fun TextStyle.toTextPaint(
 }
 
 fun TextStyle.toTextPaint(
+    @ColorInt color: Int,
     density: Density,
     layoutDirection: LayoutDirection,
     resolver: FontFamily.Resolver
@@ -90,7 +91,7 @@ fun TextStyle.toTextPaint(
     val typeface by toTypeface(resolver)
 
     it.isAntiAlias = true
-    it.color = color.toArgb()
+    it.color = color
     it.typeface = typeface
     it.textAlign = textAlign?.toAlign(layoutDirection)
     it.textSize = with(density) {
