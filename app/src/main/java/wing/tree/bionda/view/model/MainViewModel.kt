@@ -1,9 +1,7 @@
 package wing.tree.bionda.view.model
 
 import android.app.Application
-import android.location.Location
 import androidx.compose.animation.core.AnimationConstants.DefaultDurationMillis
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.ImmutableList
@@ -28,7 +26,7 @@ import wing.tree.bionda.data.core.flatMap
 import wing.tree.bionda.data.core.isSuccess
 import wing.tree.bionda.data.core.map
 import wing.tree.bionda.data.extension.fiveSecondsInMilliseconds
-import wing.tree.bionda.data.extension.ifTrue
+import wing.tree.bionda.data.extension.flatMap
 import wing.tree.bionda.data.extension.long
 import wing.tree.bionda.data.extension.negativeOne
 import wing.tree.bionda.data.model.Alarm
@@ -39,7 +37,6 @@ import wing.tree.bionda.data.repository.AlarmRepository
 import wing.tree.bionda.data.repository.LivingWthrIdxRepository
 import wing.tree.bionda.data.repository.WeatherRepository
 import wing.tree.bionda.exception.PermissionsDeniedException
-import wing.tree.bionda.extension.checkSelfPermission
 import wing.tree.bionda.extension.getAddress
 import wing.tree.bionda.extension.toCoordinate
 import wing.tree.bionda.mapper.UltraSrtNcstMapper
@@ -58,23 +55,16 @@ import wing.tree.bionda.data.model.LCRiseSetInfo.Local as LCRiseSetInfo
 @HiltViewModel
 class MainViewModel @Inject constructor(
     application: Application,
+    locationProvider: LocationProvider,
     private val alarmRepository: AlarmRepository,
     private val alarmScheduler: AlarmScheduler,
     private val livingWthrIdxRepository: LivingWthrIdxRepository,
-    private val locationProvider: LocationProvider,
     private val ultraSrtNcstMapper: UltraSrtNcstMapper,
     private val vilageFcstMapper: VilageFcstMapper,
     private val weatherRepository: WeatherRepository
-) : AndroidViewModel(application) {
-    private val location = MutableStateFlow<State<Location>>(State.Loading)
-    private val coordinate = location.map {
-        it.map(Location::toCoordinate)
-    }
-
-    private val airDiffusionIdx =  location.map {
-        it.flatMap { location ->
-            livingWthrIdxRepository.getAirDiffusionIdx(location)
-        }
+) : LocationProviderViewModel(application, locationProvider) {
+    private val airDiffusionIdx =  location.flatMap {
+        livingWthrIdxRepository.getAirDiffusionIdx(it)
     }
         .stateIn(initialValue = State.Loading)
 
@@ -94,35 +84,27 @@ class MainViewModel @Inject constructor(
     }
         .stateIn(initialValue = HeaderState.initialValue)
 
-    private val lcRiseSetInfo: StateFlow<State<ImmutableList<LCRiseSetInfo>>> = location.map {
-        it.flatMap { location ->
-            weatherRepository.getLCRiseSetInfo(location)
-        }
+    private val lcRiseSetInfo: StateFlow<State<ImmutableList<LCRiseSetInfo>>> = location.flatMap {
+        weatherRepository.getLCRiseSetInfo(it)
     }
         .stateIn(initialValue = State.Loading)
 
-    private val midLandFcstTa: StateFlow<State<MidLandFcstTa>> = location.map {
-        it.flatMap { location ->
-            weatherRepository.getMidLandFcstTa(location)
-        }
+    private val midLandFcstTa: StateFlow<State<MidLandFcstTa>> = location.flatMap {
+        weatherRepository.getMidLandFcstTa(it)
     }
         .stateIn(initialValue = State.Loading)
 
     private val requestPermissions = MutableStateFlow<PersistentSet<String>>(emptyPersistentSet())
-    private val uvIdx = location.map {
-        it.flatMap { location ->
-            livingWthrIdxRepository.getUVIdx(location)
-        }
+    private val uvIdx = location.flatMap {
+        livingWthrIdxRepository.getUVIdx(it)
     }
 
-    private val ultraSrtFcst = coordinate.map {
-        it.flatMap { (nx, ny) ->
-            weatherRepository.getUltraSrtFcst(nx = nx, ny = ny).map { ultraSrtFcst ->
-                vilageFcstMapper.toPresentationModel(
-                    ultraSrtFcst,
-                    VilageFcst.Item.Type.UltraSrtFcst
-                )
-            }
+    private val ultraSrtFcst = coordinate.flatMap { (nx, ny) ->
+        weatherRepository.getUltraSrtFcst(nx = nx, ny = ny).map { ultraSrtFcst ->
+            vilageFcstMapper.toPresentationModel(
+                ultraSrtFcst,
+                VilageFcst.Item.Type.UltraSrtFcst
+            )
         }
     }
 
@@ -265,18 +247,6 @@ class MainViewModel @Inject constructor(
             }
 
             selected.value = emptyPersistentSet()
-        }
-    }
-
-    fun load() {
-        locationPermissions.any {
-            checkSelfPermission(it)
-        }.ifTrue {
-            viewModelScope.launch {
-                location.value = locationProvider.getLocation().map {
-                    it ?: LocationProvider.seoul
-                }
-            }
         }
     }
 
