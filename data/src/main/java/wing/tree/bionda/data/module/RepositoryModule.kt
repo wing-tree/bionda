@@ -5,15 +5,15 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import wing.tree.bionda.data.processor.PostProcessor
+import wing.tree.bionda.data.provider.AreaNoProvider
 import wing.tree.bionda.data.repository.AlarmRepository
 import wing.tree.bionda.data.repository.LivingWthrIdxRepository
 import wing.tree.bionda.data.repository.WeatherRepository
 import wing.tree.bionda.data.source.local.AlarmDataSource
-import wing.tree.bionda.data.source.local.AreaDataSource
-import wing.tree.bionda.data.source.local.LivingWthrIdxDataSource as LocalLivingWthrIdxDataSource
-import wing.tree.bionda.data.source.local.WeatherDataSource as LocalDataSource
-import wing.tree.bionda.data.source.remote.LivingWthrIdxDataSource as RemoteLivingWthrIdxDataSource
-import wing.tree.bionda.data.source.remote.WeatherDataSource as RemoteDataSource
+import wing.tree.bionda.data.source.local.LivingWthrIdxDataSource as LivingWthrIdxLocalDataSource
+import wing.tree.bionda.data.source.local.WeatherDataSource as WeatherLocalDataSource
+import wing.tree.bionda.data.source.remote.LivingWthrIdxDataSource as LivingWthrIdxRemoteDataSource
+import wing.tree.bionda.data.source.remote.WeatherDataSource as WeatherRemoteDataSource
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -27,17 +27,17 @@ object RepositoryModule {
 
     @Provides
     fun providesLivingWthrIdxRepository(
-        areaDataSource: AreaDataSource,
-        localDataSource: LocalLivingWthrIdxDataSource,
-        remoteDataSource: RemoteLivingWthrIdxDataSource
+        localDataSource: LivingWthrIdxLocalDataSource,
+        remoteDataSource: LivingWthrIdxRemoteDataSource,
+        areaNoProvider: AreaNoProvider
     ): LivingWthrIdxRepository {
-        return LivingWthrIdxRepository(areaDataSource, localDataSource, remoteDataSource)
+        return LivingWthrIdxRepository(localDataSource, remoteDataSource, areaNoProvider)
     }
 
     @Provides
     fun providesForecastRepository(
-        localDataSource: LocalDataSource,
-        remoteDataSource: RemoteDataSource,
+        localDataSource: WeatherLocalDataSource,
+        remoteDataSource: WeatherRemoteDataSource,
         postProcessor: PostProcessor
     ): WeatherRepository {
         return WeatherRepository(localDataSource, remoteDataSource, postProcessor)

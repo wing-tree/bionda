@@ -5,19 +5,19 @@ import wing.tree.bionda.data.core.State
 import wing.tree.bionda.data.extension.time
 import wing.tree.bionda.data.model.Decorator
 import wing.tree.bionda.data.model.LivingWthrIdx
-import wing.tree.bionda.data.source.local.AreaDataSource
+import wing.tree.bionda.data.provider.AreaNoProvider
 import wing.tree.bionda.data.top.level.baseCalendar
 import wing.tree.bionda.data.source.local.LivingWthrIdxDataSource as LocalDataSource
 import wing.tree.bionda.data.source.remote.LivingWthrIdxDataSource as RemoteDataSource
 
 class LivingWthrIdxRepository(
-    private val areaDataSource: AreaDataSource,
     private val localDataSource: LocalDataSource,
-    private val remoteDataSource: RemoteDataSource
+    private val remoteDataSource: RemoteDataSource,
+    private val areaNoProvider: AreaNoProvider
 ) {
     suspend fun getAirDiffusionIdx(location: Location): State.Complete<LivingWthrIdx.AirDiffusionIdx.Local> {
         return try {
-            val areaNo = areaDataSource.getAreaNo(location)
+            val areaNo = areaNoProvider.provide(location)
             val time = baseCalendar(Decorator.Calendar.UvIdx).time()
 
             val uvIdx = localDataSource.loadAirDiffusionIdx(
@@ -41,7 +41,7 @@ class LivingWthrIdxRepository(
 
     suspend fun getUVIdx(location: Location): State.Complete<LivingWthrIdx.UVIdx.Local> {
         return try {
-            val areaNo = areaDataSource.getAreaNo(location)
+            val areaNo = areaNoProvider.provide(location)
             val time = baseCalendar(Decorator.Calendar.UvIdx).time()
 
             val uvIdx = localDataSource.loadUVIdx(
