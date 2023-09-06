@@ -48,5 +48,10 @@ fun Weather(
             state = state.uvIdx,
             modifier = Modifier.fillMaxWidth()
         )
+
+        AirDiffusionIdx(
+            state = state.airDiffusionIdx,
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }

@@ -7,6 +7,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 
+// TODO implement.
 @AndroidEntryPoint
 class BootCompletedReceiver : BroadcastReceiver()  {
     private val coroutineScope = CoroutineScope(Dispatchers.IO)

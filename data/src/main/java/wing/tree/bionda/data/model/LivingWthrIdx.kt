@@ -4,6 +4,7 @@ import androidx.room.Entity
 import kotlinx.serialization.Serializable
 import wing.tree.bionda.data.core.Response
 import wing.tree.bionda.data.exception.OpenAPIError
+import wing.tree.bionda.data.extension.empty
 import wing.tree.bionda.data.validator.ResponseValidator
 
 interface LivingWthrIdx {
@@ -16,7 +17,7 @@ interface LivingWthrIdx {
         val code: String,
         val areaNo: String,
         val date: String,
-        val h0: String,
+        val h0: String = String.empty,
         val h3: String,
         val h6: String,
         val h9: String,
@@ -40,8 +41,9 @@ interface LivingWthrIdx {
         val h63: String,
         val h66: String,
         val h69: String,
-        val h72: String,
-        val h75: String
+        val h72: String = String.empty,
+        val h75: String = String.empty,
+        val h78: String = String.empty
     ) : List<H> by listOf(
         H(0, h0), H(3, h3), H(6, h6),
         H(9, h9), H(12, h12), H(15, h15),
@@ -51,7 +53,7 @@ interface LivingWthrIdx {
         H(45, h45), H(48, h48), H(51, h51),
         H(54, h54), H(57, h57), H(60, h60),
         H(63, h63), H(66, h66), H(69, h69),
-        H(72, h72), H(75, h75)
+        H(72, h72), H(75, h75), H(78, h78)
     )
 
     sealed interface AirDiffusionIdx : LivingWthrIdx {
