@@ -18,6 +18,7 @@ import wing.tree.bionda.theme.YellowOrange
 
 data class ChartStyle(
     val segment: Segment,
+    val apparentTemperature: ApparentTemperature,
     val fcstHour: FcstHour,
     val reh: Reh,
     val pcp: Pcp,
@@ -46,58 +47,94 @@ data class ChartStyle(
     }
 
     sealed class Element {
-        open val textPaint: TextPaint?
-            @Composable get() = null
+        @get:Composable
+        abstract val paddedHeight: Dp
 
-        open val paddedHeight: Dp
+        open val verticalPaddingValues: VerticalPaddingValues = VerticalPaddingValues()
+    }
+
+    sealed class Text : Element() {
+        @get:Composable
+        abstract val textPaint: TextPaint
+
+        override val paddedHeight: Dp
             @Composable
             get() = with(LocalDensity.current) {
-                textPaint?.height?.toDp() ?: Dp.zero
+                textPaint.height.toDp()
             }
                 .plus(verticalPaddingValues.sum())
-
-        open val verticalPaddingValues: VerticalPaddingValues =
-            VerticalPaddingValues()
     }
 
-    object FcstHour : Element() {
-        override val textPaint: TextPaint
-            @Composable
-            get() = typography.labelSmall
-                .copy(textAlign = TextAlign.Center)
-                .toTextPaint()
+    abstract class ApparentTemperature : Text() {
+        companion object {
+            val defaultValue = object : ApparentTemperature() {
+                override val textPaint: TextPaint
+                    @Composable
+                    get() = typography.labelSmall
+                        .copy(textAlign = TextAlign.Center)
+                        .toTextPaint()
+            }
+        }
     }
 
-    object Pcp : Element() {
-        override val textPaint: TextPaint
-            @Composable
-            get() = typography.labelMedium
-                .copy(textAlign = TextAlign.Center)
-                .toTextPaint()
+    abstract class FcstHour : Text() {
+        companion object {
+            val defaultValue = object : FcstHour() {
+                override val textPaint: TextPaint
+                    @Composable
+                    get() = typography.labelSmall
+                        .copy(textAlign = TextAlign.Center)
+                        .toTextPaint()
+            }
+        }
     }
 
-    object Pop : Element() {
-        override val textPaint: TextPaint
-            @Composable
-            get() = typography.labelMedium
-                .copy(textAlign = TextAlign.Center)
-                .toTextPaint()
+    abstract class Pcp : Text() {
+        companion object {
+            val defaultValue = object : Pcp() {
+                override val textPaint: TextPaint
+                    @Composable
+                    get() = typography.labelMedium
+                        .copy(textAlign = TextAlign.Center)
+                        .toTextPaint()
+            }
+        }
     }
 
-    object Reh : Element() {
-        override val textPaint: TextPaint
-            @Composable
-            get() = typography.labelMedium
-                .copy(textAlign = TextAlign.Center)
-                .toTextPaint()
+    abstract class Pop : Text() {
+        companion object {
+            val defaultValue = object : Pop() {
+                override val textPaint: TextPaint
+                    @Composable
+                    get() = typography.labelMedium
+                        .copy(textAlign = TextAlign.Center)
+                        .toTextPaint()
+            }
+        }
     }
 
-    object Tmp : Element() {
-        override val textPaint: TextPaint
-            @Composable
-            get() = typography.labelMedium
-                .copy(textAlign = TextAlign.Center)
-                .toTextPaint()
+    abstract class Reh : Text() {
+        companion object {
+            val defaultValue = object : Reh() {
+                override val textPaint: TextPaint
+                    @Composable
+                    get() = typography.labelMedium
+                        .copy(textAlign = TextAlign.Center)
+                        .toTextPaint()
+            }
+        }
+    }
+
+    abstract class Tmp : Text() {
+        companion object {
+            val defaultValue = object : Tmp() {
+                override val textPaint: TextPaint
+                    @Composable
+                    get() = typography.labelMedium
+                        .copy(textAlign = TextAlign.Center)
+                        .toTextPaint()
+            }
+        }
     }
 
     data class TmpChart(
@@ -141,14 +178,15 @@ data class ChartStyle(
     companion object {
         val defaultValue = ChartStyle(
             segment = Segment(width = 64.dp),
-            fcstHour = FcstHour,
-            pcp = Pcp,
-            pop = Pop,
-            reh = Reh,
-            tmp = Tmp,
+            apparentTemperature = ApparentTemperature.defaultValue,
+            fcstHour = FcstHour.defaultValue,
+            pcp = Pcp.defaultValue,
+            pop = Pop.defaultValue,
+            reh = Reh.defaultValue,
+            tmp = Tmp.defaultValue,
             tmpChart = TmpChart(
                 color = YellowOrange,
-                height = 16.dp
+                height = 24.dp
             ),
             weatherIcon = WeatherIcon(
                 size = DpSize(width = 30.dp, height = 30.dp),
