@@ -28,6 +28,12 @@ var Calendar.date: Int
         set(Calendar.DATE, value)
     }
 
+var Calendar.dayOfMonth: Int
+    get() = get(Calendar.DAY_OF_MONTH)
+    set(value) {
+        set(Calendar.DAY_OF_MONTH, value)
+    }
+
 var Calendar.dayOfWeek: Int
     get() = get(Calendar.DAY_OF_WEEK)
     set(value) {
@@ -58,14 +64,28 @@ var Calendar.minute: Int
         set(Calendar.MINUTE, value)
     }
 
+var Calendar.month: Int
+    get() = get(Calendar.MONTH)
+    set(value) {
+        set(Calendar.MONTH, value)
+    }
+
 fun Calendar.advanceHourOfDayBy(hourOfDay: Int) = apply {
     this.hourOfDay -= hourOfDay
 }
 
-fun Calendar.clearBelowHour(): Calendar = apply {
-    clear(Calendar.MINUTE)
-    clear(Calendar.SECOND)
+fun Calendar.clearBelowDate(): Calendar = apply {
     clear(Calendar.MILLISECOND)
+    clear(Calendar.SECOND)
+    clear(Calendar.MINUTE)
+    clear(Calendar.HOUR_OF_DAY)
+    clear(Calendar.HOUR)
+}
+
+fun Calendar.clearBelowHour(): Calendar = apply {
+    clear(Calendar.MILLISECOND)
+    clear(Calendar.SECOND)
+    clear(Calendar.MINUTE)
 }
 
 fun Calendar.cloneAsCalendar(): Calendar = with(clone()) {
