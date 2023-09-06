@@ -58,9 +58,9 @@ import wing.tree.bionda.data.model.LCRiseSetInfo.Local as LCRiseSetInfo
 @HiltViewModel
 class MainViewModel @Inject constructor(
     application: Application,
-    private val livingWthrIdxRepository: LivingWthrIdxRepository,
     private val alarmRepository: AlarmRepository,
     private val alarmScheduler: AlarmScheduler,
+    private val livingWthrIdxRepository: LivingWthrIdxRepository,
     private val locationProvider: LocationProvider,
     private val ultraSrtNcstMapper: UltraSrtNcstMapper,
     private val vilageFcstMapper: VilageFcstMapper,
@@ -71,7 +71,13 @@ class MainViewModel @Inject constructor(
         it.map(Location::toCoordinate)
     }
 
-    private val requestPermissions = MutableStateFlow<PersistentSet<String>>(emptyPersistentSet())
+    private val airDiffusionIdx =  location.map {
+        it.flatMap { location ->
+            livingWthrIdxRepository.getAirDiffusionIdx(location)
+        }
+    }
+        .stateIn(initialValue = State.Loading)
+
     private val headerState = location.map {
         when (it) {
             State.Loading -> HeaderState.Loading
@@ -102,6 +108,7 @@ class MainViewModel @Inject constructor(
     }
         .stateIn(initialValue = State.Loading)
 
+    private val requestPermissions = MutableStateFlow<PersistentSet<String>>(emptyPersistentSet())
     private val uvIdx = location.map {
         it.flatMap { location ->
             livingWthrIdxRepository.getUVIdx(location)
@@ -183,12 +190,14 @@ class MainViewModel @Inject constructor(
         .stateIn(initialValue = AlarmState.initialValue)
 
     private val weatherState = combine(
+        airDiffusionIdx,
         lcRiseSetInfo,
         midLandFcstTa,
         uvIdx,
         vilageFcst
-    ) { lcRiseSetInfo, midLandFcstTa, uvIdx, vilageFcst ->
+    ) { airDiffusionIdx, lcRiseSetInfo, midLandFcstTa, uvIdx, vilageFcst ->
         WeatherState(
+            airDiffusionIdx = airDiffusionIdx,
             lcRiseSetInfo = lcRiseSetInfo,
             midLandFcstTa = midLandFcstTa,
             uvIdx = uvIdx,
