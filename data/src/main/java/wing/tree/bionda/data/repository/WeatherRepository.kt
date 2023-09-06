@@ -22,14 +22,12 @@ import wing.tree.bionda.data.extension.minute
 import wing.tree.bionda.data.extension.roundDownToTens
 import wing.tree.bionda.data.extension.succeeded
 import wing.tree.bionda.data.extension.three
-import wing.tree.bionda.data.extension.time
 import wing.tree.bionda.data.extension.tmFc
 import wing.tree.bionda.data.extension.toBin
 import wing.tree.bionda.data.extension.toDegreeMinute
 import wing.tree.bionda.data.extension.values
 import wing.tree.bionda.data.model.Decorator
 import wing.tree.bionda.data.model.LCRiseSetInfo
-import wing.tree.bionda.data.model.LivingWthrIdx.UVIdx
 import wing.tree.bionda.data.model.MidLandFcst
 import wing.tree.bionda.data.model.MidLandFcstTa
 import wing.tree.bionda.data.model.MidLandFcstTa.Companion.MidLandFcstTa
@@ -173,30 +171,6 @@ class WeatherRepository(
             )
 
             Complete.Success(midLandFcstTa)
-        } catch (throwable: Throwable) {
-            Complete.Failure(throwable)
-        }
-    }
-
-    suspend fun getUVIdx(location: Location): Complete<UVIdx.Local> {
-        return try {
-            val areaNo = localDataSource.getAreaNo(location)
-            val time = baseCalendar(Decorator.Calendar.UvIdx).time()
-
-            val uvIdx = localDataSource.loadUVIdx(
-                areaNo = areaNo,
-                time = time
-            ) ?: remoteDataSource.getUVIdx(
-                areaNo = areaNo,
-                time = time
-            ).toLocal(
-                areaNo = areaNo,
-                time = time
-            ).also {
-                localDataSource.cache(it)
-            }
-
-            Complete.Success(uvIdx)
         } catch (throwable: Throwable) {
             Complete.Failure(throwable)
         }

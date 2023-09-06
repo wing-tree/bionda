@@ -10,7 +10,7 @@ import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.time
 import wing.tree.bionda.data.model.LivingWthrIdx
 import wing.tree.bionda.data.service.LivingWthrIdxService
-import wing.tree.bionda.data.top.level.uvIdxCalendar
+import wing.tree.bionda.data.top.level.koreaCalendar
 
 class LivingWthrIdxDataSource(
     private val livingWthrIdxService: LivingWthrIdxService
@@ -47,9 +47,7 @@ class LivingWthrIdxDataSource(
         ) {
             if (it.isErrorCode03) {
                 // TODO set to const. time inverval ect.. uvIdx는 세 시간 주기.
-                val uvIdxCalendar = uvIdxCalendar(time).advanceHourOfDayBy(3)
-
-                with(uvIdxCalendar) {
+                with(koreaCalendar(time).advanceHourOfDayBy(3)) {
                     val errorMsg = errorMsg(areaNo = areaNo, time = time())
 
                     block(areaNo = areaNo, time = time())
@@ -94,9 +92,7 @@ class LivingWthrIdxDataSource(
         ) {
             if (it.isErrorCode03) {
                 // TODO set to const. time inverval ect.. uvIdx는 세 시간 주기.
-                val uvIdxCalendar = uvIdxCalendar(time).advanceHourOfDayBy(3)
-
-                with(uvIdxCalendar) {
+                with(koreaCalendar(time).advanceHourOfDayBy(3)) {
                     val errorMsg = errorMsg(areaNo = areaNo, time = time())
 
                     block(areaNo = areaNo, time = time())

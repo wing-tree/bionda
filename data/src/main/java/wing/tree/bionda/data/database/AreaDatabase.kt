@@ -12,7 +12,7 @@ import wing.tree.bionda.data.model.Area
     version = 1
 )
 abstract class AreaDatabase : RoomDatabase() {
-    abstract val areaDao: AreaDao
+    abstract val dao: AreaDao
 
     companion object {
         private const val DATABASE_FILE_PATH = "area.db"

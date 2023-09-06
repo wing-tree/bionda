@@ -19,7 +19,7 @@ fun fcstCalendar(hourOfDay: Int): Calendar = koreaCalendar.apply {
 }
 
 fun koreaCalendar(block: Calendar.() -> Unit) = koreaCalendar.apply(block)
-fun koreaCalendar(date: Date): Calendar = Calendar.getInstance(Locale.KOREA).apply {
+fun koreaCalendar(date: Date): Calendar = koreaCalendar.apply {
     time = date
 }
 
@@ -45,12 +45,12 @@ fun koreaCalendar(baseDate: String, baseTime: String): Calendar = koreaCalendar(
     }
 }
 
-fun koreaCalendarOf(
-    timeInMillis: Long? = null
-): Calendar = Calendar.getInstance().apply {
-    timeInMillis?.let {
-        this.timeInMillis = it
-    }
+fun koreaCalendar(time: String): Calendar = koreaCalendar(
+    timeFormat.parse(time)
+)
+
+fun koreaCalendar(timeInMillis: Long): Calendar = koreaCalendar.apply {
+    this.timeInMillis = timeInMillis
 }
 
 fun tmFcCalendar() = koreaCalendar(minute = Int.zero).apply {
@@ -63,7 +63,3 @@ fun tmFcCalendar() = koreaCalendar(minute = Int.zero).apply {
         else -> 18
     }
 }
-
-fun uvIdxCalendar(time: String): Calendar = koreaCalendar(
-    timeFormat.parse(time)
-)

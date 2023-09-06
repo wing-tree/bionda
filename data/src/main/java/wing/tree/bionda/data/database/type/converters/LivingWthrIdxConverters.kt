@@ -4,7 +4,7 @@ import androidx.room.TypeConverter
 import kotlinx.serialization.json.Json
 import wing.tree.bionda.data.model.LivingWthrIdx.Item
 
-class UVIdxConverters {
+class LivingWthrIdxConverters {
     private val json = Json {
         allowStructuredMapKeys = true
     }

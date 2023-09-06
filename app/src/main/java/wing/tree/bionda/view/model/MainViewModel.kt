@@ -36,6 +36,7 @@ import wing.tree.bionda.data.model.MidLandFcstTa
 import wing.tree.bionda.data.model.UltraSrtNcst
 import wing.tree.bionda.data.provider.LocationProvider
 import wing.tree.bionda.data.repository.AlarmRepository
+import wing.tree.bionda.data.repository.LivingWthrIdxRepository
 import wing.tree.bionda.data.repository.WeatherRepository
 import wing.tree.bionda.exception.PermissionsDeniedException
 import wing.tree.bionda.extension.checkSelfPermission
@@ -57,6 +58,7 @@ import wing.tree.bionda.data.model.LCRiseSetInfo.Local as LCRiseSetInfo
 @HiltViewModel
 class MainViewModel @Inject constructor(
     application: Application,
+    private val livingWthrIdxRepository: LivingWthrIdxRepository,
     private val alarmRepository: AlarmRepository,
     private val alarmScheduler: AlarmScheduler,
     private val locationProvider: LocationProvider,
@@ -102,7 +104,7 @@ class MainViewModel @Inject constructor(
 
     private val uvIdx = location.map {
         it.flatMap { location ->
-            weatherRepository.getUVIdx(location)
+            livingWthrIdxRepository.getUVIdx(location)
         }
     }
 

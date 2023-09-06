@@ -8,7 +8,6 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import wing.tree.bionda.data.core.LatLon
-import wing.tree.bionda.data.database.dao.AreaDao
 import wing.tree.bionda.data.database.dao.LCRiseSetInfoDao
 import wing.tree.bionda.data.database.dao.MidLandFcstDao
 import wing.tree.bionda.data.database.dao.MidTaDao
@@ -16,23 +15,13 @@ import wing.tree.bionda.data.database.dao.UVIdxDao
 import wing.tree.bionda.data.database.dao.UltraSrtFcstDao
 import wing.tree.bionda.data.database.dao.UltraSrtNcstDao
 import wing.tree.bionda.data.database.dao.VilageFcstDao
-import wing.tree.bionda.data.extension.double
+import wing.tree.bionda.data.extension.haversine
 import wing.tree.bionda.data.extension.`is`
-import wing.tree.bionda.data.extension.one
-import wing.tree.bionda.data.extension.radians
-import wing.tree.bionda.data.extension.two
-import wing.tree.bionda.data.model.Area
 import wing.tree.bionda.data.model.FcstZoneCd
 import wing.tree.bionda.data.model.RegId
 import wing.tree.bionda.data.service.RiseSetInfoService
 import wing.tree.bionda.data.service.VilageFcstInfoService
-import kotlin.math.atan2
-import kotlin.math.cos
-import kotlin.math.pow
-import kotlin.math.sin
-import kotlin.math.sqrt
 import wing.tree.bionda.data.model.LCRiseSetInfo.Local as LCRiseSetInfo
-import wing.tree.bionda.data.model.LivingWthrIdx.UVIdx.Local as UVIdx
 import wing.tree.bionda.data.model.MidLandFcst.Local as MidLandFcst
 import wing.tree.bionda.data.model.MidTa.Local as MidTa
 import wing.tree.bionda.data.model.UltraSrtFcst.Local as UltraSrtFcst
@@ -41,7 +30,6 @@ import wing.tree.bionda.data.model.VilageFcst.Local as VilageFcst
 
 class WeatherDataSource(
     private val context: Context,
-    private val areaDao: AreaDao,
     private val midLandFcstDao: MidLandFcstDao,
     private val midTaDao: MidTaDao,
     private val lcRiseSetInfoDao: LCRiseSetInfoDao,
@@ -67,8 +55,6 @@ class WeatherDataSource(
     }
 
     private val supervisorScope = CoroutineScope(Dispatchers.IO.plus(SupervisorJob()))
-
-    private var areas: List<Area>? = null
 
     fun getRegId(location: Location, regId: RegId): String {
         val item = fcstZoneCd.items.minBy {
@@ -108,12 +94,6 @@ class WeatherDataSource(
         }
     }
 
-    fun cache(uvIdx: UVIdx) {
-        supervisorScope.launch {
-            uvIdxDao.clearAndInsert(uvIdx)
-        }
-    }
-
     fun cache(ultraSrtFcst: UltraSrtFcst) {
         supervisorScope.launch {
             ultraSrtFcstDao.clearAndInsert(ultraSrtFcst)
@@ -130,17 +110,6 @@ class WeatherDataSource(
         supervisorScope.launch {
             vilageFcstDao.clearAndInsert(vilageFcst)
         }
-    }
-
-    suspend fun getAreaNo(location: Location): String {
-        val areas = areas ?: areaDao.load().also {
-            areas = it
-        }
-
-        return areas.minBy {
-            location.haversine(LatLon(lat = it.latitude, lon = it.longitude))
-        }
-            .no
     }
 
     suspend fun loadLCRiseSetInfo(
@@ -165,10 +134,6 @@ class WeatherDataSource(
             regId = regId,
             tmFc = tmFc
         )
-    }
-
-    suspend fun loadUVIdx(areaNo: String, time: String): UVIdx? {
-        return uvIdxDao.load(areaNo, time)
     }
 
     suspend fun loadUltraSrtFcst(
@@ -216,20 +181,4 @@ class WeatherDataSource(
     suspend fun insert(midLandFcst: MidLandFcst) = midLandFcstDao.insert(midLandFcst)
     suspend fun insert(midTa: MidTa) = midTaDao.insert(midTa)
     suspend fun insert(vilageFcst: VilageFcst) = vilageFcstDao.insert(vilageFcst)
-
-    private fun Location.haversine(latLon: LatLon): Double {
-        val delta = latLon
-            .delta(latitude, longitude)
-            .radians()
-            .half()
-
-        val a = sin(delta.lat).pow(Int.two) +
-                cos(latitude.radians) *
-                cos(latLon.lon.radians) *
-                sin(delta.lon).pow(Int.two)
-
-        val c = atan2(sqrt(a), sqrt(Double.one.minus(a))).double
-
-        return 6371.times(c)
-    }
 }

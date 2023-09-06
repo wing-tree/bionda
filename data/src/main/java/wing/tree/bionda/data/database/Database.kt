@@ -3,6 +3,7 @@ package wing.tree.bionda.data.database
 import android.content.Context
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import wing.tree.bionda.data.database.dao.AirDiffusionIdxDao
 import wing.tree.bionda.data.database.dao.AlarmDao
 import wing.tree.bionda.data.database.dao.LCRiseSetInfoDao
 import wing.tree.bionda.data.database.dao.MidLandFcstDao
@@ -13,13 +14,14 @@ import wing.tree.bionda.data.database.dao.UltraSrtNcstDao
 import wing.tree.bionda.data.database.dao.VilageFcstDao
 import wing.tree.bionda.data.database.type.converters.AlarmConverters
 import wing.tree.bionda.data.database.type.converters.LCRiseSetInfoConverters
+import wing.tree.bionda.data.database.type.converters.LivingWthrIdxConverters
 import wing.tree.bionda.data.database.type.converters.MidLandFcstConverters
 import wing.tree.bionda.data.database.type.converters.MidTaConverters
-import wing.tree.bionda.data.database.type.converters.UVIdxConverters
 import wing.tree.bionda.data.database.type.converters.UltraSrtNcstConverters
 import wing.tree.bionda.data.database.type.converters.VilageFcstConverters
 import wing.tree.bionda.data.model.Alarm
 import wing.tree.bionda.data.model.LCRiseSetInfo.Local as LCRiseSetInfo
+import wing.tree.bionda.data.model.LivingWthrIdx.AirDiffusionIdx.Local as AirDiffusionIdx
 import wing.tree.bionda.data.model.LivingWthrIdx.UVIdx.Local as UVIdx
 import wing.tree.bionda.data.model.MidLandFcst.Local as MidLandFcst
 import wing.tree.bionda.data.model.MidTa.Local as MidTa
@@ -29,6 +31,7 @@ import wing.tree.bionda.data.model.VilageFcst.Local as VilageFcst
 
 @androidx.room.Database(
     entities = [
+        AirDiffusionIdx::class,
         Alarm::class,
         LCRiseSetInfo::class,
         MidLandFcst::class,
@@ -46,11 +49,12 @@ import wing.tree.bionda.data.model.VilageFcst.Local as VilageFcst
     LCRiseSetInfoConverters::class,
     MidLandFcstConverters::class,
     MidTaConverters::class,
-    UVIdxConverters::class,
+    LivingWthrIdxConverters::class,
     UltraSrtNcstConverters::class,
     VilageFcstConverters::class
 )
 abstract class Database : RoomDatabase() {
+    abstract val airDiffusionIdxDao: AirDiffusionIdxDao
     abstract val alarmDao: AlarmDao
     abstract val midLandFcstDao: MidLandFcstDao
     abstract val midTaDao: MidTaDao

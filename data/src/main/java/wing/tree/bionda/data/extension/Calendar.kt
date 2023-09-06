@@ -6,7 +6,7 @@ import android.icu.util.Calendar
 import wing.tree.bionda.data.model.Decorator
 import wing.tree.bionda.data.top.level.baseDateFormat
 import wing.tree.bionda.data.top.level.baseTimeFormat
-import wing.tree.bionda.data.top.level.koreaCalendarOf
+import wing.tree.bionda.data.top.level.koreaCalendar
 import wing.tree.bionda.data.top.level.locdateFormat
 import wing.tree.bionda.data.top.level.timeFormat
 import wing.tree.bionda.data.top.level.timeRangeFirstFormat
@@ -72,7 +72,7 @@ fun Calendar.cloneAsCalendar(): Calendar = with(clone()) {
     if (this is Calendar) {
         this
     } else {
-        koreaCalendarOf(timeInMillis)
+        koreaCalendar(timeInMillis)
     }
 }
 
