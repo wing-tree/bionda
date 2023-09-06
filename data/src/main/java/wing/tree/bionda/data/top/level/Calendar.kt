@@ -1,10 +1,13 @@
 package wing.tree.bionda.data.top.level
 
 import android.icu.util.Calendar
+import wing.tree.bionda.data.extension.clearBelowDate
 import wing.tree.bionda.data.extension.cloneAsBaseCalendar
 import wing.tree.bionda.data.extension.date
+import wing.tree.bionda.data.extension.dayOfMonth
 import wing.tree.bionda.data.extension.hourOfDay
 import wing.tree.bionda.data.extension.minute
+import wing.tree.bionda.data.extension.month
 import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.data.model.Decorator
@@ -49,8 +52,18 @@ fun koreaCalendar(time: String): Calendar = koreaCalendar(
     timeFormat.parse(time)
 )
 
-fun koreaCalendar(timeInMillis: Long): Calendar = koreaCalendar.apply {
-    this.timeInMillis = timeInMillis
+fun koreaCalendar(timeInMillis: Long): Calendar = koreaCalendar.also {
+    it.timeInMillis = timeInMillis
+}
+
+fun may(dayOfMonth: Calendar.() -> Int) = koreaCalendar.clearBelowDate().also {
+    it.month = Calendar.MAY
+    it.dayOfMonth = dayOfMonth(it)
+}
+
+fun september(dayOfMonth: Calendar.() -> Int) = koreaCalendar.clearBelowDate().also {
+    it.month = Calendar.SEPTEMBER
+    it.dayOfMonth = dayOfMonth(it)
 }
 
 fun tmFcCalendar() = koreaCalendar(minute = Int.zero).apply {
