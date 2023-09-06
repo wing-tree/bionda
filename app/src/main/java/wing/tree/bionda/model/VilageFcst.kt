@@ -5,7 +5,9 @@ import androidx.compose.runtime.Stable
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.PersistentMap
 import kotlinx.collections.immutable.mutate
+import wing.tree.bionda.data.core.Season
 import wing.tree.bionda.data.core.TimesOfDay
+import wing.tree.bionda.data.core.season
 import wing.tree.bionda.data.extension.Builder.replaceAt
 import wing.tree.bionda.data.extension.doubleOrNull
 import wing.tree.bionda.data.extension.empty
@@ -36,9 +38,24 @@ data class VilageFcst(
         val timesOfDay: TimesOfDay = TimesOfDay.DAYTIME,
         val type: Type = Type.VilageFcst
     ) {
+        private val heatIndex: Double get() = calculateHeatIndex(
+            ta = tmp?.doubleOrNull ?: Double.zero,
+            rh = reh?.doubleOrNull ?: Double.zero
+        )
+
         private val weatherIcons = when (timesOfDay) {
             TimesOfDay.DAYTIME -> WeatherIcons.Daytime
             TimesOfDay.NIGHTTIME -> WeatherIcons.Nighttime
+        }
+
+        private val windChill: Double get() = calculateWindChill(
+            ta = tmp?.doubleOrNull ?: Double.zero,
+            v = wsd?.doubleOrNull ?: Double.zero
+        )
+
+        val apparentTemperature = when(season) {
+            Season.SUMMER -> heatIndex
+            Season.WINTER -> windChill
         }
 
         val fcstHour: Int get() = fcstTime.int.div(Int.oneHundred)
@@ -62,16 +79,6 @@ data class VilageFcst(
         val tmx = codeValues[Category.TMX]
         val weatherIcon: Int? @DrawableRes get() = type.getWeatherIcon(this)
         val wsd = codeValues[Category.WSD]
-
-        val heatIndex: Double get() = calculateHeatIndex(
-            ta = tmp?.doubleOrNull ?: Double.zero,
-            rh = reh?.doubleOrNull ?: Double.zero
-        )
-
-        val windChill: Double get() = calculateWindChill(
-            ta = tmp?.doubleOrNull ?: Double.zero,
-            v = wsd?.doubleOrNull ?: Double.zero
-        )
 
         sealed interface Type {
             @DrawableRes
