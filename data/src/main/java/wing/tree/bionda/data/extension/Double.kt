@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package wing.tree.bionda.data.extension
 
 import wing.tree.bionda.data.core.DegreeMinute
@@ -11,7 +13,8 @@ val Double.Companion.zero: Double get() = 0.0
 val Double.double: Double get() = times(2.0)
 val Double.half: Double get() = times(0.5)
 val Double.int: Int get() = toInt()
-val Double.isNegative: Boolean get() = this < 0.0
+val Double.isNegative: Boolean get() = this < Double.zero
+val Double.isZero: Boolean get() = this `is` Double.zero
 val Double.long: Long get() = toLong()
 val Double.radians: Double get() = Math.toRadians(this)
 val Double.quarter: Double get() = times(0.25)
