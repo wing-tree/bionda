@@ -34,8 +34,8 @@ class LivingWthrIdxRepository(
             }
 
             State.Complete.Success(uvIdx)
-        } catch (throwable: Throwable) {
-            State.Complete.Failure(throwable)
+        } catch (exception: Throwable) {
+            State.Complete.Failure(exception)
         }
     }
 
@@ -58,8 +58,8 @@ class LivingWthrIdxRepository(
             }
 
             State.Complete.Success(uvIdx)
-        } catch (throwable: Throwable) {
-            State.Complete.Failure(throwable)
+        } catch (exception: Throwable) {
+            State.Complete.Failure(exception)
         }
     }
 }
