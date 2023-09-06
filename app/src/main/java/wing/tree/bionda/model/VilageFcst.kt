@@ -5,7 +5,9 @@ import androidx.compose.runtime.Stable
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.PersistentMap
 import kotlinx.collections.immutable.mutate
+import wing.tree.bionda.data.core.TimesOfDay
 import wing.tree.bionda.data.extension.Builder.replaceAt
+import wing.tree.bionda.data.extension.doubleOrNull
 import wing.tree.bionda.data.extension.empty
 import wing.tree.bionda.data.extension.ifZero
 import wing.tree.bionda.data.extension.int
@@ -14,11 +16,13 @@ import wing.tree.bionda.data.extension.isNonNegative
 import wing.tree.bionda.data.extension.not
 import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.oneHundred
+import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.data.model.Category
 import wing.tree.bionda.data.model.CodeValue
 import wing.tree.bionda.data.model.LCRiseSetInfo
-import wing.tree.bionda.data.core.TimesOfDay
 import wing.tree.bionda.model.VilageFcst.Item.Type.RiseSet
+import wing.tree.bionda.top.level.calculateHeatIndex
+import wing.tree.bionda.top.level.calculateWindChill
 import wing.tree.bionda.top.level.emptyPersistentMap
 
 data class VilageFcst(
@@ -58,6 +62,16 @@ data class VilageFcst(
         val tmx = codeValues[Category.TMX]
         val weatherIcon: Int? @DrawableRes get() = type.getWeatherIcon(this)
         val wsd = codeValues[Category.WSD]
+
+        val heatIndex: Double get() = calculateHeatIndex(
+            ta = tmp?.doubleOrNull ?: Double.zero,
+            rh = reh?.doubleOrNull ?: Double.zero
+        )
+
+        val windChill: Double get() = calculateWindChill(
+            ta = tmp?.doubleOrNull ?: Double.zero,
+            v = wsd?.doubleOrNull ?: Double.zero
+        )
 
         sealed interface Type {
             @DrawableRes
