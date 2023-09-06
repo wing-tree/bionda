@@ -52,7 +52,6 @@ object DataSourceModule {
             midLandFcstDao = database.midLandFcstDao,
             midTaDao = database.midTaDao,
             lcRiseSetInfoDao = database.lcRiseSetInfoDao,
-            uvIdxDao = database.uvIdxDao,
             ultraSrtFcstDao = database.ultraSrtFcstDao,
             ultraSrtNcstDao = database.ultraSrtNcstDao,
             vilageFcstDao = database.vilageFcstDao
