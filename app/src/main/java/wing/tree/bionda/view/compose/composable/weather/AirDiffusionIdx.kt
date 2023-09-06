@@ -44,7 +44,7 @@ private fun Content(
 
         Text(text = date) // TODO Remove,
         LazyRow(modifier = Modifier.fillMaxWidth()) {
-            items(value.item) { item ->
+            items(value.items) { item ->
                Text(text = item.h, modifier = Modifier.padding(horizontal = 8.dp))
             }
         }

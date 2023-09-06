@@ -74,7 +74,7 @@ private fun Content(
 
         Text(text = date) // TODO Remove,
         LazyRow(modifier = Modifier.fillMaxWidth()) {
-            items(uvIdx.item) { item ->
+            items(uvIdx.items) { item ->
                 Item(
                     item = item,
                     date = date
