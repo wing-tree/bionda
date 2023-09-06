@@ -26,7 +26,7 @@ class WeatherDataSource(
     private val midFcstInfoService: MidFcstInfoService,
     private val riseSetInfoService: RiseSetInfoService,
     private val vilageFcstInfoService: VilageFcstInfoService
-) : DataSource() {
+) : DataSource {
     suspend fun getLCRiseSetInfo(
         params: RiseSetInfoService.Params
     ) = retry {

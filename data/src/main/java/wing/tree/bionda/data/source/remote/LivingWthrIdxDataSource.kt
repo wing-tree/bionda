@@ -14,7 +14,7 @@ import wing.tree.bionda.data.top.level.koreaCalendar
 
 class LivingWthrIdxDataSource(
     private val livingWthrIdxService: LivingWthrIdxService
-) : DataSource() {
+) : DataSource {
     suspend fun getAirDiffusionIdx(
         numOfRows: Int = Int.one,
         pageNo: Int = Int.one,

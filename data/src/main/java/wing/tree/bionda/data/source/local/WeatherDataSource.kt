@@ -33,7 +33,6 @@ class WeatherDataSource(
     private val midLandFcstDao: MidLandFcstDao,
     private val midTaDao: MidTaDao,
     private val lcRiseSetInfoDao: LCRiseSetInfoDao,
-    private val uvIdxDao: UVIdxDao,
     private val ultraSrtFcstDao: UltraSrtFcstDao,
     private val ultraSrtNcstDao: UltraSrtNcstDao,
     private val vilageFcstDao: VilageFcstDao

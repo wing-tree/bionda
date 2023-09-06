@@ -8,8 +8,8 @@ import wing.tree.bionda.data.extension.long
 import wing.tree.bionda.data.extension.two
 import kotlin.math.pow
 
-abstract class DataSource {
-    protected suspend fun <T> retry(
+interface DataSource {
+    suspend fun <T> retry(
         retries: Int = Int.two,
         initialDelay: Long = Long.five.hundreds,
         block: suspend () -> T
