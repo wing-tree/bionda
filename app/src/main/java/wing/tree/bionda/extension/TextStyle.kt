@@ -15,23 +15,37 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFontFamilyResolver
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontSynthesis
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.font.resolveAsTypeface
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.LayoutDirection
 
 @Composable
 fun TextStyle.toTypeface(): State<Typeface> {
-    val fontFamilyResolver = LocalFontFamilyResolver.current
+    val resolver = LocalFontFamilyResolver.current
 
-    return remember(fontFamilyResolver, this) {
-        fontFamilyResolver.resolveAsTypeface(
+    return remember(resolver, this) {
+        resolver.resolveAsTypeface(
             fontFamily = fontFamily,
             fontWeight = fontWeight ?: FontWeight.Normal,
             fontStyle = fontStyle ?: FontStyle.Normal,
             fontSynthesis = fontSynthesis ?: FontSynthesis.All
         )
     }
+}
+
+fun TextStyle.toTypeface(
+    resolver: FontFamily.Resolver
+): State<Typeface> {
+    return resolver.resolveAsTypeface(
+        fontFamily = fontFamily,
+        fontWeight = fontWeight ?: FontWeight.Normal,
+        fontStyle = fontStyle ?: FontStyle.Normal,
+        fontSynthesis = fontSynthesis ?: FontSynthesis.All
+    )
 }
 
 @Composable
@@ -66,4 +80,24 @@ fun TextStyle.toTextPaint(
     }
 
     return toTextPaint(color = textColor.toArgb())
+}
+
+fun TextStyle.toTextPaint(
+    density: Density,
+    layoutDirection: LayoutDirection,
+    resolver: FontFamily.Resolver
+) = TextPaint().also {
+    val typeface by toTypeface(resolver)
+
+    it.isAntiAlias = true
+    it.color = color.toArgb()
+    it.typeface = typeface
+    it.textAlign = textAlign?.toAlign(layoutDirection)
+    it.textSize = with(density) {
+        fontSize.toPx()
+    }
+
+    it.letterSpacing = with(density) {
+        letterSpacing.toPx().div(it.textSize)
+    }
 }
