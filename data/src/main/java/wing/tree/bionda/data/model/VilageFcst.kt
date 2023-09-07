@@ -36,7 +36,7 @@ sealed interface VilageFcst {
         val nx: Int,
         val ny: Int,
     ) {
-        val fcstCalendar: Calendar
+        val calendar: Calendar
             get() = koreaCalendar(
                 fcstDate,
                 fcstTime
@@ -71,8 +71,8 @@ sealed interface VilageFcst {
                     // 지금이 14시면, 12시 이후의 데이터들을 추출함.
                     // 첫 번째 데이터 보다, 이전의 데이터여야함.
                     println("ppppppp111:$it")
-                    koreaCalendar < it.fcstCalendar &&
-                            it.fcstCalendar < items.first().fcstCalendar
+                    koreaCalendar < it.calendar &&
+                            it.calendar < items.first().calendar
                 }.let { elements ->
                     println("pppppppp:$elements")
 
