@@ -3,7 +3,6 @@ package wing.tree.bionda.extension
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.PointF
-import android.text.TextPaint
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
@@ -35,74 +34,87 @@ import wing.tree.bionda.model.style.ChartStyle
 
 val DrawScope.nativeCanvas: Canvas get() = drawContext.canvas.nativeCanvas
 
-fun DrawScope.drawFcstHour(
-    fcstHour: String,
-    pointF: PointF,
-    textPaint: TextPaint
-) {
-    pointF.y += textPaint.height
+fun DrawScope.drawText(
+    text: String,
+    point: PointF,
+    chartStyle: ChartStyle.Text
+) = with(chartStyle) {
+    point.y += verticalPaddingValues.top.toPx()
+    point.y += textPaint.height
 
     nativeCanvas.drawText(
-        fcstHour,
-        pointF.x,
-        pointF.y,
+        text,
+        point.x,
+        point.y,
         textPaint
     )
+
+    point.y += verticalPaddingValues.bottom.toPx()
 }
+
+fun DrawScope.drawText(
+    point: PointF,
+    chartStyle: ChartStyle.Text,
+    onDraw: DrawScope.() -> Unit
+) = with(chartStyle) {
+    point.y += verticalPaddingValues.top.toPx()
+    point.y += textPaint.height
+
+    onDraw()
+
+    point.y += verticalPaddingValues.bottom.toPx()
+}
+
+fun DrawScope.drawFcstHour(
+    fcstHour: String,
+    point: PointF,
+    chartStyle: ChartStyle
+) = drawText(
+    text = fcstHour,
+    point = point,
+    chartStyle = chartStyle.fcstHour
+)
 
 fun DrawScope.drawPcp(
     pcp: String,
-    pointF: PointF,
-    textPaint: TextPaint
-) {
-    pointF.y += textPaint.height
-
-    nativeCanvas.drawText(
-        pcp,
-        pointF.x,
-        pointF.y,
-        textPaint
-    )
-}
+    point: PointF,
+    chartStyle: ChartStyle
+) = drawText(
+    text = pcp,
+    point = point,
+    chartStyle = chartStyle.pcp
+)
 
 fun DrawScope.drawPop(
     pop: String,
-    pointF: PointF,
-    textPaint: TextPaint
-) {
-    pointF.y += textPaint.height
-
-    nativeCanvas.drawText(
-        pop,
-        pointF.x,
-        pointF.y,
-        textPaint
-    )
-}
+    point: PointF,
+    chartStyle: ChartStyle
+) = drawText(
+    text = pop,
+    point = point,
+    chartStyle = chartStyle.pop
+)
 
 fun DrawScope.drawReh(
     reh: String,
-    pointF: PointF,
-    textPaint: TextPaint
-) {
-    pointF.y += textPaint.height
-
-    nativeCanvas.drawText(
-        reh,
-        pointF.x,
-        pointF.y,
-        textPaint
-    )
-}
+    point: PointF,
+    chartStyle: ChartStyle
+) = drawText(
+    text = reh,
+    point = point,
+    chartStyle = chartStyle.reh
+)
 
 fun DrawScope.drawTmp(
     tmp: String,
-    pointF: PointF,
+    point: PointF,
     offset: Offset,
-    textPaint: TextPaint
-) {
-    pointF.y += textPaint.height
-
+    chartStyle: ChartStyle
+) = drawText(
+    point = point,
+    chartStyle = chartStyle.tmp
+){
+    val textPaint = chartStyle.tmp.textPaint
     val text = buildString {
         if (tmp.isNotBlank()) {
             append(tmp)
@@ -111,16 +123,14 @@ fun DrawScope.drawTmp(
     }
 
     val width = textPaint.measureText(String.degree)
-    val x = pointF.x.plus(width.half)
+    val x = point.x.plus(width.half)
 
     nativeCanvas.drawText(
         text,
         x,
-        pointF.y.plus(offset.y),
+        point.y.plus(offset.y),
         textPaint
     )
-
-    pointF.y += textPaint.height.quarter
 }
 
 fun DrawScope.drawTmpChart(
@@ -210,18 +220,13 @@ fun DrawScope.drawWeatherIcon(
 
 fun DrawScope.drawWsd(
     wsd: String,
-    pointF: PointF,
-    textPaint: TextPaint
-) {
-    pointF.y += textPaint.height
-
-    nativeCanvas.drawText(
-        wsd,
-        pointF.x,
-        pointF.y,
-        textPaint
-    )
-}
+    point: PointF,
+    chartStyle: ChartStyle.Text
+) = drawText(
+    text = wsd,
+    point = point,
+    chartStyle = chartStyle
+)
 
 fun DrawScope.fillGradient(
     path: Path,

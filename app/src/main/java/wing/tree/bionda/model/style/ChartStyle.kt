@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
+import wing.tree.bionda.data.extension.quarter
 import wing.tree.bionda.extension.height
 import wing.tree.bionda.extension.toTextPaint
 import wing.tree.bionda.extension.zero
@@ -18,14 +19,15 @@ import wing.tree.bionda.theme.YellowOrange
 
 data class ChartStyle(
     val segment: Segment,
-    val apparentTemperature: ApparentTemperature,
-    val fcstHour: FcstHour,
-    val reh: Reh,
-    val pcp: Pcp,
-    val pop: Pop,
+    val apparentTemperature: Text,
+    val fcstHour: Text,
+    val reh: Text,
+    val pcp: Text,
+    val pop: Text,
     val tmp: Tmp,
     val tmpChart: TmpChart,
-    val weatherIcon: WeatherIcon
+    val weatherIcon: WeatherIcon,
+    val wsd: Text
 ) {
     private val elements = persistentListOf(
         reh, pcp, pop, tmp, tmpChart, weatherIcon
@@ -53,8 +55,7 @@ data class ChartStyle(
         open val verticalPaddingValues: VerticalPaddingValues = VerticalPaddingValues()
     }
 
-    sealed class Text : Element() {
-        @get:Composable
+    abstract class Text : Element() {
         abstract val textPaint: TextPaint
 
         override val paddedHeight: Dp
@@ -65,77 +66,10 @@ data class ChartStyle(
                 .plus(verticalPaddingValues.sum())
     }
 
-    abstract class ApparentTemperature : Text() {
-        companion object {
-            val defaultValue = object : ApparentTemperature() {
-                override val textPaint: TextPaint
-                    @Composable
-                    get() = typography.labelSmall
-                        .copy(textAlign = TextAlign.Center)
-                        .toTextPaint()
-            }
-        }
-    }
-
-    abstract class FcstHour : Text() {
-        companion object {
-            val defaultValue = object : FcstHour() {
-                override val textPaint: TextPaint
-                    @Composable
-                    get() = typography.labelSmall
-                        .copy(textAlign = TextAlign.Center)
-                        .toTextPaint()
-            }
-        }
-    }
-
-    abstract class Pcp : Text() {
-        companion object {
-            val defaultValue = object : Pcp() {
-                override val textPaint: TextPaint
-                    @Composable
-                    get() = typography.labelMedium
-                        .copy(textAlign = TextAlign.Center)
-                        .toTextPaint()
-            }
-        }
-    }
-
-    abstract class Pop : Text() {
-        companion object {
-            val defaultValue = object : Pop() {
-                override val textPaint: TextPaint
-                    @Composable
-                    get() = typography.labelMedium
-                        .copy(textAlign = TextAlign.Center)
-                        .toTextPaint()
-            }
-        }
-    }
-
-    abstract class Reh : Text() {
-        companion object {
-            val defaultValue = object : Reh() {
-                override val textPaint: TextPaint
-                    @Composable
-                    get() = typography.labelMedium
-                        .copy(textAlign = TextAlign.Center)
-                        .toTextPaint()
-            }
-        }
-    }
-
-    abstract class Tmp : Text() {
-        companion object {
-            val defaultValue = object : Tmp() {
-                override val textPaint: TextPaint
-                    @Composable
-                    get() = typography.labelMedium
-                        .copy(textAlign = TextAlign.Center)
-                        .toTextPaint()
-            }
-        }
-    }
+    data class Tmp(
+        override val textPaint: TextPaint,
+        override val verticalPaddingValues: VerticalPaddingValues
+    ) : Text()
 
     data class TmpChart(
         val color: Color,
@@ -176,22 +110,46 @@ data class ChartStyle(
     }
 
     companion object {
-        val defaultValue = ChartStyle(
-            segment = Segment(width = 64.dp),
-            apparentTemperature = ApparentTemperature.defaultValue,
-            fcstHour = FcstHour.defaultValue,
-            pcp = Pcp.defaultValue,
-            pop = Pop.defaultValue,
-            reh = Reh.defaultValue,
-            tmp = Tmp.defaultValue,
-            tmpChart = TmpChart(
-                color = YellowOrange,
-                height = 24.dp
-            ),
-            weatherIcon = WeatherIcon(
-                size = DpSize(width = 30.dp, height = 30.dp),
-                color = Color.Unspecified
-            )
-        )
+        fun Text(textPaint: TextPaint) = object : Text() {
+            override val textPaint: TextPaint = textPaint
+        }
+
+        val defaultValue: ChartStyle
+            @Composable
+            get() = run {
+                val labelSmall = typography.labelSmall
+                    .copy(textAlign = TextAlign.Center)
+                    .toTextPaint()
+
+                val labelMedium = typography.labelMedium
+                    .copy(textAlign = TextAlign.Center)
+                    .toTextPaint()
+
+                ChartStyle(
+                    segment = Segment(width = 64.dp),
+                    apparentTemperature = Text(labelSmall),
+                    fcstHour = Text(labelSmall),
+                    pcp = Text(labelMedium),
+                    pop = Text(labelMedium),
+                    reh = Text(labelMedium),
+                    tmp = with(LocalDensity.current) {
+                        Tmp(
+                            textPaint = labelMedium,
+                            verticalPaddingValues = VerticalPaddingValues(
+                                bottom = labelMedium.height.quarter.toDp()
+                            )
+                        )
+                    },
+                    tmpChart = TmpChart(
+                        color = YellowOrange,
+                        height = 24.dp
+                    ),
+                    weatherIcon = WeatherIcon(
+                        size = DpSize(width = 30.dp, height = 30.dp),
+                        color = Color.Unspecified
+                    ),
+                    wsd = Text(labelMedium)
+                )
+            }
     }
 }

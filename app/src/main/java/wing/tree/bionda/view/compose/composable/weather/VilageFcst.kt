@@ -32,7 +32,7 @@ import wing.tree.bionda.data.core.State.Complete
 import wing.tree.bionda.data.extension.empty
 import wing.tree.bionda.data.extension.half
 import wing.tree.bionda.data.extension.zero
-import wing.tree.bionda.data.top.level.fcstCalendar
+import wing.tree.bionda.data.top.level.koreaCalendar
 import wing.tree.bionda.extension.drawFcstHour
 import wing.tree.bionda.extension.drawPcp
 import wing.tree.bionda.extension.drawPop
@@ -124,12 +124,6 @@ private fun TmpChart(
 
     val segment = style.segment
 
-    val fcstHourTextPaint = style.fcstHour.textPaint
-    val pcpTextPaint = style.pcp.textPaint
-    val popTextPaint = style.pop.textPaint
-    val rehTextPaint = style.reh.textPaint
-    val tmpTextPaint = style.tmp.textPaint
-
     val scrollState = rememberScrollState()
     val simpleDateFormat = SimpleDateFormat(
         context.getString(R.string.pattern_fcst_hour),
@@ -145,8 +139,7 @@ private fun TmpChart(
             )
 
             items.forEachIndexed { index, item ->
-                val fcstCalendar = fcstCalendar(item.fcstHour)
-                val pointF = PointF(
+                val point = PointF(
                     segment.width
                         .times(index).toPx()
                         .plus(segment.width.toPx().half),
@@ -154,15 +147,15 @@ private fun TmpChart(
                 )
 
                 drawFcstHour(
-                    fcstHour = simpleDateFormat.format(fcstCalendar),
-                    pointF = pointF,
-                    textPaint = fcstHourTextPaint
+                    fcstHour = simpleDateFormat.format(koreaCalendar(hourOfDay = item.fcstHour)),
+                    point = point,
+                    chartStyle = style
                 )
 
                 drawWeatherIcon(
                     item = item,
                     context = context,
-                    pointF = pointF,
+                    pointF = point,
                     style = with(style.weatherIcon) {
                         copy(
                             color = color.takeOrElse {
@@ -174,45 +167,45 @@ private fun TmpChart(
 
                 drawTmp(
                     tmp = item.tmp ?: String.empty,
-                    pointF = pointF,
+                    point = point,
                     offset = with(min(offsets[index].y, offsets[index.inc()].y)) {
                         offsets[index].copy(y = this)
                     },
-                    textPaint = tmpTextPaint
+                    chartStyle = style
                 )
 
                 drawTmpChart(
                     index = index,
                     offsets = offsets.map {
-                        it.copy(y = it.y.plus(pointF.y))
+                        it.copy(y = it.y.plus(point.y))
                     },
                     path = path,
-                    pointF = pointF,
+                    pointF = point,
                     style = style.tmpChart,
                 )
 
                 drawPcp(
                     pcp = item.pcp ?: String.empty,
-                    pointF = pointF,
-                    textPaint = pcpTextPaint
+                    point = point,
+                    chartStyle = style
                 )
 
                 drawPop(
                     pop = item.pop ?: String.empty,
-                    pointF = pointF,
-                    textPaint = popTextPaint
+                    point = point,
+                    chartStyle = style
                 )
 
                 drawReh(
                     reh = item.reh ?: String.empty,
-                    pointF = pointF,
-                    textPaint = rehTextPaint
+                    point = point,
+                    chartStyle = style
                 )
 
                 drawWsd(
                     wsd = item.wsd ?: String.empty,
-                    pointF,
-                    textPaint = rehTextPaint
+                    point,
+                    chartStyle = style.wsd
                 )
             }
         }
