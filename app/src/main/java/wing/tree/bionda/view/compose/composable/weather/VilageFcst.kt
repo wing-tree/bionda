@@ -95,8 +95,7 @@ private fun Content(
 
         ElevatedCard(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(180.dp) // todo, style에서 계산 필요. or requireHeight 등도 확인.
+                .fillMaxWidth() // todo, style에서 계산 필요. or requireHeight 등도 확인.
         ) {
             val style = ChartStyle.defaultValue
 

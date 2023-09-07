@@ -30,7 +30,7 @@ data class ChartStyle(
     val wsd: Text
 ) {
     private val elements = persistentListOf(
-        reh, pcp, pop, tmp, tmpChart, weatherIcon
+        apparentTemperature, fcstHour, reh, pcp, pop, tmp, tmpChart, weatherIcon, wsd
     )
 
     @Composable
