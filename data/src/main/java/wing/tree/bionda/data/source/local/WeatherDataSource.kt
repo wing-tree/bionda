@@ -11,7 +11,6 @@ import wing.tree.bionda.data.core.LatLon
 import wing.tree.bionda.data.database.dao.LCRiseSetInfoDao
 import wing.tree.bionda.data.database.dao.MidLandFcstDao
 import wing.tree.bionda.data.database.dao.MidTaDao
-import wing.tree.bionda.data.database.dao.UVIdxDao
 import wing.tree.bionda.data.database.dao.UltraSrtFcstDao
 import wing.tree.bionda.data.database.dao.UltraSrtNcstDao
 import wing.tree.bionda.data.database.dao.VilageFcstDao
@@ -71,7 +70,7 @@ class WeatherDataSource(
                 it.regId `is` item.regUp
             }?.let {
                 getRegId(it, regId)
-            } ?: regId.default
+            } ?: regId.defaultValue
         }
     }
 
