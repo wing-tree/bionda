@@ -1,6 +1,8 @@
 package wing.tree.bionda.data.model
 
 sealed interface RegId : List<String> {
+    val defaultValue: String
+
     object MidLandFcst : RegId, List<String> by listOf(
         "11B00000",
         "11D10000",
@@ -12,7 +14,9 @@ sealed interface RegId : List<String> {
         "11H10000",
         "11H20000",
         "11G00000"
-    )
+    ) {
+        override val defaultValue: String = "11B00000"
+    }
 
     object MidTa : RegId, List<String> by listOf(
         "11A00101",
@@ -216,5 +220,7 @@ sealed interface RegId : List<String> {
         "11L10001",
         "11L10002",
         "11L10003"
-    )
+    ) {
+        override val defaultValue: String = "11B10101"
+    }
 }
