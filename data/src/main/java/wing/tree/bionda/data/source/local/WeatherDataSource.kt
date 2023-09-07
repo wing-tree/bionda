@@ -70,7 +70,7 @@ class WeatherDataSource(
                 it.regId `is` item.regUp
             }?.let {
                 getRegId(it, regId)
-            } ?: regId.defaultValue
+            } ?: regId.first()
         }
     }
 
