@@ -18,7 +18,7 @@ private val fontFamily = FontFamily(
     Font(
         resId = R.font.suite_bold,
         weight = FontWeight.Bold
-    ),
+    )
 )
 
 val Typography = with(Typography()) {
