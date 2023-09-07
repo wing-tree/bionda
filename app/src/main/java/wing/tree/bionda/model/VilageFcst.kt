@@ -59,7 +59,7 @@ data class VilageFcst(
             round(it.times(Double.ten)).div(Double.ten)
         }
 
-        val apparentTemperature: Double get() = when(season) {
+        val feelsLikeTemperature: Double get() = when(season) {
             Season.SUMMER -> heatIndex
             Season.WINTER -> windChill
         }

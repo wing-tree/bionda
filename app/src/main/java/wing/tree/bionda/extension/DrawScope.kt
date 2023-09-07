@@ -65,22 +65,22 @@ fun DrawScope.drawText(
     point.y += verticalPaddingValues.bottom.toPx()
 }
 
-fun DrawScope.drawApparentTemperature(
-    apparentTemperature: String,
-    point: PointF,
-    chartStyle: ChartStyle.Text
-) = drawText(
-    text = apparentTemperature,
-    point = point,
-    chartStyle = chartStyle
-)
-
 fun DrawScope.drawFcstTime(
     fcstTime: String,
     point: PointF,
     chartStyle: ChartStyle.Text
 ) = drawText(
     text = fcstTime,
+    point = point,
+    chartStyle = chartStyle
+)
+
+fun DrawScope.drawFeelsLikeTemperature(
+    feelsLikeTemperature: String,
+    point: PointF,
+    chartStyle: ChartStyle.Text
+) = drawText(
+    text = feelsLikeTemperature,
     point = point,
     chartStyle = chartStyle
 )

@@ -33,7 +33,7 @@ import wing.tree.bionda.data.extension.empty
 import wing.tree.bionda.data.extension.half
 import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.data.top.level.koreaCalendar
-import wing.tree.bionda.extension.drawApparentTemperature
+import wing.tree.bionda.extension.drawFeelsLikeTemperature
 import wing.tree.bionda.extension.drawFcstTime
 import wing.tree.bionda.extension.drawPcp
 import wing.tree.bionda.extension.drawPop
@@ -186,10 +186,10 @@ private fun TmpChart(
                     style = style.tmpChart,
                 )
 
-                drawApparentTemperature(
-                    apparentTemperature = "${item.apparentTemperature}",
+                drawFeelsLikeTemperature(
+                    feelsLikeTemperature = "${item.feelsLikeTemperature}",
                     point = point,
-                    chartStyle = style.apparentTemperature
+                    chartStyle = style.feelsLikeTemperature
                 )
 
                 drawPcp(
