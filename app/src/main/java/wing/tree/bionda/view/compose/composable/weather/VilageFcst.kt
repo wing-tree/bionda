@@ -33,6 +33,7 @@ import wing.tree.bionda.data.extension.empty
 import wing.tree.bionda.data.extension.half
 import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.data.top.level.koreaCalendar
+import wing.tree.bionda.extension.drawApparentTemperature
 import wing.tree.bionda.extension.drawFcstTime
 import wing.tree.bionda.extension.drawPcp
 import wing.tree.bionda.extension.drawPop
@@ -172,7 +173,7 @@ private fun TmpChart(
                     offset = with(min(offsets[index].y, offsets[index.inc()].y)) {
                         offsets[index].copy(y = this)
                     },
-                    chartStyle = style
+                    chartStyle = style.tmp
                 )
 
                 drawTmpChart(
@@ -185,22 +186,28 @@ private fun TmpChart(
                     style = style.tmpChart,
                 )
 
+                drawApparentTemperature(
+                    apparentTemperature = "${item.apparentTemperature}",
+                    point = point,
+                    chartStyle = style.apparentTemperature
+                )
+
                 drawPcp(
                     pcp = item.pcp ?: String.empty,
                     point = point,
-                    chartStyle = style
+                    chartStyle = style.pcp
                 )
 
                 drawPop(
                     pop = item.pop ?: String.empty,
                     point = point,
-                    chartStyle = style
+                    chartStyle = style.pop
                 )
 
                 drawReh(
                     reh = item.reh ?: String.empty,
                     point = point,
-                    chartStyle = style
+                    chartStyle = style.reh
                 )
 
                 drawWsd(

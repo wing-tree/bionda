@@ -7,6 +7,7 @@ import kotlin.math.abs
 import kotlin.math.sign
 
 val Double.Companion.one: Double get() = 1.0
+val Double.Companion.ten: Double get() = 10.0
 val Double.Companion.two: Double get() = 2.0
 val Double.Companion.zero: Double get() = 0.0
 

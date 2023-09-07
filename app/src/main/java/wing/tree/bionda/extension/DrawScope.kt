@@ -65,6 +65,16 @@ fun DrawScope.drawText(
     point.y += verticalPaddingValues.bottom.toPx()
 }
 
+fun DrawScope.drawApparentTemperature(
+    apparentTemperature: String,
+    point: PointF,
+    chartStyle: ChartStyle.Text
+) = drawText(
+    text = apparentTemperature,
+    point = point,
+    chartStyle = chartStyle
+)
+
 fun DrawScope.drawFcstTime(
     fcstTime: String,
     point: PointF,
@@ -78,43 +88,43 @@ fun DrawScope.drawFcstTime(
 fun DrawScope.drawPcp(
     pcp: String,
     point: PointF,
-    chartStyle: ChartStyle
+    chartStyle: ChartStyle.Text
 ) = drawText(
     text = pcp,
     point = point,
-    chartStyle = chartStyle.pcp
+    chartStyle = chartStyle
 )
 
 fun DrawScope.drawPop(
     pop: String,
     point: PointF,
-    chartStyle: ChartStyle
+    chartStyle: ChartStyle.Text
 ) = drawText(
     text = pop,
     point = point,
-    chartStyle = chartStyle.pop
+    chartStyle = chartStyle
 )
 
 fun DrawScope.drawReh(
     reh: String,
     point: PointF,
-    chartStyle: ChartStyle
+    chartStyle: ChartStyle.Text
 ) = drawText(
     text = reh,
     point = point,
-    chartStyle = chartStyle.reh
+    chartStyle = chartStyle
 )
 
 fun DrawScope.drawTmp(
     tmp: String,
     point: PointF,
     offset: Offset,
-    chartStyle: ChartStyle
+    chartStyle: ChartStyle.Tmp
 ) = drawText(
     point = point,
-    chartStyle = chartStyle.tmp
+    chartStyle = chartStyle
 ){
-    val textPaint = chartStyle.tmp.textPaint
+    val textPaint = chartStyle.textPaint
     val text = buildString {
         if (tmp.isNotBlank()) {
             append(tmp)

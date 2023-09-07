@@ -18,6 +18,7 @@ import wing.tree.bionda.data.extension.isNonNegative
 import wing.tree.bionda.data.extension.not
 import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.oneHundred
+import wing.tree.bionda.data.extension.ten
 import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.data.model.Category
 import wing.tree.bionda.data.model.CodeValue
@@ -26,6 +27,7 @@ import wing.tree.bionda.model.VilageFcst.Item.Type.RiseSet
 import wing.tree.bionda.top.level.calculateHeatIndex
 import wing.tree.bionda.top.level.calculateWindChill
 import wing.tree.bionda.top.level.emptyPersistentMap
+import kotlin.math.round
 
 data class VilageFcst(
     val items: PersistentList<Item>
@@ -41,7 +43,9 @@ data class VilageFcst(
         private val heatIndex: Double get() = calculateHeatIndex(
             ta = tmp?.doubleOrNull ?: Double.zero,
             rh = reh?.doubleOrNull ?: Double.zero
-        )
+        ).let {
+            round(it.times(Double.ten)).div(Double.ten)
+        }
 
         private val weatherIcons = when (timesOfDay) {
             TimesOfDay.DAYTIME -> WeatherIcons.Daytime
@@ -51,9 +55,11 @@ data class VilageFcst(
         private val windChill: Double get() = calculateWindChill(
             ta = tmp?.doubleOrNull ?: Double.zero,
             v = wsd?.doubleOrNull ?: Double.zero
-        )
+        ).let {
+            round(it.times(Double.ten)).div(Double.ten)
+        }
 
-        val apparentTemperature = when(season) {
+        val apparentTemperature: Double get() = when(season) {
             Season.SUMMER -> heatIndex
             Season.WINTER -> windChill
         }
