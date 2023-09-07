@@ -33,7 +33,7 @@ import wing.tree.bionda.data.extension.empty
 import wing.tree.bionda.data.extension.half
 import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.data.top.level.koreaCalendar
-import wing.tree.bionda.extension.drawFcstHour
+import wing.tree.bionda.extension.drawFcstTime
 import wing.tree.bionda.extension.drawPcp
 import wing.tree.bionda.extension.drawPop
 import wing.tree.bionda.extension.drawReh
@@ -145,10 +145,12 @@ private fun TmpChart(
                     Float.zero
                 )
 
-                drawFcstHour(
-                    fcstHour = simpleDateFormat.format(koreaCalendar(hourOfDay = item.fcstHour)),
+                drawFcstTime(
+                    fcstTime = simpleDateFormat.format(
+                        koreaCalendar(hourOfDay = item.hourOfDay)
+                    ),
                     point = point,
-                    chartStyle = style
+                    chartStyle = style.fcstTime
                 )
 
                 drawWeatherIcon(

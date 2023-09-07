@@ -65,14 +65,14 @@ fun DrawScope.drawText(
     point.y += verticalPaddingValues.bottom.toPx()
 }
 
-fun DrawScope.drawFcstHour(
-    fcstHour: String,
+fun DrawScope.drawFcstTime(
+    fcstTime: String,
     point: PointF,
-    chartStyle: ChartStyle
+    chartStyle: ChartStyle.Text
 ) = drawText(
-    text = fcstHour,
+    text = fcstTime,
     point = point,
-    chartStyle = chartStyle.fcstHour
+    chartStyle = chartStyle
 )
 
 fun DrawScope.drawPcp(

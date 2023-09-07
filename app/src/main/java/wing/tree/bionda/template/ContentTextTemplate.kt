@@ -55,14 +55,14 @@ sealed class ContentTextTemplate {
 
                     items.forEach { item ->
                         val hour = koreaCalendar.apply {
-                            hourOfDay = item.fcstHour
+                            hourOfDay = item.hourOfDay
                         }
                             .hour
                             .ifZero {
                                 LocalTime.NOON.hour
                             }
 
-                        if (LocalTime.NOON.hour > item.fcstHour) {
+                        if (LocalTime.NOON.hour > item.hourOfDay) {
                             amHours.add(hour)
                         } else {
                             pmHours.add(hour)
@@ -98,7 +98,7 @@ sealed class ContentTextTemplate {
 
     protected fun Calendar.predicate(item: VilageFcst.Item): Boolean = when {
         item.fcstDate not baseDate.int -> false
-        item.fcstHour < hourOfDay -> false
+        item.hourOfDay < hourOfDay -> false
         else -> true
     }
 }

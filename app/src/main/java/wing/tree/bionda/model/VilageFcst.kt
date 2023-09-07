@@ -58,7 +58,7 @@ data class VilageFcst(
             Season.WINTER -> windChill
         }
 
-        val fcstHour: Int get() = fcstTime.int.div(Int.oneHundred)
+        val hourOfDay: Int get() = fcstTime.int.div(Int.oneHundred)
         val pcp: String? get() = when (type) {
             is Type.UltraSrtFcst -> rn1
             else -> codeValues[Category.PCP]
@@ -168,13 +168,13 @@ data class VilageFcst(
         val sunset = lcRiseSetInfo.sunset.trim()
 
         firstOrNull { item ->
-            val fcstHour = item.fcstHour.ifZero(defaultValue = 24)
+            val hourOfDay = item.hourOfDay.ifZero(defaultValue = 24)
 
             with(sunrise.int.div(Int.oneHundred)) {
                 when {
                     item.fcstDate not locdate -> false
-                    fcstHour < this -> false
-                    else -> fcstHour.minus(this) `is` Int.one
+                    hourOfDay < this -> false
+                    else -> hourOfDay.minus(this) `is` Int.one
                 }
             }
         }?.let {
@@ -189,13 +189,13 @@ data class VilageFcst(
         }
 
         firstOrNull { item ->
-            val fcstHour = item.fcstHour.ifZero(defaultValue = 24)
+            val hourOfDay = item.hourOfDay.ifZero(defaultValue = 24)
 
             with(sunset.int.div(Int.oneHundred)) {
                 when {
                     item.fcstDate not locdate -> false
-                    fcstHour < this -> false
-                    else -> fcstHour.minus(this) `is` Int.one
+                    hourOfDay < this -> false
+                    else -> hourOfDay.minus(this) `is` Int.one
                 }
             }
         }?.let {

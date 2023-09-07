@@ -59,7 +59,7 @@ sealed interface UltraSrtFcst : VilageFcst {
                 it.removeAll { item ->
                     when {
                         item.fcstDate > `when`.baseDate -> false
-                        item.fcstHour >= `when`.hourOfDay -> false
+                        item.hourOfDay >= `when`.hourOfDay -> false
                         else -> true
                     }
                 }

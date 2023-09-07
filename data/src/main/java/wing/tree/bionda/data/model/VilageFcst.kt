@@ -42,7 +42,7 @@ sealed interface VilageFcst {
                 fcstTime
             )
 
-        val fcstHour: Int get() = fcstTime.int.div(Int.oneHundred)
+        val hourOfDay: Int get() = fcstTime.int.div(Int.oneHundred)
     }
 
     @Entity(
@@ -90,7 +90,7 @@ sealed interface VilageFcst {
                 it.removeAll { item ->
                     when {
                         item.fcstDate > `when`.baseDate -> false
-                        item.fcstHour >= `when`.hourOfDay -> false
+                        item.hourOfDay >= `when`.hourOfDay -> false
                         else -> true
                     }
                 }

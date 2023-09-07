@@ -20,7 +20,7 @@ import wing.tree.bionda.theme.YellowOrange
 data class ChartStyle(
     val segment: Segment,
     val apparentTemperature: Text,
-    val fcstHour: Text,
+    val fcstTime: Text,
     val reh: Text,
     val pcp: Text,
     val pop: Text,
@@ -30,7 +30,7 @@ data class ChartStyle(
     val wsd: Text
 ) {
     private val elements = persistentListOf(
-        apparentTemperature, fcstHour, reh, pcp, pop, tmp, tmpChart, weatherIcon, wsd
+        apparentTemperature, fcstTime, reh, pcp, pop, tmp, tmpChart, weatherIcon, wsd
     )
 
     @Composable
@@ -128,7 +128,7 @@ data class ChartStyle(
                 ChartStyle(
                     segment = Segment(width = 64.dp),
                     apparentTemperature = Text(labelSmall),
-                    fcstHour = Text(labelSmall),
+                    fcstTime = Text(labelSmall),
                     pcp = Text(labelMedium),
                     pop = Text(labelMedium),
                     reh = Text(labelMedium),
