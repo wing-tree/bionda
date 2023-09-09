@@ -144,6 +144,13 @@ interface LivingWthrIdx {
                 time = time
             )
         }
+
+        object Level {
+            const val LOW = "100"
+            const val NORMAL = "75"
+            const val HIGH = "50"
+            const val VERY_HIGH = "25"
+        }
     }
 
     sealed interface UVIdx : LivingWthrIdx {

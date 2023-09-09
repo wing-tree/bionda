@@ -12,8 +12,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import wing.tree.bionda.data.core.State
+import wing.tree.bionda.data.core.State.Complete
 import wing.tree.bionda.data.extension.empty
 import wing.tree.bionda.data.model.LivingWthrIdx
+import wing.tree.bionda.extension.level
 import wing.tree.bionda.view.compose.composable.core.Loading
 
 @Composable
@@ -25,9 +27,9 @@ fun AirDiffusionIdx(
         Crossfade(targetState = state, label = String.empty) {
             when (it) {
                 State.Loading -> Loading(modifier = Modifier)
-                is State.Complete -> when (it) {
-                    is State.Complete.Success -> Content(value = it.value)
-                    is State.Complete.Failure -> Text(it.exception.message ?: "${it.exception}")
+                is Complete -> when (it) {
+                    is Complete.Success -> Content(value = it.value)
+                    is Complete.Failure -> Text(it.exception.message ?: "${it.exception}")
                 }
             }
         }
@@ -40,12 +42,12 @@ private fun Content(
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.padding(16.dp)) {
-        val date = value.item.date
-
-        Text(text = date) // TODO Remove,
         LazyRow(modifier = Modifier.fillMaxWidth()) {
             items(value.items) { item ->
-               Text(text = item.h, modifier = Modifier.padding(horizontal = 8.dp))
+               Text(
+                   text = item.level,
+                   modifier = Modifier.padding(horizontal = 8.dp)
+               )
             }
         }
     }
