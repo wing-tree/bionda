@@ -21,6 +21,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.unit.dp
 import wing.tree.bionda.data.core.State
+import wing.tree.bionda.data.core.State.Complete
 import wing.tree.bionda.data.extension.delayHourOfDayBy
 import wing.tree.bionda.data.extension.empty
 import wing.tree.bionda.data.extension.half
@@ -52,9 +53,9 @@ fun UVIdx(
         ) {
             when (it) {
                 State.Loading -> Loading(modifier = Modifier)
-                is State.Complete -> when (it) {
-                    is State.Complete.Success -> Content(uvIdx = it.value)
-                    is State.Complete.Failure -> Text(it.exception.message ?: "${it.exception}")
+                is Complete -> when (it) {
+                    is Complete.Success -> Content(uvIdx = it.value)
+                    is Complete.Failure -> Text(it.exception.message ?: "${it.exception}")
                 }
             }
         }
