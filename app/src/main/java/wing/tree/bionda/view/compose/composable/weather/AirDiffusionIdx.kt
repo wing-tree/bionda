@@ -47,10 +47,13 @@ private fun Content(
     modifier: Modifier = Modifier
 ) {
     val date = value.item.date
+    val items = value.items.filterNot {
+        it.level.isBlank()
+    }
 
     Column(modifier = modifier.padding(16.dp)) {
         LazyRow(modifier = Modifier.fillMaxWidth()) {
-            items(value.items) { item ->
+            items(items) { item ->
                Item(
                    item = item,
                    date = date,
