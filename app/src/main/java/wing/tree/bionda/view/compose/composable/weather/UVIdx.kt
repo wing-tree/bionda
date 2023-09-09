@@ -1,6 +1,6 @@
 package wing.tree.bionda.view.compose.composable.weather
 
-import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -46,12 +46,9 @@ fun UVIdx(
     modifier: Modifier = Modifier
 ) {
     ElevatedCard(modifier = modifier) {
-        AnimatedContent(
+        Crossfade(
             targetState = state,
-            label = String.empty,
-            contentKey = {
-                it::class.qualifiedName
-            }
+            label = String.empty
         ) {
             when (it) {
                 State.Loading -> Loading(modifier = Modifier)
@@ -72,7 +69,6 @@ private fun Content(
     Column(modifier = modifier.padding(16.dp)) {
         val date = uvIdx.item.date
 
-        Text(text = date) // TODO Remove,
         LazyRow(modifier = Modifier.fillMaxWidth()) {
             items(uvIdx.items) { item ->
                 Item(
@@ -150,7 +146,7 @@ private fun H(
                         else -> LightGray
                     }
 
-                    val y = (height / 11) * (11 - h)
+                    val y = height.div(11).times(11.minus(h))
 
                     drawCircle(
                         color = color,
