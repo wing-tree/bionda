@@ -18,7 +18,7 @@ class LivingWthrIdxRepository(
     suspend fun getAirDiffusionIdx(location: Location): State.Complete<LivingWthrIdx.AirDiffusionIdx.Local> {
         return try {
             val areaNo = areaNoProvider.provide(location)
-            val time = baseCalendar(Decorator.Calendar.UvIdx).time()
+            val time = baseCalendar(Decorator.Calendar.UVIdx).time()
 
             val uvIdx = localDataSource.loadAirDiffusionIdx(
                 areaNo = areaNo,
@@ -42,7 +42,7 @@ class LivingWthrIdxRepository(
     suspend fun getUVIdx(location: Location): State.Complete<LivingWthrIdx.UVIdx.Local> {
         return try {
             val areaNo = areaNoProvider.provide(location)
-            val time = baseCalendar(Decorator.Calendar.UvIdx).time()
+            val time = baseCalendar(Decorator.Calendar.UVIdx).time()
 
             val uvIdx = localDataSource.loadUVIdx(
                 areaNo = areaNo,

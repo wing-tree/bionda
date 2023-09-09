@@ -33,7 +33,7 @@ sealed interface Decorator<T> : (T) -> T {
             }
         }
 
-        object UvIdx : Calendar {
+        object UVIdx : Calendar {
             override fun invoke(calendar: android.icu.util.Calendar) = calendar.apply {
                 hourOfDay = hourOfDay.toBin(0..24, 3)
                 minute = Int.zero
