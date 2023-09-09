@@ -6,7 +6,10 @@
     <string name="app_name">비온다</string>
     <string name="at">에는</string>
     <string name="delete">삭제</string>
+    <string name="high">높음</string>
     <string name="hour">시</string>
+    <string name="low">낮음</string>
+    <string name="normal">보통</string>
     <string name="pattern_fcst_hour">a h시</string>
     <string name="post_notification_permission_rationale">알림을 받으시려면, 알림 권한을 허용해 주세요.</string>
     <string name="rain">비</string>
@@ -16,6 +19,7 @@
     <string name="sunrise">일출</string>
     <string name="sunset">일몰</string>
     <string name="take_an_umbrella">우산 챙기세요!</string>
+    <string name="very_high">매우높음</string>
     <string name="weather">날씨</string>
 
     <string-array name="subject_markers">
