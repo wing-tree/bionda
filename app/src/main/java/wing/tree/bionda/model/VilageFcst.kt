@@ -84,6 +84,7 @@ data class VilageFcst(
         val tmn = codeValues[Category.TMN]
         val tmx = codeValues[Category.TMX]
         val weatherIcon: Int? @DrawableRes get() = type.getWeatherIcon(this)
+        val vec = codeValues[Category.VEC]
         val wsd = codeValues[Category.WSD]
 
         sealed interface Type {
