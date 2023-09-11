@@ -26,7 +26,6 @@ import wing.tree.bionda.data.extension.half
 import wing.tree.bionda.data.extension.inc
 import wing.tree.bionda.data.extension.int
 import wing.tree.bionda.data.extension.`is`
-import wing.tree.bionda.data.extension.isNotNull
 import wing.tree.bionda.data.extension.isZero
 import wing.tree.bionda.data.extension.quarter
 import wing.tree.bionda.data.extension.zero
@@ -231,7 +230,7 @@ fun DrawScope.drawWeatherIcon(
 }
 
 fun DrawScope.drawVec(
-    vec: Float,
+    vec: Float?,
     context: Context,
     point: PointF,
     chartStyle: ChartStyle.Icon
@@ -239,17 +238,16 @@ fun DrawScope.drawVec(
     val width = chartStyle.width.toPx()
     val height = chartStyle.height.toPx()
 
-    val image = context.getImageBitmap(
+    vec ?: run {
+        point.y += height.half; return
+    }
+
+    context.getImageBitmap(
         id = R.drawable.wi_wind_deg,
         width = width.int,
         height = height.int
-    )
-
-    if (image.isNotNull()) {
-        rotate(vec, Offset(
-            point.x,
-            point.y.plus(height.half)
-        )) {
+    )?.let { image ->
+        rotate(vec, Offset(point.x, point.y.plus(height.half))) {
             drawImage(
                 image = image,
                 topLeft = Offset(

@@ -204,7 +204,7 @@ private fun TmpChart(
                 )
 
                 drawVec(
-                    vec = item.vec?.floatOrNull ?: Float.zero,
+                    vec = item.vec?.floatOrNull,
                     context = context,
                     point = point,
                     chartStyle = style.vec
