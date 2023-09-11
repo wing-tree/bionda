@@ -17,12 +17,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.ImmutableList
@@ -30,16 +28,18 @@ import wing.tree.bionda.R
 import wing.tree.bionda.data.core.State
 import wing.tree.bionda.data.core.State.Complete
 import wing.tree.bionda.data.extension.empty
+import wing.tree.bionda.data.extension.floatOrNull
 import wing.tree.bionda.data.extension.half
 import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.data.top.level.koreaCalendar
-import wing.tree.bionda.extension.drawFeelsLikeTemperature
 import wing.tree.bionda.extension.drawFcstTime
+import wing.tree.bionda.extension.drawFeelsLikeTemperature
 import wing.tree.bionda.extension.drawPcp
 import wing.tree.bionda.extension.drawPop
 import wing.tree.bionda.extension.drawReh
 import wing.tree.bionda.extension.drawTmp
 import wing.tree.bionda.extension.drawTmpChart
+import wing.tree.bionda.extension.drawVec
 import wing.tree.bionda.extension.drawWeatherIcon
 import wing.tree.bionda.extension.drawWsd
 import wing.tree.bionda.extension.offsets
@@ -118,7 +118,6 @@ private fun TmpChart(
     style: ChartStyle,
     modifier: Modifier = Modifier
 ) {
-    val contentColor = LocalContentColor.current
     val context = LocalContext.current
     val count = items.count()
 
@@ -155,16 +154,10 @@ private fun TmpChart(
                 )
 
                 drawWeatherIcon(
-                    item = item,
+                    weatherIcon = item.weatherIcon,
                     context = context,
-                    pointF = point,
-                    style = with(style.weatherIcon) {
-                        copy(
-                            color = color.takeOrElse {
-                                contentColor
-                            }
-                        )
-                    }
+                    point = point,
+                    style = style.weatherIcon
                 )
 
                 drawTmp(
@@ -210,9 +203,16 @@ private fun TmpChart(
                     chartStyle = style.reh
                 )
 
+                drawVec(
+                    vec = item.vec?.floatOrNull ?: Float.zero,
+                    context = context,
+                    point = point,
+                    chartStyle = style.vec
+                )
+
                 drawWsd(
                     wsd = item.wsd ?: String.empty,
-                    point,
+                    point = point,
                     chartStyle = style.wsd
                 )
             }
