@@ -1,6 +1,7 @@
 package wing.tree.bionda.model.style
 
 import android.text.TextPaint
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
@@ -24,13 +25,18 @@ data class ChartStyle(
     val reh: Text,
     val pcp: Text,
     val pop: Text,
-    val tmp: Tmp,
+    val tmp: Text,
     val tmpChart: TmpChart,
-    val weatherIcon: WeatherIcon,
+    val weatherIcon: Icon,
+    val vec: Icon,
     val wsd: Text
 ) {
     private val elements = persistentListOf(
-        fcstTime, feelsLikeTemperature, reh, pcp, pop, tmp, tmpChart, weatherIcon, wsd
+        fcstTime, feelsLikeTemperature,
+        reh, pcp,
+        pop, tmp,
+        tmpChart, vec,
+        weatherIcon, wsd
     )
 
     @Composable
@@ -55,7 +61,21 @@ data class ChartStyle(
         open val verticalPaddingValues: VerticalPaddingValues = VerticalPaddingValues()
     }
 
-    abstract class Text : Element() {
+    abstract class Icon: Element() {
+        abstract val color: Color
+        abstract val size: DpSize
+
+        override val paddedHeight: Dp
+            @Composable
+            get() = size.height.plus(verticalPaddingValues.sum())
+
+        val width: Dp get() = size.width
+        val height: Dp get() = size.height
+    }
+
+    abstract class Text(
+        override val verticalPaddingValues: VerticalPaddingValues = VerticalPaddingValues()
+    ) : Element() {
         abstract val textPaint: TextPaint
 
         override val paddedHeight: Dp
@@ -66,30 +86,10 @@ data class ChartStyle(
                 .plus(verticalPaddingValues.sum())
     }
 
-    data class Tmp(
-        override val textPaint: TextPaint,
-        override val verticalPaddingValues: VerticalPaddingValues
-    ) : Text()
-
     data class TmpChart(
         val color: Color,
         val height: Dp
     ) : Element() {
-        override val paddedHeight: Dp
-            @Composable
-            get() = height.plus(verticalPaddingValues.sum())
-
-        override val verticalPaddingValues: VerticalPaddingValues
-            get() = VerticalPaddingValues(4.dp, 4.dp) // TODO calculate nice value.
-    }
-
-    data class WeatherIcon(
-        val size: DpSize,
-        val color: Color
-    ) : Element() {
-        val width: Dp = size.width
-        val height: Dp = size.height
-
         override val paddedHeight: Dp
             @Composable
             get() = height.plus(verticalPaddingValues.sum())
@@ -110,13 +110,26 @@ data class ChartStyle(
     }
 
     companion object {
-        fun Text(textPaint: TextPaint) = object : Text() {
+        private fun Icon(
+            color: Color,
+            size: DpSize
+        ) = object : Icon() {
+            override val color = color
+            override val size = size
+        }
+
+        private fun Text(
+            textPaint: TextPaint,
+            verticalPaddingValues: VerticalPaddingValues = VerticalPaddingValues()
+        ) = object : Text() {
             override val textPaint: TextPaint = textPaint
+            override val verticalPaddingValues: VerticalPaddingValues = verticalPaddingValues
         }
 
         val defaultValue: ChartStyle
             @Composable
             get() = run {
+                val contentColor = LocalContentColor.current
                 val labelSmall = typography.labelSmall
                     .copy(textAlign = TextAlign.Center)
                     .toTextPaint()
@@ -133,7 +146,7 @@ data class ChartStyle(
                     pop = Text(labelMedium),
                     reh = Text(labelMedium),
                     tmp = with(LocalDensity.current) {
-                        Tmp(
+                        Text(
                             textPaint = labelMedium,
                             verticalPaddingValues = VerticalPaddingValues(
                                 bottom = labelMedium.height.quarter.toDp()
@@ -144,9 +157,13 @@ data class ChartStyle(
                         color = YellowOrange,
                         height = 24.dp
                     ),
-                    weatherIcon = WeatherIcon(
+                    vec = Icon(
+                        color = contentColor,
+                        size = DpSize(width = 18.dp, height = 18.dp)
+                    ),
+                    weatherIcon = Icon(
+                        color = contentColor,
                         size = DpSize(width = 30.dp, height = 30.dp),
-                        color = Color.Unspecified
                     ),
                     wsd = Text(labelMedium)
                 )
