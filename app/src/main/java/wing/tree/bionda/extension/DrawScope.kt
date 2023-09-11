@@ -3,6 +3,7 @@ package wing.tree.bionda.extension
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.PointF
+import androidx.annotation.DrawableRes
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
@@ -13,23 +14,22 @@ import androidx.compose.ui.graphics.PaintingStyle
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.asAndroidPath
 import androidx.compose.ui.graphics.asComposePath
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.unit.Dp
-import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.toBitmap
+import wing.tree.bionda.R
 import wing.tree.bionda.data.extension.dec
 import wing.tree.bionda.data.extension.degree
 import wing.tree.bionda.data.extension.half
 import wing.tree.bionda.data.extension.inc
 import wing.tree.bionda.data.extension.int
 import wing.tree.bionda.data.extension.`is`
+import wing.tree.bionda.data.extension.isNotNull
 import wing.tree.bionda.data.extension.isZero
 import wing.tree.bionda.data.extension.quarter
 import wing.tree.bionda.data.extension.zero
-import wing.tree.bionda.model.VilageFcst
 import wing.tree.bionda.model.style.ChartStyle
 
 val DrawScope.nativeCanvas: Canvas get() = drawContext.canvas.nativeCanvas
@@ -55,12 +55,12 @@ fun DrawScope.drawText(
 fun DrawScope.drawText(
     point: PointF,
     chartStyle: ChartStyle.Text,
-    onDraw: DrawScope.() -> Unit
+    draw: DrawScope.() -> Unit
 ) = with(chartStyle) {
     point.y += verticalPaddingValues.top.toPx()
     point.y += textPaint.height
 
-    onDraw()
+    draw()
 
     point.y += verticalPaddingValues.bottom.toPx()
 }
@@ -119,11 +119,11 @@ fun DrawScope.drawTmp(
     tmp: String,
     point: PointF,
     offset: Offset,
-    chartStyle: ChartStyle.Tmp
+    chartStyle: ChartStyle.Text
 ) = drawText(
     point = point,
     chartStyle = chartStyle
-){
+) {
     val textPaint = chartStyle.textPaint
     val text = buildString {
         if (tmp.isNotBlank()) {
@@ -200,32 +200,68 @@ fun DrawScope.drawTmpChart(
 }
 
 fun DrawScope.drawWeatherIcon(
-    item: VilageFcst.Item,
+    @DrawableRes weatherIcon: Int?,
     context: Context,
-    pointF: PointF,
-    style: ChartStyle.WeatherIcon
+    point: PointF,
+    style: ChartStyle.Icon
 ) {
     val width = style.width.toPx()
     val height = style.height.toPx()
 
-    item.weatherIcon?.let {
-        val image = ContextCompat.getDrawable(context, it)
-            ?.toBitmap(width = width.int, height = height.int)
-            ?.asImageBitmap()
+    weatherIcon?.let {
+        val image = context.getImageBitmap(
+            id = it,
+            width = width.int,
+            height = height.int
+        )
 
         image?.let {
             drawImage(
                 image = image,
                 topLeft = Offset(
-                    pointF.x.minus(width.half),
-                    height.half,
+                    point.x.minus(width.half),
+                    point.y,
                 ),
                 colorFilter = ColorFilter.tint(style.color, BlendMode.SrcAtop)
             )
         }
     }
 
-    pointF.y += height.half
+    point.y += height.half
+}
+
+fun DrawScope.drawVec(
+    vec: Float,
+    context: Context,
+    point: PointF,
+    chartStyle: ChartStyle.Icon
+) {
+    val width = chartStyle.width.toPx()
+    val height = chartStyle.height.toPx()
+
+    val image = context.getImageBitmap(
+        id = R.drawable.wi_wind_deg,
+        width = width.int,
+        height = height.int
+    )
+
+    if (image.isNotNull()) {
+        rotate(vec, Offset(
+            point.x,
+            point.y.plus(height.half)
+        )) {
+            drawImage(
+                image = image,
+                topLeft = Offset(
+                    point.x.minus(width.half),
+                    point.y,
+                ),
+                colorFilter = ColorFilter.tint(chartStyle.color, BlendMode.SrcAtop)
+            )
+        }
+    }
+
+    point.y += height.half
 }
 
 fun DrawScope.drawWsd(
