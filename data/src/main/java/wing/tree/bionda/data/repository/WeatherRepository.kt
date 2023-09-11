@@ -15,10 +15,12 @@ import wing.tree.bionda.data.extension.awaitOrFailure
 import wing.tree.bionda.data.extension.delayDateBy
 import wing.tree.bionda.data.extension.exceptions
 import wing.tree.bionda.data.extension.failed
+import wing.tree.bionda.data.extension.hourOfDay
 import wing.tree.bionda.data.extension.isSingle
 import wing.tree.bionda.data.extension.julianDay
 import wing.tree.bionda.data.extension.locdate
 import wing.tree.bionda.data.extension.minute
+import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.roundDownToTens
 import wing.tree.bionda.data.extension.succeeded
 import wing.tree.bionda.data.extension.three
@@ -244,16 +246,31 @@ class WeatherRepository(
         ny: Int
     ): Complete<VilageFcst.Local> {
         return try {
+            val baseCalendar = baseCalendar(Decorator.Calendar.VilageFcst)
             val params = VilageFcstInfoService.Params(
-                baseCalendar = baseCalendar(Decorator.Calendar.VilageFcst),
+                baseCalendar = baseCalendar,
                 nx = nx,
                 ny = ny
             )
 
+            val numOfRows = 580.apply {
+                val hourOfDay = baseCalendar.hourOfDay
+
+                plus(23.minus(hourOfDay).times(12))
+
+                if (hourOfDay in listOf(2)) {
+                    plus(Int.one)
+                }
+
+                if (hourOfDay in listOf(2, 5, 8, 11)) {
+                    plus(Int.one)
+                }
+            }
+
             val vilageFcst = localDataSource.loadVilageFcst(
                 params = params
             ) ?: remoteDataSource.getVilageFcst(
-                numOfRows = 290,
+                numOfRows = numOfRows,
                 params = params
             ).let {
                 with(postProcessor) {
