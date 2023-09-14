@@ -30,6 +30,7 @@ import wing.tree.bionda.data.core.State.Complete
 import wing.tree.bionda.data.extension.empty
 import wing.tree.bionda.data.extension.floatOrNull
 import wing.tree.bionda.data.extension.half
+import wing.tree.bionda.data.extension.string
 import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.data.top.level.koreaCalendar
 import wing.tree.bionda.extension.drawFcstTime
@@ -180,7 +181,7 @@ private fun TmpChart(
                 )
 
                 drawFeelsLikeTemperature(
-                    feelsLikeTemperature = "${item.feelsLikeTemperature}",
+                    feelsLikeTemperature = item.feelsLikeTemperature?.string ?: String.empty,
                     point = point,
                     chartStyle = style.feelsLikeTemperature
                 )

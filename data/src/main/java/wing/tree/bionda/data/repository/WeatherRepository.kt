@@ -253,6 +253,7 @@ class WeatherRepository(
                 ny = ny
             )
 
+            // TODO, make as const. val.. etc.
             val numOfRows = 580.apply {
                 val hourOfDay = baseCalendar.hourOfDay
 

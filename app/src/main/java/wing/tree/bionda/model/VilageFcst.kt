@@ -10,11 +10,13 @@ import wing.tree.bionda.data.core.TimesOfDay
 import wing.tree.bionda.data.core.season
 import wing.tree.bionda.data.extension.Builder.replaceAt
 import wing.tree.bionda.data.extension.doubleOrNull
+import wing.tree.bionda.data.extension.doubleOrZero
 import wing.tree.bionda.data.extension.empty
 import wing.tree.bionda.data.extension.ifZero
 import wing.tree.bionda.data.extension.int
 import wing.tree.bionda.data.extension.`is`
 import wing.tree.bionda.data.extension.isNonNegative
+import wing.tree.bionda.data.extension.isNotNull
 import wing.tree.bionda.data.extension.not
 import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.oneHundred
@@ -40,11 +42,17 @@ data class VilageFcst(
         val timesOfDay: TimesOfDay = TimesOfDay.DAYTIME,
         val type: Type = Type.VilageFcst
     ) {
-        private val heatIndex: Double get() = calculateHeatIndex(
-            ta = tmp?.doubleOrNull ?: Double.zero,
-            rh = reh?.doubleOrNull ?: Double.zero
-        ).let {
-            round(it.times(Double.ten)).div(Double.ten)
+        private val heatIndex: Double? get() = with(tmp) {
+            if (isNotNull()) {
+                calculateHeatIndex(
+                    ta = doubleOrZero,
+                    rh = reh?.doubleOrNull ?: Double.zero
+                ).let {
+                    round(it.times(Double.ten)).div(Double.ten)
+                }
+            } else {
+                null
+            }
         }
 
         private val weatherIcons = when (timesOfDay) {
@@ -52,14 +60,20 @@ data class VilageFcst(
             TimesOfDay.NIGHTTIME -> WeatherIcons.Nighttime
         }
 
-        private val windChill: Double get() = calculateWindChill(
-            ta = tmp?.doubleOrNull ?: Double.zero,
-            v = wsd?.doubleOrNull ?: Double.zero
-        ).let {
-            round(it.times(Double.ten)).div(Double.ten)
+        private val windChill: Double? get() = with(tmp) {
+            if (isNotNull()) {
+                calculateWindChill(
+                    ta = doubleOrZero,
+                    v = wsd?.doubleOrNull ?: Double.zero
+                ).let {
+                    round(it.times(Double.ten)).div(Double.ten)
+                }
+            } else {
+                null
+            }
         }
 
-        val feelsLikeTemperature: Double get() = when(season) {
+        val feelsLikeTemperature: Double? get() = when(season) {
             Season.SUMMER -> heatIndex
             Season.WINTER -> windChill
         }

@@ -19,6 +19,7 @@ val Double.isZero: Boolean get() = this `is` Double.zero
 val Double.long: Long get() = toLong()
 val Double.radians: Double get() = Math.toRadians(this)
 val Double.quarter: Double get() = times(0.25)
+val Double.string: String get() = toString()
 
 fun Double.delta(other: Double) = minus(other)
 fun Double.toDegreeMinute(type: DegreeMinute.Type): DegreeMinute {
