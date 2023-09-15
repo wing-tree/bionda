@@ -67,8 +67,8 @@ class WeatherRepository(
             }
 
             Complete.Success(lcRiseSetInfo)
-        } catch (throwable: Throwable) {
-            Complete.Failure(throwable)
+        } catch (exception: Throwable) {
+            Complete.Failure(exception)
         }
     }
 
@@ -87,8 +87,8 @@ class WeatherRepository(
             }
 
             Complete.Success(local)
-        } catch (throwable: Throwable) {
-            Complete.Failure(throwable)
+        } catch (exception: Throwable) {
+            Complete.Failure(exception)
         }
     }
 
@@ -107,8 +107,8 @@ class WeatherRepository(
             }
 
             Complete.Success(local)
-        } catch (throwable: Throwable) {
-            Complete.Failure(throwable)
+        } catch (exception: Throwable) {
+            Complete.Failure(exception)
         }
     }
 
@@ -173,8 +173,8 @@ class WeatherRepository(
             )
 
             Complete.Success(midLandFcstTa)
-        } catch (throwable: Throwable) {
-            Complete.Failure(throwable)
+        } catch (exception: Throwable) {
+            Complete.Failure(exception)
         }
     }
 
@@ -207,8 +207,8 @@ class WeatherRepository(
             }
 
             Complete.Success(ultraSrtFcst.takeAfter(koreaCalendar))
-        } catch (throwable: Throwable) {
-            Complete.Failure(throwable)
+        } catch (exception: Throwable) {
+            Complete.Failure(exception)
         }
     }
 
@@ -236,8 +236,8 @@ class WeatherRepository(
             }
 
             Complete.Success(ultraSrtNcst)
-        } catch (throwable: Throwable) {
-            Complete.Failure(throwable)
+        } catch (exception: Throwable) {
+            Complete.Failure(exception)
         }
     }
 
@@ -280,8 +280,8 @@ class WeatherRepository(
             }
 
             Complete.Success(vilageFcst.takeAfter(koreaCalendar))
-        } catch (throwable: Throwable) {
-            Complete.Failure(throwable)
+        } catch (exception: Throwable) {
+            Complete.Failure(exception)
         }
     }
 }
