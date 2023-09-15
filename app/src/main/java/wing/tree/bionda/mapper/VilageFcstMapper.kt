@@ -2,7 +2,9 @@ package wing.tree.bionda.mapper
 
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.collections.immutable.toPersistentMap
-import wing.tree.bionda.model.VilageFcst
+import wing.tree.bionda.data.extension.updateFirst
+import wing.tree.bionda.data.extension.updatedWith
+import wing.tree.bionda.model.VilageFcst.Item.Type
 import wing.tree.bionda.data.model.VilageFcst as DataModel
 import wing.tree.bionda.model.VilageFcst as PresentationModel
 
@@ -21,26 +23,14 @@ class VilageFcstMapper : DataModelMapper<DataModel, PresentationModel> {
                 }
                     .toPersistentMap()
             )
-        }
-
-        return PresentationModel(items = items.toPersistentList())
-    }
-
-    fun toPresentationModel(dataModel: DataModel, type: VilageFcst.Item.Type): PresentationModel {
-        val items = dataModel.items.groupBy {
-            it.fcstDate to it.fcstTime
-        }.map { (key, value) ->
-            val (fcstDate, fcstTime) = key
-
-            PresentationModel.Item(
-                fcstDate = fcstDate,
-                fcstTime = fcstTime,
-                codeValues = value.associate {
-                    it.category to it.fcstValue
+        }.groupBy {
+            it.fcstDate
+        }.flatMap {
+            it.value.updatedWith {
+                updateFirst { item ->
+                    item.copy(type = Type.VilageFcst.Leading)
                 }
-                    .toPersistentMap(),
-                type = type
-            )
+            }
         }
 
         return PresentationModel(items = items.toPersistentList())

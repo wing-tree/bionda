@@ -14,3 +14,4 @@ fun <T> MutableList<T>.replaceAt(index: Int, element: T): Boolean {
 }
 
 fun <T> MutableList<T>.replaceFirst(element: T): Boolean = replaceAt(Int.firstIndex, element)
+fun <T> MutableList<T>.updateFirst(function: (T) -> T): Boolean = replaceFirst(function(first()))
