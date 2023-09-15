@@ -1,7 +1,6 @@
 package wing.tree.bionda.model
 
 import androidx.annotation.DrawableRes
-import androidx.compose.runtime.Stable
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.PersistentMap
 import kotlinx.collections.immutable.mutate
@@ -34,13 +33,12 @@ import kotlin.math.round
 data class VilageFcst(
     val items: PersistentList<Item>
 ) {
-    @Stable
     data class Item(
         val fcstDate: String,
         val fcstTime: String,
         val codeValues: PersistentMap<String, String>,
         val timesOfDay: TimesOfDay = TimesOfDay.DAYTIME,
-        val type: Type = Type.VilageFcst
+        val type: Type = Type.VilageFcst.Following
     ) {
         private val heatIndex: Double? get() = with(tmp) {
             if (isNotNull()) {
@@ -105,20 +103,26 @@ data class VilageFcst(
             @DrawableRes
             fun getWeatherIcon(item: Item): Int?
 
-            object UltraSrtFcst : Type {
+            sealed interface UltraSrtFcst : Type {
                 override fun getWeatherIcon(item: Item) = with(item) {
                     weatherIcons.let {
                         it.pty[pty.code] ?: it.sky[sky.code]
                     }
                 }
+
+                object Following : UltraSrtFcst
+                object Leading : UltraSrtFcst
             }
 
-            object VilageFcst : Type {
+            sealed interface VilageFcst : Type {
                 override fun getWeatherIcon(item: Item) = with(item) {
                     weatherIcons.let {
                         it.pty[pty.code] ?: it.sky[sky.code]
                     }
                 }
+
+                object Following : VilageFcst
+                object Leading : VilageFcst
             }
 
             sealed interface RiseSet : Type {

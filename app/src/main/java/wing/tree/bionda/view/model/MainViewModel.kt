@@ -42,6 +42,7 @@ import wing.tree.bionda.extension.toCoordinate
 import wing.tree.bionda.mapper.UltraSrtNcstMapper
 import wing.tree.bionda.mapper.VilageFcstMapper
 import wing.tree.bionda.model.VilageFcst
+import wing.tree.bionda.model.VilageFcst.Item.Type
 import wing.tree.bionda.permissions.locationPermissions
 import wing.tree.bionda.scheduler.AlarmScheduler
 import wing.tree.bionda.top.level.emptyPersistentSet
@@ -103,7 +104,7 @@ class MainViewModel @Inject constructor(
         weatherRepository.getUltraSrtFcst(nx = nx, ny = ny).map { ultraSrtFcst ->
             vilageFcstMapper.toPresentationModel(
                 ultraSrtFcst,
-                VilageFcst.Item.Type.UltraSrtFcst
+                Type.UltraSrtFcst.Following
             )
         }
     }
