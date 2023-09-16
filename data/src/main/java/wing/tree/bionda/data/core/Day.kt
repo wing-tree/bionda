@@ -8,6 +8,11 @@ import wing.tree.bionda.data.top.level.koreaCalendar
 sealed class Day {
     abstract val baseDate: String
 
+    object DayAfterTomorrow : Day() {
+        override val baseDate: String
+            get() = koreaCalendar.dayAfterTomorrow.baseDate
+    }
+
     object Today : Day() {
         override val baseDate: String
             get() = koreaCalendar.baseDate
@@ -16,10 +21,5 @@ sealed class Day {
     object Tomorrow : Day() {
         override val baseDate: String
             get() = koreaCalendar.tomorrow.baseDate
-    }
-
-    object DayAfterTomorrow : Day() {
-        override val baseDate: String
-            get() = koreaCalendar.dayAfterTomorrow.baseDate
     }
 }
