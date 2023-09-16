@@ -30,15 +30,13 @@ import wing.tree.bionda.top.level.calculateWindChill
 import wing.tree.bionda.top.level.emptyPersistentMap
 import kotlin.math.round
 
-data class VilageFcst(
-    val items: PersistentList<Item>
-) {
+data class VilageFcst(val items: PersistentList<Item>) {
     data class Item(
         val fcstDate: String,
         val fcstTime: String,
         val codeValues: PersistentMap<String, String>,
         val timesOfDay: TimesOfDay = TimesOfDay.DAYTIME,
-        val type: Type = Type.VilageFcst.Following
+        val type: Type = Type.VilageFcst
     ) {
         private val heatIndex: Double? get() = with(tmp) {
             if (isNotNull()) {
@@ -99,43 +97,37 @@ data class VilageFcst(
         val vec = codeValues[Category.VEC]
         val wsd = codeValues[Category.WSD]
 
-        sealed interface Type {
+        sealed class Type {
             @DrawableRes
-            fun getWeatherIcon(item: Item): Int?
+            abstract fun getWeatherIcon(item: Item): Int?
 
-            sealed interface UltraSrtFcst : Type {
+            object UltraSrtFcst : Type() {
                 override fun getWeatherIcon(item: Item) = with(item) {
                     weatherIcons.let {
                         it.pty[pty.code] ?: it.sky[sky.code]
                     }
                 }
-
-                object Following : UltraSrtFcst
-                object Leading : UltraSrtFcst
             }
 
-            sealed interface VilageFcst : Type {
+            object VilageFcst : Type() {
                 override fun getWeatherIcon(item: Item) = with(item) {
                     weatherIcons.let {
                         it.pty[pty.code] ?: it.sky[sky.code]
                     }
                 }
-
-                object Following : VilageFcst
-                object Leading : VilageFcst
             }
 
-            sealed interface RiseSet : Type {
+            sealed class RiseSet : Type() {
                 operator fun not() = when(this) {
                     Sunrise -> Sunset
                     Sunset -> Sunrise
                 }
 
-                object Sunrise : RiseSet {
+                object Sunrise : RiseSet() {
                     override fun getWeatherIcon(item: Item) = item.weatherIcons.sunrise
                 }
 
-                object Sunset : RiseSet {
+                object Sunset : RiseSet() {
                     override fun getWeatherIcon(item: Item): Int = item.weatherIcons.sunset
                 }
             }
