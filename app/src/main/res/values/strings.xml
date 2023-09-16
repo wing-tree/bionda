@@ -5,6 +5,7 @@
     <string name="alarm_on">알람 켜기</string>
     <string name="app_name">비온다</string>
     <string name="at">에는</string>
+    <string name="day_after_tomorrow">모레</string>
     <string name="delete">삭제</string>
     <string name="high">높음</string>
     <string name="hour">시</string>
@@ -19,6 +20,8 @@
     <string name="sunrise">일출</string>
     <string name="sunset">일몰</string>
     <string name="take_an_umbrella">우산 챙기세요!</string>
+    <string name="today">오늘</string>
+    <string name="tomorrow">내일</string>
     <string name="very_high">매우 높음</string>
     <string name="weather">날씨</string>
 
