@@ -19,12 +19,14 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.ImmutableList
 import wing.tree.bionda.R
+import wing.tree.bionda.data.core.Day
 import wing.tree.bionda.data.core.State
 import wing.tree.bionda.data.core.State.Complete
 import wing.tree.bionda.data.extension.empty
@@ -33,6 +35,7 @@ import wing.tree.bionda.data.extension.half
 import wing.tree.bionda.data.extension.string
 import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.data.top.level.koreaCalendar
+import wing.tree.bionda.extension.drawDay
 import wing.tree.bionda.extension.drawFcstTime
 import wing.tree.bionda.extension.drawFeelsLikeTemperature
 import wing.tree.bionda.extension.drawPcp
@@ -89,7 +92,7 @@ private fun Content(
     Column(modifier = modifier) {
         VerticalSpacer(16.dp)
 
-        // TODO 아래 내용 체크, 기본 api 제공도 확인,
+        // TODO 아래 내용 체크, [기본 api] 제공도 확인,
 //        contentPadding = windowSizeClass.marginValues.copy(
 //            top = Dp.zero,
 //            bottom = Dp.zero
@@ -101,7 +104,7 @@ private fun Content(
         ) {
             val style = ChartStyle.defaultValue
 
-            TmpChart(
+            Chart(
                 items = vilageFcst.items,
                 style = style,
                 modifier = Modifier
@@ -114,21 +117,30 @@ private fun Content(
 }
 
 @Composable
-private fun TmpChart(
+private fun Chart(
     items: ImmutableList<VilageFcst.Item>,
     style: ChartStyle,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
     val count = items.count()
+    val marked = items.groupBy {
+        it.fcstDate
+    }.map { (_, value) ->
+        value.minBy { item ->
+            item.fcstTime
+        }
+    }
 
     val segment = style.segment
 
     val scrollState = rememberScrollState()
-    val simpleDateFormat = SimpleDateFormat(
-        context.getString(R.string.pattern_fcst_hour),
-        Locale.KOREA
-    )
+    val simpleDateFormat = remember {
+        SimpleDateFormat(
+            context.getString(R.string.pattern_fcst_hour),
+            Locale.KOREA
+        )
+    }
 
     Row(modifier = modifier.horizontalScroll(scrollState)) {
         Canvas(modifier = Modifier.width(segment.width.times(count))) {
@@ -144,6 +156,27 @@ private fun TmpChart(
                         .times(index).toPx()
                         .plus(segment.width.toPx().half),
                     Float.zero
+                )
+
+                val day = if (item in marked) {
+                    val resId = when (item.fcstDate) {
+                        Day.Today.baseDate -> R.string.today
+                        Day.Tomorrow.baseDate -> R.string.tomorrow
+                        Day.DayAfterTomorrow.baseDate -> R.string.day_after_tomorrow
+                        else -> null
+                    }
+
+                    resId?.let {
+                        context.getString(it)
+                    }
+                } else {
+                    null
+                }
+
+                drawDay(
+                    day = day ?: String.empty,
+                    point = point,
+                    chartStyle = style.day
                 )
 
                 drawFcstTime(

@@ -64,6 +64,16 @@ fun DrawScope.drawText(
     point.y += verticalPaddingValues.bottom.toPx()
 }
 
+fun DrawScope.drawDay(
+    day: String,
+    point: PointF,
+    chartStyle: ChartStyle.Text
+) = drawText(
+    text = day,
+    point = point,
+    chartStyle = chartStyle
+)
+
 fun DrawScope.drawFcstTime(
     fcstTime: String,
     point: PointF,
