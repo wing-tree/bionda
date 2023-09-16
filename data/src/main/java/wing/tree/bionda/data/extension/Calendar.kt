@@ -19,7 +19,6 @@ val Calendar.dayAfterTomorrow: Calendar get() = tomorrow.apply {
     date += Int.one
 }
 
-val Calendar.fcstDate: String get() = baseDate
 val Calendar.locdate: String get() = locdateFormat.format(this)
 val Calendar.tmFc: String get() = tmFcFormat.format(this)
 val Calendar.timeRange: String get() = buildString {
