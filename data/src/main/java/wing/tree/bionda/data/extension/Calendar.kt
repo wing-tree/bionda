@@ -15,6 +15,7 @@ import wing.tree.bionda.data.top.level.tmFcFormat
 
 val Calendar.baseDate: String get() = baseDateFormat.format(this)
 val Calendar.baseTime: String get() = baseTimeFormat.format(this)
+val Calendar.fcstDate: String get() = baseDate
 val Calendar.locdate: String get() = locdateFormat.format(this)
 val Calendar.tmFc: String get() = tmFcFormat.format(this)
 val Calendar.timeRange: String get() = buildString {
