@@ -101,7 +101,6 @@ class MainViewModel @Inject constructor(
 
     private val ultraSrtFcst = coordinate.flatMap { (nx, ny) ->
         weatherRepository.getUltraSrtFcst(nx = nx, ny = ny).map { ultraSrtFcst ->
-            ultraSrtFcst.items
             vilageFcstMapper.toPresentationModel(ultraSrtFcst)
         }
     }
