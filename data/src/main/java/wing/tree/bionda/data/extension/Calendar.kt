@@ -15,12 +15,20 @@ import wing.tree.bionda.data.top.level.tmFcFormat
 
 val Calendar.baseDate: String get() = baseDateFormat.format(this)
 val Calendar.baseTime: String get() = baseTimeFormat.format(this)
+val Calendar.dayAfterTomorrow: Calendar get() = tomorrow.apply {
+    date += Int.one
+}
+
 val Calendar.fcstDate: String get() = baseDate
 val Calendar.locdate: String get() = locdateFormat.format(this)
 val Calendar.tmFc: String get() = tmFcFormat.format(this)
 val Calendar.timeRange: String get() = buildString {
     append(timeRangeFirstFormat.format(cloneAsCalendar()))
     append(timeRangeLastFormat.format(cloneAsCalendar().delayHourOfDayBy(3))) // TODO make to const. or property
+}
+
+val Calendar.tomorrow: Calendar get() = cloneAsCalendar().apply {
+    date += Int.one
 }
 
 var Calendar.date: Int
