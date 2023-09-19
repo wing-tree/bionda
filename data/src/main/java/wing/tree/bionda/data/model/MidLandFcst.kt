@@ -66,8 +66,8 @@ sealed interface MidLandFcst {
 
         data class LandFcst(
             val n: Int,
-            val rnStAm: Int?,
-            val rnStPm: Int?,
+            val rnStAm: Number?,
+            val rnStPm: Number?,
             val rnSt: Int?,
             val wfAm: String?,
             val wfPm: String?,
