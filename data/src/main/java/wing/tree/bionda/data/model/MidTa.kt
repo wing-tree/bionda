@@ -207,7 +207,8 @@ sealed interface MidTa {
         fun advancedDayBy(n: Int): ImmutableList<Ta> = if (n > Int.zero) {
             ta.map {
                 it.copy(n = it.n.minus(n))
-            }.toImmutableList()
+            }
+                .toImmutableList()
         } else {
             ta
         }
