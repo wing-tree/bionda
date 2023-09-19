@@ -20,6 +20,7 @@ import wing.tree.bionda.data.service.MidFcstInfoService
 import wing.tree.bionda.data.service.RiseSetInfoService
 import wing.tree.bionda.data.service.VilageFcstInfoService
 import wing.tree.bionda.data.top.level.koreaCalendar
+import wing.tree.bionda.data.top.level.timeFormat
 
 class WeatherDataSource(
     private val livingWthrIdxService: LivingWthrIdxService,
@@ -129,7 +130,7 @@ class WeatherDataSource(
         ) {
             if (it.isErrorCode03) {
                 // TODO set to const. time inverval ect.. uvIdx는 세 시간 주기.
-                with(koreaCalendar(time).advanceHourOfDayBy(3)) {
+                with(koreaCalendar(timeFormat.parse(time)).advanceHourOfDayBy(3)) {
                     val errorMsg = errorMsg(areaNo = areaNo, time = time())
 
                     block(areaNo = areaNo, time = time())

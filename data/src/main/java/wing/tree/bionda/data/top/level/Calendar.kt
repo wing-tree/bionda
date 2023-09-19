@@ -48,10 +48,6 @@ fun koreaCalendar(baseDate: String, baseTime: String): Calendar = koreaCalendar(
     }
 }
 
-fun koreaCalendar(time: String): Calendar = koreaCalendar(
-    timeFormat.parse(time)
-)
-
 fun koreaCalendar(timeInMillis: Long): Calendar = koreaCalendar.also {
     it.timeInMillis = timeInMillis
 }
