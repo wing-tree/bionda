@@ -33,4 +33,14 @@ fun String.ifZero(defaultValue: () -> String) = if (this `is` String.zero) {
     this
 }
 
-fun String.isBlankOrZero(): Boolean = isBlank() || `is`(String.zero)
+fun String.isBlankOrZero(): Boolean = when {
+    `is`(String.zero) -> true
+    isBlank() -> true
+    else -> false
+}
+
+fun String?.isNullOrZero(): Boolean = when {
+    `is`(String.zero) -> true
+    isNull() -> true
+    else -> false
+}
