@@ -1,6 +1,6 @@
 package wing.tree.bionda.data.extension
 
-inline fun Boolean?.ifTrue(then: () -> Unit) {
+inline fun <R> Boolean?.ifTrue(then: () -> R) {
     if (this == true) {
         then()
     }
