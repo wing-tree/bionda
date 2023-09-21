@@ -2,7 +2,7 @@ package wing.tree.bionda.data.model
 
 import androidx.room.Entity
 import androidx.room.Ignore
-import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.serialization.Serializable
@@ -163,7 +163,7 @@ sealed interface MidLandFcst {
         )
 
         @Ignore
-        val landFcst: ImmutableList<LandFcst> = persistentListOf(
+        val landFcst: PersistentList<LandFcst> = persistentListOf(
             landFcst3, landFcst4, landFcst5, landFcst6, landFcst7, landFcst8, landFcst9, landFcst10
         )
 

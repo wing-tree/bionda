@@ -1,10 +1,11 @@
 package wing.tree.bionda.data.model
 
-import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toImmutableList
-import wing.tree.bionda.data.extension.zero
+import kotlinx.collections.immutable.toPersistentList
 import wing.tree.bionda.data.core.State.Complete
 import wing.tree.bionda.data.core.isSuccess
+import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.data.model.MidLandFcst.Local as LandFcst
 import wing.tree.bionda.data.model.MidTa.Local as Ta
 
@@ -23,12 +24,12 @@ sealed interface MidLandFcstTa {
             val ta: Ta.Ta
         )
 
-        val items: ImmutableList<Item> = midLandFcst.landFcst
+        val items: PersistentList<Item> = midLandFcst.landFcst
             .sortedBy(LandFcst.LandFcst::n)
             .zip(midTa.ta.sortedBy(Ta.Ta::n))
             .map { (landFcst, ta) ->
                 Item(n = landFcst.n, landFcst = landFcst, ta = ta)
-            }.toImmutableList()
+            }.toPersistentList()
 
         fun advancedDayBy(n: Int) = if (n > Int.zero) {
             items.map { item ->
