@@ -2,15 +2,28 @@ package wing.tree.bionda.extension
 
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.Dp
+import wing.tree.bionda.data.extension.baseDate
 import wing.tree.bionda.data.extension.complement
+import wing.tree.bionda.data.extension.dayAfterTomorrow
 import wing.tree.bionda.data.extension.dec
 import wing.tree.bionda.data.extension.floatOrNull
 import wing.tree.bionda.data.extension.half
 import wing.tree.bionda.data.extension.ifZero
 import wing.tree.bionda.data.extension.inc
+import wing.tree.bionda.data.extension.`is`
+import wing.tree.bionda.data.extension.tomorrow
 import wing.tree.bionda.data.extension.zero
+import wing.tree.bionda.data.top.level.koreaCalendar
 import wing.tree.bionda.model.style.ChartStyle
 import wing.tree.bionda.model.VilageFcst
+
+fun List<VilageFcst.Item>.dayAfterTomorrow() = with(koreaCalendar.dayAfterTomorrow) {
+    val baseDate = baseDate
+
+    filter {
+        it.fcstDate `is` baseDate
+    }
+}
 
 fun List<VilageFcst.Item>.offsets(
     density: Float,
@@ -66,5 +79,13 @@ fun List<VilageFcst.Item>.offsets(
 
             Offset(x, y)
         }
+    }
+}
+
+fun List<VilageFcst.Item>.tomorrow() = with(koreaCalendar.tomorrow) {
+    val baseDate = baseDate
+
+    filter {
+        it.fcstDate `is` baseDate
     }
 }
