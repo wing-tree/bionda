@@ -19,7 +19,7 @@ import wing.tree.bionda.data.extension.isNotNull
 import wing.tree.bionda.data.extension.not
 import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.oneHundred
-import wing.tree.bionda.data.extension.ten
+import wing.tree.bionda.data.extension.roundToOneDecimalPlace
 import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.data.model.Category
 import wing.tree.bionda.data.model.CodeValue
@@ -28,7 +28,6 @@ import wing.tree.bionda.model.VilageFcst.Item.Type.RiseSet
 import wing.tree.bionda.top.level.calculateHeatIndex
 import wing.tree.bionda.top.level.calculateWindChill
 import wing.tree.bionda.top.level.emptyPersistentMap
-import kotlin.math.round
 
 data class VilageFcst(val items: PersistentList<Item>) {
     data class Item(
@@ -43,9 +42,8 @@ data class VilageFcst(val items: PersistentList<Item>) {
                 calculateHeatIndex(
                     ta = doubleOrZero,
                     rh = reh?.doubleOrNull ?: Double.zero
-                ).let {
-                    round(it.times(Double.ten)).div(Double.ten)
-                }
+                )
+                    .roundToOneDecimalPlace()
             } else {
                 null
             }
@@ -61,9 +59,8 @@ data class VilageFcst(val items: PersistentList<Item>) {
                 calculateWindChill(
                     ta = doubleOrZero,
                     v = wsd?.doubleOrNull ?: Double.zero
-                ).let {
-                    round(it.times(Double.ten)).div(Double.ten)
-                }
+                )
+                    .roundToOneDecimalPlace()
             } else {
                 null
             }

@@ -4,6 +4,7 @@ package wing.tree.bionda.data.extension
 
 import wing.tree.bionda.data.core.DegreeMinute
 import kotlin.math.abs
+import kotlin.math.round
 import kotlin.math.sign
 
 val Double.Companion.one: Double get() = 1.0
@@ -22,6 +23,10 @@ val Double.quarter: Double get() = times(0.25)
 val Double.string: String get() = toString()
 
 fun Double.delta(other: Double) = minus(other)
+fun Double.roundToOneDecimalPlace(): Double {
+    return round(times(Int.ten)).div(Int.ten)
+}
+
 fun Double.toDegreeMinute(type: DegreeMinute.Type): DegreeMinute {
     val abs = abs(this)
 
