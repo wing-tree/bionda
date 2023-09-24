@@ -2,7 +2,6 @@ package wing.tree.bionda.data.model
 
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toPersistentList
 import wing.tree.bionda.data.core.State.Complete
 import wing.tree.bionda.data.core.isSuccess
@@ -47,7 +46,7 @@ sealed interface MidLandFcstTa {
                     )
                 }
             }
-                .toImmutableList()
+                .toPersistentList()
         } else {
             items
         }
