@@ -38,10 +38,11 @@ import wing.tree.bionda.data.repository.LivingWthrIdxRepository
 import wing.tree.bionda.data.repository.WeatherRepository
 import wing.tree.bionda.exception.PermissionsDeniedException
 import wing.tree.bionda.extension.getAddress
+import wing.tree.bionda.extension.insertLCRiseSetInfo
+import wing.tree.bionda.extension.prependVilageFcst
 import wing.tree.bionda.extension.toCoordinate
 import wing.tree.bionda.mapper.UltraSrtNcstMapper
 import wing.tree.bionda.mapper.VilageFcstMapper
-import wing.tree.bionda.model.VilageFcst
 import wing.tree.bionda.permissions.locationPermissions
 import wing.tree.bionda.scheduler.AlarmScheduler
 import wing.tree.bionda.top.level.emptyPersistentSet
@@ -178,7 +179,7 @@ class MainViewModel @Inject constructor(
         WeatherState(
             airDiffusionIdx = airDiffusionIdx,
             lcRiseSetInfo = lcRiseSetInfo,
-            midLandFcstTa = midLandFcstTa,
+            midLandFcstTa = midLandFcstTa.prependVilageFcst(vilageFcst),
             uvIdx = uvIdx,
             vilageFcst = vilageFcst.insertLCRiseSetInfo(lcRiseSetInfo)
         )
@@ -291,18 +292,6 @@ class MainViewModel @Inject constructor(
         )
 
         is Complete.Failure -> HeaderState.Error(exception)
-    }
-
-    private fun State<VilageFcst>.insertLCRiseSetInfo(
-        lcRiseSetInfo: State<ImmutableList<LCRiseSetInfo>>
-    ) = map {
-        with(lcRiseSetInfo) {
-            if (isSuccess()) {
-                it.insertLCRiseSetInfo(value)
-            } else {
-                it
-            }
-        }
     }
 
     private fun StateFlow<AlarmState>.selected(): List<Alarm> = with(value) {
