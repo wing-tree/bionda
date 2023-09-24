@@ -112,7 +112,7 @@ private fun BothSuccess(
             .julianDay
             .minus(julianDay)
 
-        advancedDayBy(n)
+        prefix.plus(advancedDayBy(n))
     }
 
     val (maxTa, minTa) = with(bothSuccess.midTa) {
@@ -156,7 +156,7 @@ private fun OneOfSuccess(
                         .julianDay
                         .minus(julianDay)
 
-                    midLandFcst.advancedDayBy(n)
+                    prefix.plus(midLandFcst.advancedDayBy(n))
                 }
 
                 LazyRow(
@@ -179,7 +179,7 @@ private fun OneOfSuccess(
                         .julianDay
                         .minus(julianDay)
 
-                    midTa.advancedDayBy(n)
+                    prefix.plus(midTa.advancedDayBy(n))
                 }
 
                 val (maxTa, minTa) = with(oneOfSuccess.midTa) {
