@@ -1,6 +1,7 @@
 package wing.tree.bionda.data.model
 
 import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toPersistentList
 import wing.tree.bionda.data.core.State.Complete
@@ -12,12 +13,17 @@ import wing.tree.bionda.data.model.MidTa.Local as Ta
 sealed interface MidLandFcstTa {
     val tmFc: String
 
+    interface AtLeastOneSuccess<T> {
+        val prefix: PersistentList<T>
+    }
+
     data class BothSuccess(
         override val tmFc: String,
+        override val prefix: PersistentList<Item> = persistentListOf(),
         val julianDay: Int,
         val midLandFcst: LandFcst,
         val midTa: Ta
-    ) : MidLandFcstTa {
+    ) : MidLandFcstTa, AtLeastOneSuccess<BothSuccess.Item> {
         data class Item(
             val n: Int,
             val landFcst: LandFcst.LandFcst,
@@ -53,16 +59,18 @@ sealed interface MidLandFcstTa {
         data class MidLandFcst(
             override val tmFc: String,
             override val exception: Throwable,
+            override val prefix: PersistentList<LandFcst.LandFcst> = persistentListOf(),
             val julianDay: Int,
             val midLandFcst: LandFcst
-        ) : OneOfSuccess
+        ) : OneOfSuccess, AtLeastOneSuccess<LandFcst.LandFcst>
 
         data class MidTa(
             override val tmFc: String,
             override val exception: Throwable,
+            override val prefix: PersistentList<Ta.Ta> = persistentListOf(),
             val julianDay: Int,
             val midTa: Ta
-        ) : OneOfSuccess
+        ) : OneOfSuccess, AtLeastOneSuccess<Ta.Ta>
     }
 
     data class BothFailure(
