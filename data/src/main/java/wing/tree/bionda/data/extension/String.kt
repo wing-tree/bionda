@@ -15,6 +15,7 @@ val String.doubleOrZero: Double get() = toDoubleOrNull() ?: Double.zero
 val String.floatOrNull: Float? get() = toFloatOrNull()
 val String.floatOrZero: Float get() = toFloatOrNull() ?: Float.zero
 val String.int: Int get() = toInt()
+val String.intOrNull: Int? get() = toIntOrNull()
 val String.intOrZero: Int get() = toIntOrNull() ?: Int.zero
 
 fun String.advanceHourOfDayBy(hourOfDay: Int, pattern: String): String {
