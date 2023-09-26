@@ -14,14 +14,12 @@ import wing.tree.bionda.model.VilageFcst
 data class MainState(
     val alarmState: AlarmState,
     val inSelectionMode: Boolean,
-    val headerState: HeaderState,
     val weatherState: WeatherState
 ) {
     companion object {
         val initialValue = MainState(
             alarmState = AlarmState.initialValue,
             inSelectionMode = false,
-            headerState = HeaderState.initialValue,
             weatherState = WeatherState.initialValue
         )
     }
@@ -78,6 +76,7 @@ sealed interface AlarmState {
 
 data class WeatherState(
     val airDiffusionIdx: State<LivingWthrIdx.AirDiffusionIdx>,
+    val headerState: HeaderState,
     val midLandFcstTa: State<MidLandFcstTa>,
     val uvIdx: State<LivingWthrIdx.UVIdx>,
     val vilageFcst: State<VilageFcst>
@@ -85,6 +84,7 @@ data class WeatherState(
     companion object {
         val initialValue = WeatherState(
             airDiffusionIdx = State.Loading,
+            headerState = HeaderState.Loading,
             midLandFcstTa = State.Loading,
             uvIdx = State.Loading,
             vilageFcst = State.Loading

@@ -143,10 +143,6 @@ class MainActivity : AppCompatActivity(), PermissionChecker {
                             .fillMaxSize()
                             .padding(innerPadding)
                     ) {
-                        Header(state = state.headerState)
-
-                        VerticalSpacer(height = 16.dp)
-
                         SingleChoiceSegmentedButtonRow(
                             selectedSegmentedButtonIndex = selectedSegmentedButtonIndex,
                             onClick = {

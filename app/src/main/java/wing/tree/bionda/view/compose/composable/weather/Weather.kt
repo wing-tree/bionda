@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import wing.tree.bionda.model.WindowSizeClass
+import wing.tree.bionda.view.compose.composable.Header
 import wing.tree.bionda.view.state.WeatherState
 
 @Composable
@@ -27,6 +28,8 @@ fun Weather(
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+        Header(state = state.headerState)
+
         VilageFcst(
             state = state.vilageFcst,
             modifier = Modifier.fillMaxWidth()

@@ -173,12 +173,14 @@ class MainViewModel @Inject constructor(
 
     private val weatherState = combine(
         airDiffusionIdx,
+        headerState,
         midLandFcstTa,
         uvIdx,
         vilageFcst
-    ) { airDiffusionIdx, midLandFcstTa, uvIdx, vilageFcst ->
+    ) { airDiffusionIdx, headerState, midLandFcstTa, uvIdx, vilageFcst ->
         WeatherState(
             airDiffusionIdx = airDiffusionIdx,
+            headerState = headerState,
             midLandFcstTa = midLandFcstTa.prependVilageFcst(vilageFcst),
             uvIdx = uvIdx,
             vilageFcst = vilageFcst
@@ -189,13 +191,11 @@ class MainViewModel @Inject constructor(
     val state: StateFlow<MainState> = combine(
         alarmState,
         inSelectionMode,
-        headerState,
         weatherState
-    ) { alarmState, inSelectionMode, ultraSrtNcstState, weatherState ->
+    ) { alarmState, inSelectionMode, weatherState ->
         MainState(
             alarmState = alarmState,
             inSelectionMode = inSelectionMode,
-            headerState = ultraSrtNcstState,
             weatherState = weatherState
         )
     }
