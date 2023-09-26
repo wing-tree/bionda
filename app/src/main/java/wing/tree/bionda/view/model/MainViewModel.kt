@@ -108,8 +108,9 @@ class MainViewModel @Inject constructor(
 
     private val vilageFcst = combine(
         coordinate,
+        lcRiseSetInfo,
         ultraSrtFcst
-    ) { coordinate, ultraSrtFcst ->
+    ) { coordinate, lcRiseSetInfo, ultraSrtFcst ->
         coordinate.flatMap { (nx, ny) ->
             weatherRepository.getVilageFcst(nx = nx, ny = ny).map { vilageFcst ->
                 vilageFcstMapper
@@ -122,6 +123,7 @@ class MainViewModel @Inject constructor(
                         }
                     }
             }
+                .insertLCRiseSetInfo(lcRiseSetInfo)
         }
     }
         .stateIn(initialValue = State.Loading)
@@ -171,17 +173,15 @@ class MainViewModel @Inject constructor(
 
     private val weatherState = combine(
         airDiffusionIdx,
-        lcRiseSetInfo,
         midLandFcstTa,
         uvIdx,
         vilageFcst
-    ) { airDiffusionIdx, lcRiseSetInfo, midLandFcstTa, uvIdx, vilageFcst ->
+    ) { airDiffusionIdx, midLandFcstTa, uvIdx, vilageFcst ->
         WeatherState(
             airDiffusionIdx = airDiffusionIdx,
-            lcRiseSetInfo = lcRiseSetInfo,
             midLandFcstTa = midLandFcstTa.prependVilageFcst(vilageFcst),
             uvIdx = uvIdx,
-            vilageFcst = vilageFcst.insertLCRiseSetInfo(lcRiseSetInfo)
+            vilageFcst = vilageFcst
         )
     }
         .stateIn(initialValue = WeatherState.initialValue)
