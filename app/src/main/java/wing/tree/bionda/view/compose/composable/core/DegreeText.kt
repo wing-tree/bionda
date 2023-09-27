@@ -26,12 +26,15 @@ fun DegreeText(
         text = text,
         modifier = modifier.drawWithContent {
             drawContent()
-            drawText(
-                textMeasurer = textMeasurer,
-                text = String.degree,
-                topLeft = Offset(size.width, Float.zero),
-                style = style
-            )
+
+            if (text.isNotBlank()) {
+                drawText(
+                    textMeasurer = textMeasurer,
+                    text = String.degree,
+                    topLeft = Offset(size.width, Float.zero),
+                    style = style
+                )
+            }
         },
         color = color,
         style = style
