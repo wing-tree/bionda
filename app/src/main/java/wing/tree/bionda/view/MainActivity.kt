@@ -42,6 +42,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import wing.tree.bionda.data.extension.containsAny
 import wing.tree.bionda.data.extension.empty
+import wing.tree.bionda.data.extension.full
 import wing.tree.bionda.data.extension.`is`
 import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.toggle
@@ -61,8 +62,6 @@ import wing.tree.bionda.theme.BiondaTheme
 import wing.tree.bionda.top.level.noOperations
 import wing.tree.bionda.view.compose.composable.SingleChoiceSegmentedButtonRow
 import wing.tree.bionda.view.compose.composable.alarm.Alarm
-import wing.tree.bionda.view.compose.composable.core.VerticalSpacer
-import wing.tree.bionda.view.compose.composable.Header
 import wing.tree.bionda.view.compose.composable.weather.Weather
 import wing.tree.bionda.view.model.MainViewModel
 import wing.tree.bionda.view.state.AlarmState.Action
@@ -153,7 +152,7 @@ class MainActivity : AppCompatActivity(), PermissionChecker {
 
                         AnimatedContent(
                             targetState = selectedSegmentedButtonIndex,
-                            modifier = Modifier.weight(Float.one),
+                            modifier = Modifier.weight(Float.full),
                             transitionSpec = {
                                 val slideDirection = if (targetState `is` Int.zero) {
                                     SlideDirection.Right

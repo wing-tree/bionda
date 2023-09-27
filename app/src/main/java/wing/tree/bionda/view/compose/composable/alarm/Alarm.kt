@@ -51,7 +51,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import wing.tree.bionda.R
 import wing.tree.bionda.data.extension.empty
-import wing.tree.bionda.data.extension.one
+import wing.tree.bionda.data.extension.full
 import wing.tree.bionda.data.model.Alarm
 import wing.tree.bionda.data.top.level.koreaCalendar
 import wing.tree.bionda.extension.zero
@@ -69,7 +69,7 @@ fun Alarm(
     state: AlarmState,
     inSelectionMode: Boolean,
     onAction: (Action) -> Unit,
-    windowSizeClass : WindowSizeClass,
+    windowSizeClass: WindowSizeClass,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier) {
@@ -110,7 +110,7 @@ fun Alarm(
                 onAction = {
                     onAction(it)
                 },
-                modifier = Modifier.weight(Float.one)
+                modifier = Modifier.weight(Float.full)
             )
         }
 
@@ -148,7 +148,7 @@ private fun SelectionMode(
                     onClick = {
                         onAction(Action.SelectionMode.ALARM_ON)
                     },
-                    modifier = Modifier.weight(Float.one),
+                    modifier = Modifier.weight(Float.full),
                     text = {
                         Text(text = stringResource(id = R.string.alarm_on))
                     },
@@ -165,7 +165,7 @@ private fun SelectionMode(
                     onClick = {
                         onAction(Action.SelectionMode.ALARM_OFF)
                     },
-                    modifier = Modifier.weight(Float.one),
+                    modifier = Modifier.weight(Float.full),
                     text = {
                         Text(text = stringResource(id = R.string.alarm_off))
                     },
@@ -182,7 +182,7 @@ private fun SelectionMode(
                     onClick = {
                         onAction(Action.SelectionMode.DELETE_ALL)
                     },
-                    modifier = Modifier.weight(Float.one),
+                    modifier = Modifier.weight(Float.full),
                     text = {
                         Text(text = stringResource(id = R.string.delete))
                     },
@@ -317,7 +317,7 @@ private fun Item(
 
             Text(
                 text = text,
-                modifier = Modifier.weight(Float.one),
+                modifier = Modifier.weight(Float.full),
                 style = MaterialTheme.typography.titleMedium
             )
 

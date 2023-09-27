@@ -17,8 +17,8 @@ import androidx.compose.ui.unit.dp
 import wing.tree.bionda.data.core.Address
 import wing.tree.bionda.data.core.State
 import wing.tree.bionda.data.extension.empty
+import wing.tree.bionda.data.extension.full
 import wing.tree.bionda.data.extension.isNotNull
-import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.string
 import wing.tree.bionda.model.UltraSrtNcst
 import wing.tree.bionda.view.compose.composable.core.DegreeText
@@ -48,7 +48,7 @@ fun Header(
                 val value = targetState.value
 
                 Column(
-                    modifier = Modifier.weight(Float.one),
+                    modifier = Modifier.weight(Float.full),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     TextClock()
@@ -58,7 +58,7 @@ fun Header(
 
                 UltraSrtNcst(
                     ultraSrtNcst = value.ultraSrtNcst,
-                    modifier = Modifier.weight(Float.one)
+                    modifier = Modifier.weight(Float.full)
                 )
             }
             is State.Complete.Failure -> {
