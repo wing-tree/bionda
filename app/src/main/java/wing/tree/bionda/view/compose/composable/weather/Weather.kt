@@ -23,7 +23,11 @@ fun Weather(
     val paddingValues = windowSizeClass.marginValues
 
     Column(modifier = modifier.padding(paddingValues)) {
-        Header(state = state.headerState)
+        Header(
+            state = state.headerState,
+            modifier = Modifier.padding(vertical = 16.dp)
+        )
+
         Column(
             modifier = modifier.verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
