@@ -129,24 +129,18 @@ class WeatherDataSource(
 
             launch {
                 vilageFcst.items.groupBy {
-                    it.baseDate
+                    it.fcstDate
                 }.forEach { (baseDate, items) ->
                     val tmn = items.find {
                         it.category `is` Category.TMN
                     }?.let {
-                        Tmn(
-                            baseDate = baseDate,
-                            value = it.fcstValue
-                        )
+                        Tmn(baseDate = baseDate, value = it.fcstValue)
                     }
 
                     val tmx = items.find {
                         it.category `is` Category.TMX
                     }?.let {
-                        Tmx(
-                            baseDate = baseDate,
-                            value = it.fcstValue
-                        )
+                        Tmx(baseDate = baseDate, value = it.fcstValue)
                     }
 
                     cache(tmn = tmn, tmx = tmx)
