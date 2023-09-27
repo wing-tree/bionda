@@ -14,13 +14,20 @@ import wing.tree.bionda.data.model.Decorator
 import java.util.Date
 import java.util.Locale
 
-val koreaCalendar: Calendar get() = koreaCalendar()
-
-fun baseCalendar(decorator: Decorator.Calendar): Calendar = koreaCalendar.cloneAsBaseCalendar(decorator)
-fun fcstCalendar(hourOfDay: Int): Calendar = koreaCalendar.apply {
-    this.hourOfDay = hourOfDay
+val dayAfterTomorrow: Calendar get() = tomorrow.apply {
+    date += Int.one
 }
 
+val koreaCalendar: Calendar get() = koreaCalendar()
+val tomorrow: Calendar get() = koreaCalendar.apply {
+    date += Int.one
+}
+
+val yesterday: Calendar get() = koreaCalendar.apply {
+    date -= Int.one
+}
+
+fun baseCalendar(decorator: Decorator.Calendar): Calendar = koreaCalendar.cloneAsBaseCalendar(decorator)
 fun koreaCalendar(block: Calendar.() -> Unit) = koreaCalendar.apply(block)
 fun koreaCalendar(date: Date): Calendar = koreaCalendar.apply {
     time = date
