@@ -3,7 +3,7 @@ package wing.tree.bionda.theme
 import androidx.compose.ui.graphics.Color
 import wing.tree.bionda.data.extension.half
 import wing.tree.bionda.data.extension.one
-import wing.tree.bionda.data.extension.seven
+import wing.tree.bionda.data.extension.six
 import wing.tree.bionda.data.extension.thirty
 
 val Purple40 = Color(0xFF6650a4)
@@ -18,7 +18,7 @@ val Orange = Color(0xFFFD8D3C)
 val Red = Color(0xFFC30000)
 val Purple = Color(0xFF54248E)
 
-val temperature = List(Int.seven) {
+val temperature = List(Int.six) {
     Color.hsl(
         hue = it.times(Float.thirty),
         Float.one,
