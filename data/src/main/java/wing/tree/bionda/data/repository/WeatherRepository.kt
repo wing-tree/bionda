@@ -178,6 +178,9 @@ class WeatherRepository(
         }
     }
 
+    suspend fun getTmn(baseDate: String) = localDataSource.getTmn(baseDate = baseDate)
+    suspend fun getTmx(baseDate: String) = localDataSource.getTmx(baseDate = baseDate)
+
     suspend fun getUltraSrtFcst(
         nx: Int,
         ny: Int

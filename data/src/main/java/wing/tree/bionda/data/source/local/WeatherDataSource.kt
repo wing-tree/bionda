@@ -155,6 +155,9 @@ class WeatherDataSource(
         }
     }
 
+    suspend fun getTmn(baseDate: String) = tmnDao.get(baseDate = baseDate)
+    suspend fun getTmx(baseDate: String) = tmxDao.get(baseDate = baseDate)
+
     suspend fun loadLCRiseSetInfo(
         params: RiseSetInfoService.Params
     ): LCRiseSetInfo? = with(params) {
