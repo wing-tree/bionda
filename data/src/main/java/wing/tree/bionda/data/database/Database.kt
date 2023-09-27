@@ -1,6 +1,7 @@
 package wing.tree.bionda.data.database
 
 import android.content.Context
+import androidx.room.AutoMigration
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import wing.tree.bionda.data.database.dao.AirDiffusionIdxDao
@@ -8,6 +9,8 @@ import wing.tree.bionda.data.database.dao.AlarmDao
 import wing.tree.bionda.data.database.dao.LCRiseSetInfoDao
 import wing.tree.bionda.data.database.dao.MidLandFcstDao
 import wing.tree.bionda.data.database.dao.MidTaDao
+import wing.tree.bionda.data.database.dao.TmnDao
+import wing.tree.bionda.data.database.dao.TmxDao
 import wing.tree.bionda.data.database.dao.UVIdxDao
 import wing.tree.bionda.data.database.dao.UltraSrtFcstDao
 import wing.tree.bionda.data.database.dao.UltraSrtNcstDao
@@ -20,6 +23,8 @@ import wing.tree.bionda.data.database.type.converters.MidTaConverters
 import wing.tree.bionda.data.database.type.converters.UltraSrtNcstConverters
 import wing.tree.bionda.data.database.type.converters.VilageFcstConverters
 import wing.tree.bionda.data.model.Alarm
+import wing.tree.bionda.data.model.Tmn
+import wing.tree.bionda.data.model.Tmx
 import wing.tree.bionda.data.model.LCRiseSetInfo.Local as LCRiseSetInfo
 import wing.tree.bionda.data.model.LivingWthrIdx.AirDiffusionIdx.Local as AirDiffusionIdx
 import wing.tree.bionda.data.model.LivingWthrIdx.UVIdx.Local as UVIdx
@@ -36,13 +41,18 @@ import wing.tree.bionda.data.model.VilageFcst.Local as VilageFcst
         LCRiseSetInfo::class,
         MidLandFcst::class,
         MidTa::class,
+        Tmn::class,
+        Tmx::class,
         UVIdx::class,
         UltraSrtFcst::class,
         UltraSrtNcst::class,
         VilageFcst::class
     ],
     exportSchema = true,
-    version = 1
+    version = 2,
+    autoMigrations = [
+        AutoMigration (from = 1, to = 2)
+    ]
 )
 @androidx.room.TypeConverters(
     AlarmConverters::class,
@@ -59,6 +69,8 @@ abstract class Database : RoomDatabase() {
     abstract val midLandFcstDao: MidLandFcstDao
     abstract val midTaDao: MidTaDao
     abstract val lcRiseSetInfoDao: LCRiseSetInfoDao
+    abstract val tmnDao: TmnDao
+    abstract val tmxDao: TmxDao
     abstract val uvIdxDao: UVIdxDao
     abstract val ultraSrtFcstDao: UltraSrtFcstDao
     abstract val ultraSrtNcstDao: UltraSrtNcstDao
