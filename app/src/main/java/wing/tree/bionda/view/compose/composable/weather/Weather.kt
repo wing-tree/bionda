@@ -10,6 +10,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import wing.tree.bionda.extension.verticalFadingEdge
 import wing.tree.bionda.model.WindowSizeClass
 import wing.tree.bionda.view.compose.composable.Header
 import wing.tree.bionda.view.state.WeatherState
@@ -23,13 +24,17 @@ fun Weather(
     val paddingValues = windowSizeClass.marginValues
 
     Column(modifier = modifier.padding(paddingValues)) {
+        val scrollState = rememberScrollState()
+
         Header(
             state = state.headerState,
             modifier = Modifier.padding(vertical = 16.dp)
         )
 
         Column(
-            modifier = modifier.verticalScroll(rememberScrollState()),
+            modifier = modifier
+                .verticalScroll(scrollState)
+                .verticalFadingEdge(scrollState = scrollState),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             VilageFcst(
