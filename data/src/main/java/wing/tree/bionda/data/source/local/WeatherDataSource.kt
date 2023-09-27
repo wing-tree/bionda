@@ -11,13 +11,18 @@ import wing.tree.bionda.data.core.LatLon
 import wing.tree.bionda.data.database.dao.LCRiseSetInfoDao
 import wing.tree.bionda.data.database.dao.MidLandFcstDao
 import wing.tree.bionda.data.database.dao.MidTaDao
+import wing.tree.bionda.data.database.dao.TmnDao
+import wing.tree.bionda.data.database.dao.TmxDao
 import wing.tree.bionda.data.database.dao.UltraSrtFcstDao
 import wing.tree.bionda.data.database.dao.UltraSrtNcstDao
 import wing.tree.bionda.data.database.dao.VilageFcstDao
 import wing.tree.bionda.data.extension.haversine
 import wing.tree.bionda.data.extension.`is`
+import wing.tree.bionda.data.model.Category
 import wing.tree.bionda.data.model.FcstZoneCd
 import wing.tree.bionda.data.model.RegId
+import wing.tree.bionda.data.model.Tmn
+import wing.tree.bionda.data.model.Tmx
 import wing.tree.bionda.data.service.RiseSetInfoService
 import wing.tree.bionda.data.service.VilageFcstInfoService
 import wing.tree.bionda.data.model.LCRiseSetInfo.Local as LCRiseSetInfo
@@ -32,6 +37,8 @@ class WeatherDataSource(
     private val midLandFcstDao: MidLandFcstDao,
     private val midTaDao: MidTaDao,
     private val lcRiseSetInfoDao: LCRiseSetInfoDao,
+    private val tmnDao: TmnDao,
+    private val tmxDao: TmxDao,
     private val ultraSrtFcstDao: UltraSrtFcstDao,
     private val ultraSrtNcstDao: UltraSrtNcstDao,
     private val vilageFcstDao: VilageFcstDao
@@ -54,12 +61,16 @@ class WeatherDataSource(
 
     private val supervisorScope = CoroutineScope(Dispatchers.IO.plus(SupervisorJob()))
 
-    fun getRegId(location: Location, regId: RegId): String {
-        val item = fcstZoneCd.items.minBy {
-            location.haversine(LatLon(lat = it.lat, lon = it.lon))
-        }
+    private fun cache(tmn: Tmn?, tmx: Tmx?) {
+        supervisorScope.launch {
+            tmn?.let {
+                tmnDao.insert(it)
+            }
 
-        return getRegId(item, regId)
+            tmx?.let {
+                tmxDao.insert(it)
+            }
+        }
     }
 
     private fun getRegId(item: FcstZoneCd.Item, regId: RegId): String {
@@ -72,6 +83,14 @@ class WeatherDataSource(
                 getRegId(it, regId)
             } ?: regId.defaultValue
         }
+    }
+
+    fun getRegId(location: Location, regId: RegId): String {
+        val item = fcstZoneCd.items.minBy {
+            location.haversine(LatLon(lat = it.lat, lon = it.lon))
+        }
+
+        return getRegId(item, regId)
     }
 
     fun cache(midLandFcst: MidLandFcst) {
@@ -107,6 +126,32 @@ class WeatherDataSource(
     fun cache(vilageFcst: VilageFcst) {
         supervisorScope.launch {
             vilageFcstDao.clearAndInsert(vilageFcst)
+
+            launch {
+                vilageFcst.items.groupBy {
+                    it.baseDate
+                }.forEach { (baseDate, items) ->
+                    val tmn = items.find {
+                        it.category `is` Category.TMN
+                    }?.let {
+                        Tmn(
+                            baseDate = baseDate,
+                            value = it.fcstValue
+                        )
+                    }
+
+                    val tmx = items.find {
+                        it.category `is` Category.TMX
+                    }?.let {
+                        Tmx(
+                            baseDate = baseDate,
+                            value = it.fcstValue
+                        )
+                    }
+
+                    cache(tmn = tmn, tmx = tmx)
+                }
+            }
         }
     }
 

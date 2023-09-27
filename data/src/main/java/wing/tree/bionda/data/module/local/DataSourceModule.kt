@@ -47,14 +47,18 @@ object DataSourceModule {
         @ApplicationContext context: Context,
         database: Database
     ): WeatherDataSource {
-        return WeatherDataSource(
-            context = context,
-            midLandFcstDao = database.midLandFcstDao,
-            midTaDao = database.midTaDao,
-            lcRiseSetInfoDao = database.lcRiseSetInfoDao,
-            ultraSrtFcstDao = database.ultraSrtFcstDao,
-            ultraSrtNcstDao = database.ultraSrtNcstDao,
-            vilageFcstDao = database.vilageFcstDao
-        )
+        return with(database) {
+            WeatherDataSource(
+                context = context,
+                midLandFcstDao = midLandFcstDao,
+                midTaDao = midTaDao,
+                lcRiseSetInfoDao = lcRiseSetInfoDao,
+                tmnDao = tmnDao,
+                tmxDao = tmxDao,
+                ultraSrtFcstDao = ultraSrtFcstDao,
+                ultraSrtNcstDao = ultraSrtNcstDao,
+                vilageFcstDao = vilageFcstDao
+            )
+        }
     }
 }
