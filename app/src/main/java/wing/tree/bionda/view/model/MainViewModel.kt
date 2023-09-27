@@ -15,27 +15,26 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import wing.tree.bionda.data.core.Address
 import wing.tree.bionda.data.core.State
 import wing.tree.bionda.data.core.State.Complete
 import wing.tree.bionda.data.core.flatMap
 import wing.tree.bionda.data.core.isSuccess
 import wing.tree.bionda.data.core.map
+import wing.tree.bionda.data.extension.baseDate
 import wing.tree.bionda.data.extension.fiveSecondsInMilliseconds
 import wing.tree.bionda.data.extension.flatMap
 import wing.tree.bionda.data.extension.long
 import wing.tree.bionda.data.extension.negativeOne
 import wing.tree.bionda.data.model.Alarm
 import wing.tree.bionda.data.model.MidLandFcstTa
-import wing.tree.bionda.data.model.UltraSrtNcst
 import wing.tree.bionda.data.provider.LocationProvider
 import wing.tree.bionda.data.repository.AlarmRepository
 import wing.tree.bionda.data.repository.LivingWthrIdxRepository
 import wing.tree.bionda.data.repository.WeatherRepository
+import wing.tree.bionda.data.top.level.koreaCalendar
 import wing.tree.bionda.exception.PermissionsDeniedException
 import wing.tree.bionda.extension.getAddress
 import wing.tree.bionda.extension.insertLCRiseSetInfo
@@ -69,21 +68,25 @@ class MainViewModel @Inject constructor(
     }
         .stateIn(initialValue = State.Loading)
 
-    private val headerState = location.map {
-        when (it) {
-            State.Loading -> HeaderState.Loading
-            is Complete.Success -> it.value.let { location ->
-                val (nx, ny) = location.toCoordinate()
-                val address = location.getAddress(getApplication())
-                val ultraSrtNcst = weatherRepository.getUltraSrtNcst(nx = nx, ny = ny)
+    private val headerState = location.flatMap {
+        val (nx, ny) = it.toCoordinate()
+        val address = it.getAddress(getApplication())
+        val baseDate = koreaCalendar.baseDate
 
-                ultraSrtNcst.asState(address)
+        val (tmn, tmx) = with(weatherRepository) {
+            getTmn(baseDate)?.value to getTmx(baseDate)?.value
+        }
+
+        weatherRepository.getUltraSrtNcst(nx = nx, ny = ny).map { ultraSrtFcst ->
+            with(ultraSrtNcstMapper.toPresentationModel(ultraSrtFcst)) {
+                HeaderState(
+                    address = address,
+                    ultraSrtNcst = copy(tmn = tmn, tmx = tmx)
+                )
             }
-
-            is Complete.Failure -> HeaderState.Error(it.exception)
         }
     }
-        .stateIn(initialValue = HeaderState.initialValue)
+        .stateIn(initialValue = State.Loading)
 
     private val lcRiseSetInfo: StateFlow<State<ImmutableList<LCRiseSetInfo>>> = location.flatMap {
         weatherRepository.getLCRiseSetInfo(it)
@@ -283,15 +286,6 @@ class MainViewModel @Inject constructor(
             alarmRepository.update(alarm)
             alarmScheduler.scheduleOrCancel(alarm)
         }
-    }
-
-    private fun Complete<UltraSrtNcst.Local>.asState(address: Address?): HeaderState = when (this) {
-        is Complete.Success -> HeaderState.Content(
-            address = address,
-            ultraSrtNcst = ultraSrtNcstMapper.toPresentationModel(value)
-        )
-
-        is Complete.Failure -> HeaderState.Error(exception)
     }
 
     private fun StateFlow<AlarmState>.selected(): List<Alarm> = with(value) {

@@ -76,7 +76,7 @@ sealed interface AlarmState {
 
 data class WeatherState(
     val airDiffusionIdx: State<LivingWthrIdx.AirDiffusionIdx>,
-    val headerState: HeaderState,
+    val headerState: State<HeaderState>,
     val midLandFcstTa: State<MidLandFcstTa>,
     val uvIdx: State<LivingWthrIdx.UVIdx>,
     val vilageFcst: State<VilageFcst>
@@ -84,7 +84,7 @@ data class WeatherState(
     companion object {
         val initialValue = WeatherState(
             airDiffusionIdx = State.Loading,
-            headerState = HeaderState.Loading,
+            headerState = State.Loading,
             midLandFcstTa = State.Loading,
             uvIdx = State.Loading,
             vilageFcst = State.Loading
@@ -92,16 +92,7 @@ data class WeatherState(
     }
 }
 
-sealed interface HeaderState {
-    object Loading : HeaderState
-    data class Content(
-        val address: Address?,
-        val ultraSrtNcst: UltraSrtNcst
-    ) : HeaderState
-
-    data class Error(val throwable: Throwable) : HeaderState
-
-    companion object {
-        val initialValue = Loading
-    }
-}
+data class HeaderState(
+    val address: Address?,
+    val ultraSrtNcst: UltraSrtNcst
+)

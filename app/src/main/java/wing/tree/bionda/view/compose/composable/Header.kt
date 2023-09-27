@@ -1,6 +1,7 @@
 package wing.tree.bionda.view.compose.composable
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
@@ -14,9 +15,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import wing.tree.bionda.data.core.Address
+import wing.tree.bionda.data.core.State
 import wing.tree.bionda.data.extension.empty
 import wing.tree.bionda.data.extension.isNotNull
 import wing.tree.bionda.data.extension.one
+import wing.tree.bionda.data.extension.string
 import wing.tree.bionda.model.UltraSrtNcst
 import wing.tree.bionda.view.compose.composable.core.DegreeText
 import wing.tree.bionda.view.compose.composable.core.Loading
@@ -26,7 +29,7 @@ import wing.tree.bionda.view.state.HeaderState
 
 @Composable
 fun Header(
-    state: HeaderState,
+    state: State<HeaderState>,
     modifier: Modifier = Modifier
 ) {
     AnimatedContent(
@@ -37,12 +40,12 @@ fun Header(
         }
     ) { targetState ->
         when (targetState) {
-            HeaderState.Loading -> Loading(modifier = Modifier)
-            is HeaderState.Content -> Row(
+            State.Loading -> Loading(modifier = Modifier)
+            is State.Complete.Success -> Row(
                 modifier = modifier,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                val (address, ultraSrtNcst) = targetState
+                val value = targetState.value
 
                 Column(
                     modifier = Modifier.weight(Float.one),
@@ -50,16 +53,16 @@ fun Header(
                 ) {
                     TextClock()
                     VerticalSpacer(height = 8.dp)
-                    Address(address = address)
+                    Address(address = value.address)
                 }
 
                 UltraSrtNcst(
-                    ultraSrtNcst = ultraSrtNcst,
+                    ultraSrtNcst = value.ultraSrtNcst,
                     modifier = Modifier.weight(Float.one)
                 )
             }
-            is HeaderState.Error -> {
-                val text = targetState.throwable.message ?: "${targetState.throwable}"
+            is State.Complete.Failure -> {
+                val text = targetState.exception.message ?: "${targetState.exception}"
 
                 Text(text = text)
             }
@@ -98,19 +101,23 @@ private fun UltraSrtNcst(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        ultraSrtNcst.t1h?.let {
-
-        }
         with(ultraSrtNcst) {
             t1h?.let {
                 DegreeText(
                     text = "$it",
                     style = typography.headlineLarge
                 )
+                
+                DegreeText(text = feelsLikeTemperature?.string ?: String.empty)
             }
 
             pty.value?.let {
                 Text(text = it)
+            }
+
+            Row(horizontalArrangement = Arrangement.SpaceBetween) {
+                DegreeText(text = tmx ?: String.empty)
+                DegreeText(text = tmn ?: String.empty)
             }
         }
     }
