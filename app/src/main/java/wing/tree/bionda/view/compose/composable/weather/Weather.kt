@@ -22,34 +22,33 @@ fun Weather(
 ) {
     val paddingValues = windowSizeClass.marginValues
 
-    Column(
-        modifier = modifier
-            .padding(paddingValues)
-            .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
+    Column(modifier = modifier.padding(paddingValues)) {
         Header(state = state.headerState)
+        Column(
+            modifier = modifier.verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            VilageFcst(
+                state = state.vilageFcst,
+                modifier = Modifier.fillMaxWidth()
+            )
 
-        VilageFcst(
-            state = state.vilageFcst,
-            modifier = Modifier.fillMaxWidth()
-        )
+            MidLandFcstTa(
+                state = state.midLandFcstTa,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+            )
 
-        MidLandFcstTa(
-            state = state.midLandFcstTa,
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-        )
+            UVIdx(
+                state = state.uvIdx,
+                modifier = Modifier.fillMaxWidth()
+            )
 
-        UVIdx(
-            state = state.uvIdx,
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        AirDiffusionIdx(
-            state = state.airDiffusionIdx,
-            modifier = Modifier.fillMaxWidth()
-        )
+            AirDiffusionIdx(
+                state = state.airDiffusionIdx,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
     }
 }

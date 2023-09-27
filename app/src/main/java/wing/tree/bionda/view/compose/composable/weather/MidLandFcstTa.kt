@@ -27,17 +27,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import wing.tree.bionda.data.core.State
+import wing.tree.bionda.data.core.State.Complete
 import wing.tree.bionda.data.extension.date
 import wing.tree.bionda.data.extension.dayOfWeek
 import wing.tree.bionda.data.extension.empty
 import wing.tree.bionda.data.extension.float
 import wing.tree.bionda.data.extension.isNull
 import wing.tree.bionda.data.extension.julianDay
-import wing.tree.bionda.data.core.State
-import wing.tree.bionda.data.core.State.Complete
 import wing.tree.bionda.data.model.MidLandFcstTa
 import wing.tree.bionda.data.model.MidLandFcstTa.BothFailure
 import wing.tree.bionda.data.model.MidLandFcstTa.BothSuccess
@@ -45,8 +44,7 @@ import wing.tree.bionda.data.model.MidLandFcstTa.OneOfSuccess
 import wing.tree.bionda.data.top.level.dayOfMonthFormat
 import wing.tree.bionda.data.top.level.koreaCalendar
 import wing.tree.bionda.model.WeatherIcons
-import wing.tree.bionda.theme.SunOrange
-import wing.tree.bionda.theme.WaterBlue
+import wing.tree.bionda.theme.temperature
 import wing.tree.bionda.view.compose.composable.core.DegreeText
 import wing.tree.bionda.view.compose.composable.core.Loading
 import wing.tree.bionda.view.compose.composable.core.VerticalSpacer
@@ -333,9 +331,7 @@ private fun Ta(
                 .width(4.dp)
                 .height(barHeight)
                 .background(
-                    brush = Brush.verticalGradient(
-                        listOf(SunOrange, Color.Green.copy(alpha = 0.5F), WaterBlue)
-                    ),
+                    brush = Brush.verticalGradient(temperature),
                     shape = CircleShape
                 )
         )
