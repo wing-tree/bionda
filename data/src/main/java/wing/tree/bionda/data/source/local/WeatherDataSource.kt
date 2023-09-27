@@ -16,6 +16,7 @@ import wing.tree.bionda.data.database.dao.TmxDao
 import wing.tree.bionda.data.database.dao.UltraSrtFcstDao
 import wing.tree.bionda.data.database.dao.UltraSrtNcstDao
 import wing.tree.bionda.data.database.dao.VilageFcstDao
+import wing.tree.bionda.data.extension.baseDate
 import wing.tree.bionda.data.extension.haversine
 import wing.tree.bionda.data.extension.`is`
 import wing.tree.bionda.data.model.Category
@@ -25,6 +26,7 @@ import wing.tree.bionda.data.model.Tmn
 import wing.tree.bionda.data.model.Tmx
 import wing.tree.bionda.data.service.RiseSetInfoService
 import wing.tree.bionda.data.service.VilageFcstInfoService
+import wing.tree.bionda.data.top.level.yesterday
 import wing.tree.bionda.data.model.LCRiseSetInfo.Local as LCRiseSetInfo
 import wing.tree.bionda.data.model.MidLandFcst.Local as MidLandFcst
 import wing.tree.bionda.data.model.MidTa.Local as MidTa
@@ -144,6 +146,11 @@ class WeatherDataSource(
                     }
 
                     cache(tmn = tmn, tmx = tmx)
+                }
+
+                with(yesterday) {
+                    tmnDao.deleteBefore(baseDate)
+                    tmxDao.deleteBefore(baseDate)
                 }
             }
         }
