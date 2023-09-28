@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import wing.tree.bionda.extension.verticalFadingEdge
 import wing.tree.bionda.model.WindowSizeClass
-import wing.tree.bionda.view.compose.composable.Header
+import wing.tree.bionda.view.compose.composable.UltraSrtNcst
 import wing.tree.bionda.view.state.WeatherState
 
 @Composable
@@ -26,8 +26,8 @@ fun Weather(
     Column(modifier = modifier.padding(paddingValues)) {
         val scrollState = rememberScrollState()
 
-        Header(
-            state = state.headerState,
+        UltraSrtNcst(
+            state = state.ultraSrtNcst,
             modifier = Modifier.padding(vertical = 16.dp)
         )
 

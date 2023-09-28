@@ -26,11 +26,10 @@ import wing.tree.bionda.view.compose.composable.core.DegreeText
 import wing.tree.bionda.view.compose.composable.core.Loading
 import wing.tree.bionda.view.compose.composable.core.TextClock
 import wing.tree.bionda.view.compose.composable.core.VerticalSpacer
-import wing.tree.bionda.view.state.HeaderState
 
 @Composable
-fun Header(
-    state: State<HeaderState>,
+fun UltraSrtNcst(
+    state: State<UltraSrtNcst>,
     modifier: Modifier = Modifier
 ) {
     AnimatedContent(
@@ -57,8 +56,8 @@ fun Header(
                     Address(address = value.address)
                 }
 
-                UltraSrtNcst(
-                    ultraSrtNcst = value.ultraSrtNcst,
+                Content(
+                    ultraSrtNcst = value,
                     modifier = Modifier.weight(Float.full)
                 )
             }
@@ -94,7 +93,7 @@ private fun Address(
 }
 
 @Composable
-private fun UltraSrtNcst(
+private fun Content(
     ultraSrtNcst: UltraSrtNcst,
     modifier: Modifier = Modifier
 ) {
@@ -113,7 +112,7 @@ private fun UltraSrtNcst(
 
                         append(String.empty)
                     },
-                    style = typography.headlineLarge
+                    style = typography.displayMedium
                 )
 
                 DegreeText(text = "${feelsLikeTemperature.ifNull(String::empty)}")

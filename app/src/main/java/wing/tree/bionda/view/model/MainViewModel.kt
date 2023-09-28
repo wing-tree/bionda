@@ -46,7 +46,6 @@ import wing.tree.bionda.permissions.locationPermissions
 import wing.tree.bionda.scheduler.AlarmScheduler
 import wing.tree.bionda.top.level.emptyPersistentSet
 import wing.tree.bionda.view.state.AlarmState
-import wing.tree.bionda.view.state.HeaderState
 import wing.tree.bionda.view.state.MainState
 import wing.tree.bionda.view.state.WeatherState
 import javax.inject.Inject
@@ -68,26 +67,6 @@ class MainViewModel @Inject constructor(
     }
         .stateIn(initialValue = State.Loading)
 
-    private val headerState = location.flatMap {
-        val (nx, ny) = it.toCoordinate()
-        val address = it.getAddress(getApplication())
-        val baseDate = koreaCalendar.baseDate
-
-        val (tmn, tmx) = with(weatherRepository) {
-            getTmn(baseDate)?.value to getTmx(baseDate)?.value
-        }
-
-        weatherRepository.getUltraSrtNcst(nx = nx, ny = ny).map { ultraSrtFcst ->
-            with(ultraSrtNcstMapper.toPresentationModel(ultraSrtFcst)) {
-                HeaderState(
-                    address = address,
-                    ultraSrtNcst = copy(tmn = tmn, tmx = tmx)
-                )
-            }
-        }
-    }
-        .stateIn(initialValue = State.Loading)
-
     private val lcRiseSetInfo: StateFlow<State<ImmutableList<LCRiseSetInfo>>> = location.flatMap {
         weatherRepository.getLCRiseSetInfo(it)
     }
@@ -99,14 +78,34 @@ class MainViewModel @Inject constructor(
         .stateIn(initialValue = State.Loading)
 
     private val requestPermissions = MutableStateFlow<PersistentSet<String>>(emptyPersistentSet())
-    private val uvIdx = location.flatMap {
-        livingWthrIdxRepository.getUVIdx(it)
+    private val ultraSrtNcst = location.flatMap {
+        val (nx, ny) = it.toCoordinate()
+        val address = it.getAddress(getApplication())
+        val baseDate = koreaCalendar.baseDate
+
+        val (tmn, tmx) = with(weatherRepository) {
+            getTmn(baseDate)?.value to getTmx(baseDate)?.value
+        }
+
+        weatherRepository.getUltraSrtNcst(nx = nx, ny = ny).map { dataModel ->
+            ultraSrtNcstMapper.toPresentationModel(
+                address = address,
+                dataModel = dataModel,
+                tmn = tmn,
+                tmx = tmx
+            )
+        }
     }
+        .stateIn(initialValue = State.Loading)
 
     private val ultraSrtFcst = coordinate.flatMap { (nx, ny) ->
         weatherRepository.getUltraSrtFcst(nx = nx, ny = ny).map { ultraSrtFcst ->
             vilageFcstMapper.toPresentationModel(ultraSrtFcst)
         }
+    }
+
+    private val uvIdx = location.flatMap {
+        livingWthrIdxRepository.getUVIdx(it)
     }
 
     private val vilageFcst = combine(
@@ -176,15 +175,15 @@ class MainViewModel @Inject constructor(
 
     private val weatherState = combine(
         airDiffusionIdx,
-        headerState,
         midLandFcstTa,
+        ultraSrtNcst,
         uvIdx,
         vilageFcst
-    ) { airDiffusionIdx, headerState, midLandFcstTa, uvIdx, vilageFcst ->
+    ) { airDiffusionIdx, midLandFcstTa, ultraSrtNcst, uvIdx, vilageFcst ->
         WeatherState(
             airDiffusionIdx = airDiffusionIdx,
-            headerState = headerState,
             midLandFcstTa = midLandFcstTa.prependVilageFcst(vilageFcst),
+            ultraSrtNcst = ultraSrtNcst,
             uvIdx = uvIdx,
             vilageFcst = vilageFcst
         )
