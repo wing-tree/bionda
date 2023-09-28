@@ -25,3 +25,9 @@ fun Any?.isNotNull(): Boolean {
 
     return this not null
 }
+
+fun <T : Any?> T.ifNull(defaultValue: () -> T) = if (isNull()) {
+    defaultValue()
+} else {
+    this
+}
