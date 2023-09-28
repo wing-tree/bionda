@@ -162,8 +162,10 @@ class MainActivity : AppCompatActivity(), PermissionChecker {
                                     SlideDirection.Left
                                 }
 
-                                slideIntoContainer(slideDirection).plus(fadeIn()) togetherWith
-                                        slideOutOfContainer(slideDirection).plus(fadeOut())
+                                val enter = slideIntoContainer(slideDirection).plus(fadeIn())
+                                val exit = slideOutOfContainer(slideDirection).plus(fadeOut())
+
+                                enter togetherWith exit
                             },
                             label = String.empty
                         ) { targetState ->
