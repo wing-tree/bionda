@@ -16,10 +16,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import wing.tree.bionda.data.core.Address
 import wing.tree.bionda.data.core.State
+import wing.tree.bionda.data.extension.degree
 import wing.tree.bionda.data.extension.empty
 import wing.tree.bionda.data.extension.full
+import wing.tree.bionda.data.extension.ifNull
 import wing.tree.bionda.data.extension.isNotNull
-import wing.tree.bionda.data.extension.string
 import wing.tree.bionda.model.UltraSrtNcst
 import wing.tree.bionda.view.compose.composable.core.DegreeText
 import wing.tree.bionda.view.compose.composable.core.Loading
@@ -102,13 +103,20 @@ private fun UltraSrtNcst(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         with(ultraSrtNcst) {
-            t1h?.let {
-                DegreeText(
-                    text = "$it",
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = buildString {
+                        t1h?.let {
+                            append("$it")
+                            append(String.degree)
+                        }
+
+                        append(String.empty)
+                    },
                     style = typography.headlineLarge
                 )
-                
-                DegreeText(text = feelsLikeTemperature?.string ?: String.empty)
+
+                DegreeText(text = "${feelsLikeTemperature.ifNull(String::empty)}")
             }
 
             Text(text = "${pty.value}")
