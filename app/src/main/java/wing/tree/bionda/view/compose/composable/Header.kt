@@ -111,9 +111,7 @@ private fun UltraSrtNcst(
                 DegreeText(text = feelsLikeTemperature?.string ?: String.empty)
             }
 
-            pty.value?.let {
-                Text(text = it)
-            }
+            Text(text = "${pty.value}")
 
             Row(horizontalArrangement = Arrangement.SpaceBetween) {
                 DegreeText(text = tmx ?: String.empty)
