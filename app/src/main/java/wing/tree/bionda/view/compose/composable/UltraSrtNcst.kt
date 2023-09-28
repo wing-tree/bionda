@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Icon
@@ -13,19 +12,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import wing.tree.bionda.data.core.Address
 import wing.tree.bionda.data.core.State
-import wing.tree.bionda.data.extension.degree
 import wing.tree.bionda.data.extension.empty
 import wing.tree.bionda.data.extension.full
 import wing.tree.bionda.data.extension.ifNull
 import wing.tree.bionda.data.extension.isNotNull
 import wing.tree.bionda.model.UltraSrtNcst
 import wing.tree.bionda.view.compose.composable.core.DegreeText
+import wing.tree.bionda.view.compose.composable.core.HorizontalSpacer
 import wing.tree.bionda.view.compose.composable.core.Loading
-import wing.tree.bionda.view.compose.composable.core.TextClock
-import wing.tree.bionda.view.compose.composable.core.VerticalSpacer
 
 @Composable
 fun UltraSrtNcst(
@@ -34,6 +30,7 @@ fun UltraSrtNcst(
 ) {
     AnimatedContent(
         targetState = state,
+        modifier = modifier,
         label = String.empty,
         contentKey = {
             it::class.qualifiedName
@@ -41,26 +38,9 @@ fun UltraSrtNcst(
     ) { targetState ->
         when (targetState) {
             State.Loading -> Loading(modifier = Modifier)
-            is State.Complete.Success -> Row(
-                modifier = modifier,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                val value = targetState.value
-
-                Column(
-                    modifier = Modifier.weight(Float.full),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    TextClock()
-                    VerticalSpacer(height = 8.dp)
-                    Address(address = value.address)
-                }
-
-                Content(
-                    ultraSrtNcst = value,
-                    modifier = Modifier.weight(Float.full)
-                )
-            }
+            is State.Complete.Success -> Content(
+                ultraSrtNcst = targetState.value
+            )
             is State.Complete.Failure -> {
                 val text = targetState.exception.message ?: "${targetState.exception}"
 
@@ -78,15 +58,17 @@ private fun Address(
     val thoroughfare = address?.thoroughfare
 
     if (thoroughfare.isNotNull()) {
+        val imageVector = Icons.Default.LocationOn
+
         Row(
             modifier = modifier,
             verticalAlignment = Alignment.CenterVertically
         ) {
+            HorizontalSpacer(width = imageVector.defaultWidth)
             Text(text = thoroughfare)
             Icon(
-                imageVector = Icons.Default.LocationOn,
-                contentDescription = null,
-                modifier = Modifier.size(20.dp)
+                imageVector = imageVector,
+                contentDescription = null
             )
         }
     }
@@ -97,32 +79,30 @@ private fun Content(
     ultraSrtNcst: UltraSrtNcst,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+    Row(modifier = modifier) {
         with(ultraSrtNcst) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = buildString {
-                        t1h?.let {
-                            append("$it")
-                            append(String.degree)
-                        }
-
-                        append(String.empty)
-                    },
+            Column(
+                modifier = Modifier.weight(Float.full),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Address(address = address)
+                DegreeText(
+                    text = "${t1h.ifNull(String::empty)}",
                     style = typography.displayMedium
                 )
 
                 DegreeText(text = "${feelsLikeTemperature.ifNull(String::empty)}")
+                Row(horizontalArrangement = Arrangement.SpaceBetween) {
+                    DegreeText(text = tmx ?: String.empty)
+                    DegreeText(text = tmn ?: String.empty)
+                }
             }
 
-            Text(text = "${pty.value}")
-
-            Row(horizontalArrangement = Arrangement.SpaceBetween) {
-                DegreeText(text = tmx ?: String.empty)
-                DegreeText(text = tmn ?: String.empty)
+            Column(
+                modifier = Modifier.weight(Float.full),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(text = pty.value ?: String.empty)
             }
         }
     }

@@ -9,8 +9,13 @@ val Float.Companion.onePercent: Float get() = 0.01F
 val Float.Companion.quarter: Float get() = 0.25F
 val Float.Companion.thirty: Float get() = 30F
 val Float.Companion.threeQuarters: Float get() = 0.75F
+val Float.Companion.two: Float get() = 2.0F
 val Float.Companion.zero: Float get() = 0.0F
 val Float.complement: Float get() = run {
+    if (`is`(Float.NaN)) {
+        return Float.zero
+    }
+
     require(this in Float.zero..Float.one)
 
     Float.one.minus(this)
