@@ -223,6 +223,10 @@ data class VilageFcst(val items: PersistentList<Item>) {
             add(indexOf(it), item)
         }
 
+        if (firstOrNull()?.type is RiseSet) {
+            removeFirst()
+        }
+
         return this
     }
 
