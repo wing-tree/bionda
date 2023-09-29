@@ -6,16 +6,16 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import wing.tree.bionda.data.database.AreaDatabase
 import wing.tree.bionda.data.provider.AreaNoProvider
 import wing.tree.bionda.data.provider.LocationProvider
+import wing.tree.bionda.data.source.local.AreaDataSource
 
 @Module
 @InstallIn(SingletonComponent::class)
 object ProviderModule {
     @Provides
-    fun providesAreaNoProvider(database: AreaDatabase): AreaNoProvider {
-        return AreaNoProvider(database.dao)
+    fun providesAreaNoProvider(dataSource: AreaDataSource): AreaNoProvider {
+        return AreaNoProvider(dataSource)
     }
 
     @Provides

@@ -9,14 +9,14 @@ import wing.tree.bionda.data.model.Area
 @androidx.room.Database(
     entities = [Area::class],
     exportSchema = true,
-    version = 1
+    version = 2
 )
 abstract class AreaDatabase : RoomDatabase() {
     abstract val dao: AreaDao
 
     companion object {
         private const val DATABASE_FILE_PATH = "area.db"
-        private const val NAME = "area-database"
+        private const val NAME = "area"
 
         @Volatile
         private var instance: AreaDatabase? = null

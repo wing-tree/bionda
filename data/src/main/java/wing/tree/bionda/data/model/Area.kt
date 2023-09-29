@@ -7,6 +7,9 @@ import androidx.room.PrimaryKey
 data class Area(
     @PrimaryKey(autoGenerate = false)
     val no: String,
+    val level1: String,
+    val level2: String,
+    val level3: String,
     val nx: Int,
     val ny: Int,
     val longitude: Double,
