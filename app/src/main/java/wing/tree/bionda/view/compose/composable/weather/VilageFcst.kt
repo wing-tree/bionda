@@ -222,7 +222,7 @@ private fun Chart(
                 )
 
                 drawPcp(
-                    pcp = item.pcp?.takeIf {
+                    pcp = item.pcp.takeIf {
                         it.not("강수없음")
                     }
                         ?: HYPHEN,
