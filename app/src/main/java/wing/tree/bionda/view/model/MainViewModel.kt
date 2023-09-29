@@ -9,13 +9,10 @@ import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import wing.tree.bionda.data.core.State
@@ -24,7 +21,6 @@ import wing.tree.bionda.data.core.flatMap
 import wing.tree.bionda.data.core.isSuccess
 import wing.tree.bionda.data.core.map
 import wing.tree.bionda.data.extension.baseDate
-import wing.tree.bionda.data.extension.fiveSecondsInMilliseconds
 import wing.tree.bionda.data.extension.flatMap
 import wing.tree.bionda.data.extension.long
 import wing.tree.bionda.data.extension.negativeOne
@@ -304,10 +300,4 @@ class MainViewModel @Inject constructor(
             emptyList()
         }
     }
-
-    private fun <T> Flow<T>.stateIn(initialValue: T) = stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(Long.fiveSecondsInMilliseconds),
-        initialValue = initialValue
-    )
 }
