@@ -33,13 +33,13 @@ fun Weather(
         Column(
             modifier = modifier
                 .verticalScroll(scrollState)
-                .verticalFadingEdge(scrollState = scrollState),
+                .verticalFadingEdge(scrollState = scrollState)
+                .padding(vertical = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             UltraSrtNcst(
                 state = state.ultraSrtNcst,
                 modifier = Modifier
-                    .padding(vertical = 16.dp)
                     .graphicsLayer {
                         with(scrollState) {
                             alpha = value.divAsFloat(maxValue).complement
