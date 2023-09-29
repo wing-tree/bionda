@@ -203,6 +203,8 @@ class MainViewModel @Inject constructor(
     }
         .stateIn(initialValue = MainState.initialValue)
 
+    private fun refresh() = load()
+
     fun add(hour: Int, minute: Int) {
         viewModelScope.launch {
             val alarm = Alarm(hour = hour, minute = minute)
@@ -280,6 +282,12 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    fun onAction(action: WeatherState.Action) {
+        when (action) {
+            WeatherState.Action.Refresh -> refresh()
+        }
+    }
+
     fun update(alarm: Alarm) {
         viewModelScope.launch {
             alarmRepository.update(alarm)
@@ -297,9 +305,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private fun <T> Flow<T>.stateIn(
-        initialValue: T
-    ) = stateIn(
+    private fun <T> Flow<T>.stateIn(initialValue: T) = stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(Long.fiveSecondsInMilliseconds),
         initialValue = initialValue

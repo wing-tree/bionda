@@ -80,6 +80,10 @@ data class WeatherState(
     val uvIdx: State<LivingWthrIdx.UVIdx>,
     val vilageFcst: State<VilageFcst>
 ) {
+    sealed interface Action {
+        object Refresh : Action
+    }
+
     companion object {
         val initialValue = WeatherState(
             airDiffusionIdx = State.Loading,

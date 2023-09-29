@@ -178,6 +178,7 @@ class MainActivity : AppCompatActivity(), PermissionChecker {
                                 Int.zero -> Weather(
                                     state = state.weatherState,
                                     windowSizeClass = windowSizeClass,
+                                    onAction = viewModel::onAction,
                                     modifier = Modifier.fillMaxSize()
                                 )
 
