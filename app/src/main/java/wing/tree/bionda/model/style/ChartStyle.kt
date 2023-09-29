@@ -2,6 +2,7 @@ package wing.tree.bionda.model.style
 
 import android.text.TextPaint
 import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
@@ -16,7 +17,6 @@ import wing.tree.bionda.data.extension.quarter
 import wing.tree.bionda.extension.height
 import wing.tree.bionda.extension.toTextPaint
 import wing.tree.bionda.extension.zero
-import wing.tree.bionda.theme.YellowOrange
 
 data class ChartStyle(
     val segment: Segment,
@@ -60,7 +60,7 @@ data class ChartStyle(
         open val verticalPaddingValues: VerticalPaddingValues = VerticalPaddingValues()
     }
 
-    abstract class Icon: Element() {
+    abstract class Icon : Element() {
         abstract val color: Color
         abstract val size: DpSize
 
@@ -154,7 +154,7 @@ data class ChartStyle(
                         )
                     },
                     tmpChart = TmpChart(
-                        color = YellowOrange,
+                        color = colorScheme.primary,
                         height = 24.dp
                     ),
                     vec = Icon(
