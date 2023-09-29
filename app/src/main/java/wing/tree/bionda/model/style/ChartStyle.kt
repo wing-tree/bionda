@@ -138,7 +138,7 @@ data class ChartStyle(
                     .toTextPaint()
 
                 ChartStyle(
-                    segment = Segment(width = 64.dp),
+                    segment = Segment(width = 56.dp),
                     day = Text(labelSmall),
                     feelsLikeTemperature = Text(labelSmall),
                     fcstTime = Text(labelSmall),

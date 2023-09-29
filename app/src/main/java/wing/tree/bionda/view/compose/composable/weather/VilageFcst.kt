@@ -26,12 +26,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.ImmutableList
 import wing.tree.bionda.R
+import wing.tree.bionda.data.constant.HYPHEN
 import wing.tree.bionda.data.core.Day
 import wing.tree.bionda.data.core.State
 import wing.tree.bionda.data.core.State.Complete
 import wing.tree.bionda.data.extension.empty
 import wing.tree.bionda.data.extension.floatOrNull
 import wing.tree.bionda.data.extension.half
+import wing.tree.bionda.data.extension.not
 import wing.tree.bionda.data.extension.string
 import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.data.top.level.koreaCalendar
@@ -220,7 +222,10 @@ private fun Chart(
                 )
 
                 drawPcp(
-                    pcp = item.pcp ?: String.empty,
+                    pcp = item.pcp?.takeIf {
+                        it.not("강수없음")
+                    }
+                        ?: HYPHEN,
                     point = point,
                     chartStyle = style.pcp
                 )
