@@ -101,9 +101,12 @@ class WeatherDataSource(
         }
     }
 
-    fun cache(lcRiseSetInfo: LCRiseSetInfo) {
+    fun cache(params: RiseSetInfoService.Params, lcRiseSetInfo: LCRiseSetInfo) {
         supervisorScope.launch {
-            lcRiseSetInfoDao.clearAndInsert(lcRiseSetInfo)
+            lcRiseSetInfoDao.deleteAndInsert(
+                params = params,
+                lcRiseSetInfo = lcRiseSetInfo
+            )
         }
     }
 

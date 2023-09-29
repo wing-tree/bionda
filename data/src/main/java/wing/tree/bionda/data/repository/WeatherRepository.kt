@@ -63,7 +63,10 @@ class WeatherRepository(
             ).toLocal(
                 params = params
             ).also {
-                localDataSource.cache(it)
+                localDataSource.cache(
+                    params = params,
+                    lcRiseSetInfo = it
+                )
             }
 
             Complete.Success(lcRiseSetInfo)
