@@ -82,6 +82,10 @@ data class WeatherState(
 ) {
     sealed interface Action {
         object Refresh : Action
+
+        sealed interface Click : Action {
+            object Area : Click
+        }
     }
 
     companion object {
