@@ -9,6 +9,7 @@ import java.util.Locale
 val String.Companion.degree: String get() = "°"
 val String.Companion.empty: String get() = ""
 val String.Companion.minusSign: String get() = "-"
+val String.Companion.nan: String get() = "nan"
 val String.Companion.zero: String get() = "0"
 val String.doubleOrNull: Double? get() = toDoubleOrNull()
 val String.doubleOrZero: Double get() = toDoubleOrNull() ?: Double.zero
