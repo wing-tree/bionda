@@ -29,6 +29,7 @@ val Int.inc: Int get() = inc()
 val Int.isNegative: Boolean get() = this < 0
 val Int.isNonNegative: Boolean get() = this >= 0
 val Int.long: Long get() = toLong()
+val Int.negated: Int get() = unaryMinus()
 val Int.string: String get() = toString()
 
 fun Int.divAsFloat(other: Int) = div(other.float)
