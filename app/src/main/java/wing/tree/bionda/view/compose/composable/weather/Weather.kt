@@ -82,6 +82,7 @@ fun Weather(
             ) {
                 UltraSrtNcst(
                     state = state.ultraSrtNcst,
+                    onAction = onAction,
                     modifier = Modifier
                         .graphicsLayer {
                             with(scrollState) {

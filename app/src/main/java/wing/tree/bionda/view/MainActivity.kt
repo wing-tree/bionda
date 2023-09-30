@@ -56,6 +56,7 @@ import wing.tree.bionda.extension.rememberWindowSizeClass
 import wing.tree.bionda.extension.remove
 import wing.tree.bionda.extension.requestAccessBackgroundLocationPermission
 import wing.tree.bionda.extension.showMaterialTimePicker
+import wing.tree.bionda.extension.startActivity
 import wing.tree.bionda.extension.toggle
 import wing.tree.bionda.permissions.PermissionChecker
 import wing.tree.bionda.permissions.RequestMultiplePermissions
@@ -67,6 +68,7 @@ import wing.tree.bionda.view.compose.composable.alarm.Alarm
 import wing.tree.bionda.view.compose.composable.weather.Weather
 import wing.tree.bionda.view.model.MainViewModel
 import wing.tree.bionda.view.state.AlarmState.Action
+import wing.tree.bionda.view.state.WeatherState
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), PermissionChecker {
@@ -178,7 +180,17 @@ class MainActivity : AppCompatActivity(), PermissionChecker {
                                 Int.zero -> Weather(
                                     state = state.weatherState,
                                     windowSizeClass = windowSizeClass,
-                                    onAction = viewModel::onAction,
+                                    onAction = { action ->
+                                        when (action) {
+                                            is WeatherState.Action.Click -> when (action) {
+                                                is WeatherState.Action.Click.Area -> {
+                                                    startActivity<AreaSearchActivity>()
+                                                }
+                                            }
+
+                                            else -> viewModel.onAction(action)
+                                        }
+                                    },
                                     modifier = Modifier.fillMaxSize()
                                 )
 

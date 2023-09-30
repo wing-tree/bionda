@@ -72,3 +72,7 @@ fun Activity.shareApp() {
         startActivity(it)
     }
 }
+
+inline fun <reified T : Activity> Activity.startActivity() {
+    startActivity(Intent(this, T::class.java))
+}
