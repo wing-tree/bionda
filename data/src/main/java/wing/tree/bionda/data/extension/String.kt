@@ -41,6 +41,12 @@ fun String.isBlankOrZero(): Boolean = when {
     else -> false
 }
 
+fun String.isNotNanOrBlank(): Boolean = when {
+    `is`(String.nan) -> false
+    isBlank() -> false
+    else -> true
+}
+
 fun String?.isNullOrZero(): Boolean = when {
     `is`(String.zero) -> true
     isNull() -> true
