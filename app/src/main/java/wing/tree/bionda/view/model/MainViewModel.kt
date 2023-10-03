@@ -41,6 +41,7 @@ import wing.tree.bionda.mapper.VilageFcstMapper
 import wing.tree.bionda.permissions.locationPermissions
 import wing.tree.bionda.scheduler.AlarmScheduler
 import wing.tree.bionda.top.level.emptyPersistentSet
+import wing.tree.bionda.top.level.noOperations
 import wing.tree.bionda.view.state.AlarmState
 import wing.tree.bionda.view.state.MainState
 import wing.tree.bionda.view.state.WeatherState
@@ -58,19 +59,16 @@ class MainViewModel @Inject constructor(
     private val vilageFcstMapper: VilageFcstMapper,
     private val weatherRepository: WeatherRepository
 ) : LocationProviderViewModel(application, locationProvider) {
-    private val airDiffusionIdx =  location.flatMap {
-        livingWthrIdxRepository.getAirDiffusionIdx(it)
-    }
+    private val airDiffusionIdx =  location
+        .flatMap(livingWthrIdxRepository::getAirDiffusionIdx)
         .stateIn(initialValue = State.Loading)
 
-    private val lcRiseSetInfo: StateFlow<State<ImmutableList<LCRiseSetInfo>>> = location.flatMap {
-        weatherRepository.getLCRiseSetInfo(it)
-    }
+    private val lcRiseSetInfo: StateFlow<State<ImmutableList<LCRiseSetInfo>>> = location
+        .flatMap(weatherRepository::getLCRiseSetInfo)
         .stateIn(initialValue = State.Loading)
 
-    private val midLandFcstTa: StateFlow<State<MidLandFcstTa>> = location.flatMap {
-        weatherRepository.getMidLandFcstTa(it)
-    }
+    private val midLandFcstTa: StateFlow<State<MidLandFcstTa>> = location
+        .flatMap(weatherRepository::getMidLandFcstTa)
         .stateIn(initialValue = State.Loading)
 
     private val requestPermissions = MutableStateFlow<PersistentSet<String>>(emptyPersistentSet())
@@ -100,9 +98,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private val uvIdx = location.flatMap {
-        livingWthrIdxRepository.getUVIdx(it)
-    }
+    private val uvIdx = location.flatMap(livingWthrIdxRepository::getUVIdx)
 
     private val vilageFcst = combine(
         coordinate,
@@ -281,6 +277,7 @@ class MainViewModel @Inject constructor(
     fun onAction(action: WeatherState.Action) {
         when (action) {
             WeatherState.Action.Refresh -> refresh()
+            is WeatherState.Action.Click -> noOperations
         }
     }
 
