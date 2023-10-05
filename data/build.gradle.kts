@@ -62,7 +62,8 @@ dependencies {
     api("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.5")
 
     implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("androidx.compose.runtime:runtime:1.5.1")
+    implementation("androidx.compose.runtime:runtime:1.5.3")
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
     implementation("androidx.room:room-ktx:2.5.2")
     implementation("androidx.room:room-runtime:2.5.2")
     implementation("com.google.android.gms:play-services-location:21.0.1")
