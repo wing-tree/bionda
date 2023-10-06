@@ -16,7 +16,9 @@ data class Area(
     val nx: Int,
     val ny: Int,
     val longitude: Double,
-    val latitude: Double
+    val latitude: Double,
+    val selected: Boolean = false,
+    val selectedAt: Long? = null
 ) {
     @Ignore
     val name: String = buildString {
