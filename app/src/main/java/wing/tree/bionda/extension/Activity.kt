@@ -19,6 +19,8 @@ import wing.tree.bionda.data.constant.SCHEME_PACKAGE
 import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.model.WindowSizeClass
 
+fun Activity.Intent(cls: Class<*>) = Intent(this, cls)
+
 fun Activity.launchApplicationDetailsSettings() {
     Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
         data = Uri.fromParts(SCHEME_PACKAGE, packageName, null)
