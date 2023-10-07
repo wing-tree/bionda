@@ -15,7 +15,7 @@ import com.google.android.gms.location.Priority
 import kotlinx.coroutines.suspendCancellableCoroutine
 import timber.log.Timber
 import wing.tree.bionda.data.core.State
-import wing.tree.bionda.data.core.ifFailure
+import wing.tree.bionda.data.core.ifFailureOrNull
 import wing.tree.bionda.data.core.ifNull
 import wing.tree.bionda.data.exception.OnCanceledException
 import wing.tree.bionda.data.extension.empty
@@ -45,9 +45,7 @@ class LocationProvider(private val context: Context)  {
     @RequiresPermission(anyOf = [Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION])
     suspend fun getLocation(): State.Complete<Location?> {
         val currentLocation = getCurrentLocation()
-            .ifNull {
-                getCurrentLocation(currentLocationRequest)
-            }.ifFailure {
+            .ifFailureOrNull {
                 Timber.e(it)
                 getCurrentLocation(currentLocationRequest)
             }
@@ -56,9 +54,7 @@ class LocationProvider(private val context: Context)  {
             is State.Complete.Success -> currentLocation
                 .ifNull {
                     getLastLocation()
-                        .ifNull {
-                            getLastLocation(lastLocationRequest)
-                        }.ifFailure {
+                        .ifFailureOrNull {
                             Timber.e(it)
                             getLastLocation(lastLocationRequest)
                         }
@@ -66,9 +62,7 @@ class LocationProvider(private val context: Context)  {
             is State.Complete.Failure -> {
                 Timber.e(currentLocation.exception)
                 getLastLocation()
-                    .ifNull {
-                        getLastLocation(lastLocationRequest)
-                    }.ifFailure {
+                    .ifFailureOrNull {
                         Timber.e(it)
                         getLastLocation(lastLocationRequest)
                     }

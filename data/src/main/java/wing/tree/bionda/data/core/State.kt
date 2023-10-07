@@ -87,7 +87,7 @@ inline fun <T> Complete<T>.ifFailure(defaultValue: (throwable: Throwable) -> Com
         callsInPlace(defaultValue, InvocationKind.AT_MOST_ONCE)
     }
 
-    if (this is Complete.Failure) {
+    if (isFailure()) {
         return defaultValue(exception)
     }
 
@@ -107,6 +107,19 @@ inline fun <T> Complete<T>.ifNull(defaultValue: () -> Complete<T>): Complete<T> 
     }
 
     return this
+}
+
+@OptIn(ExperimentalContracts::class)
+inline fun <T> Complete<T>.ifFailureOrNull(defaultValue: (Throwable?) -> Complete<T>): Complete<T> {
+    contract {
+        callsInPlace(defaultValue, InvocationKind.AT_MOST_ONCE)
+    }
+
+    return when {
+        isFailure() -> defaultValue(exception)
+        isSuccess() -> defaultValue(null)
+        else -> this
+    }
 }
 
 inline fun <R, T> Complete<T>.map(transform: (T) -> R): Complete<R> {
