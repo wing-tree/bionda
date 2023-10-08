@@ -4,23 +4,17 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import wing.tree.bionda.data.core.Address
 import wing.tree.bionda.data.core.State
 import wing.tree.bionda.data.extension.empty
 import wing.tree.bionda.data.extension.full
 import wing.tree.bionda.data.extension.ifNull
-import wing.tree.bionda.data.extension.isNotNull
 import wing.tree.bionda.model.UltraSrtNcst
 import wing.tree.bionda.view.compose.composable.core.DegreeText
-import wing.tree.bionda.view.compose.composable.core.HorizontalSpacer
 import wing.tree.bionda.view.compose.composable.core.Loading
 
 @Composable
@@ -44,30 +38,6 @@ fun UltraSrtNcst(
 
                 Text(text = text)
             }
-        }
-    }
-}
-
-@Composable
-private fun Address(
-    address: Address?,
-    modifier: Modifier = Modifier
-) {
-    val thoroughfare = address?.thoroughfare
-
-    if (thoroughfare.isNotNull()) {
-        val imageVector = Icons.Default.LocationOn
-
-        Row(
-            modifier = modifier,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            HorizontalSpacer(width = imageVector.defaultWidth)
-            Text(text = thoroughfare)
-            Icon(
-                imageVector = imageVector,
-                contentDescription = null
-            )
         }
     }
 }
