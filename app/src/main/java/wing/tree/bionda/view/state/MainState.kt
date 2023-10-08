@@ -3,10 +3,11 @@ package wing.tree.bionda.view.state
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
+import wing.tree.bionda.data.core.Address
 import wing.tree.bionda.data.core.State
 import wing.tree.bionda.data.model.Alarm
-import wing.tree.bionda.data.model.LivingWthrIdx
 import wing.tree.bionda.data.model.MidLandFcstTa
+import wing.tree.bionda.model.LivingWthrIdx
 import wing.tree.bionda.model.UltraSrtNcst
 import wing.tree.bionda.model.VilageFcst
 
@@ -74,10 +75,10 @@ sealed interface AlarmState {
 }
 
 data class WeatherState(
-    val airDiffusionIdx: State<LivingWthrIdx.AirDiffusionIdx>,
+    val address: Address?,
+    val livingWthrIdx: LivingWthrIdx,
     val midLandFcstTa: State<MidLandFcstTa>,
     val ultraSrtNcst: State<UltraSrtNcst>,
-    val uvIdx: State<LivingWthrIdx.UVIdx>,
     val vilageFcst: State<VilageFcst>
 ) {
     sealed interface Action {
@@ -90,10 +91,10 @@ data class WeatherState(
 
     companion object {
         val initialValue = WeatherState(
-            airDiffusionIdx = State.Loading,
+            address = null,
+            livingWthrIdx = LivingWthrIdx.initialValue,
             midLandFcstTa = State.Loading,
             ultraSrtNcst = State.Loading,
-            uvIdx = State.Loading,
             vilageFcst = State.Loading
         )
     }

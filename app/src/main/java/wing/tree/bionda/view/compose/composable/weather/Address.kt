@@ -10,7 +10,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import wing.tree.bionda.data.core.Address
 import wing.tree.bionda.data.extension.isNotNull
-import wing.tree.bionda.view.compose.composable.core.HorizontalSpacer
 
 @Composable
 fun Address(
@@ -20,16 +19,13 @@ fun Address(
     val thoroughfare = address?.thoroughfare
 
     if (thoroughfare.isNotNull()) {
-        val imageVector = Icons.Default.LocationOn
-
         Row(
             modifier = modifier,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            HorizontalSpacer(width = imageVector.defaultWidth)
             Text(text = thoroughfare)
             Icon(
-                imageVector = imageVector,
+                imageVector = Icons.Default.LocationOn,
                 contentDescription = null
             )
         }

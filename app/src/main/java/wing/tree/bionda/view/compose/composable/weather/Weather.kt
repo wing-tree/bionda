@@ -1,5 +1,6 @@
 package wing.tree.bionda.view.compose.composable.weather
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -80,9 +81,9 @@ fun Weather(
                     .padding(vertical = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                UltraSrtNcst(
-                    state = state.ultraSrtNcst,
-                    onAction = onAction,
+                val livingWthrIdx = state.livingWthrIdx
+
+                Column(
                     modifier = Modifier
                         .graphicsLayer {
                             with(scrollState) {
@@ -90,7 +91,16 @@ fun Weather(
                                 translationY = value.halfAfFloat
                             }
                         }
-                )
+                ) {
+                    Address(
+                        address = state.address,
+                        modifier = Modifier.clickable {
+                            onAction(Action.Click.Area)
+                        }
+                    )
+                    
+                    UltraSrtNcst(state = state.ultraSrtNcst)
+                }
 
                 VilageFcst(
                     state = state.vilageFcst,
@@ -105,12 +115,12 @@ fun Weather(
                 )
 
                 UVIdx(
-                    state = state.uvIdx,
+                    state = livingWthrIdx.uvIdx,
                     modifier = Modifier.fillMaxWidth()
                 )
 
                 AirDiffusionIdx(
-                    state = state.airDiffusionIdx,
+                    state = livingWthrIdx.airDiffusionIdx,
                     modifier = Modifier.fillMaxWidth()
                 )
             }

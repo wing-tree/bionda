@@ -35,6 +35,7 @@ import wing.tree.bionda.extension.insertLCRiseSetInfo
 import wing.tree.bionda.extension.prependVilageFcst
 import wing.tree.bionda.mapper.UltraSrtNcstMapper
 import wing.tree.bionda.mapper.VilageFcstMapper
+import wing.tree.bionda.model.LivingWthrIdx
 import wing.tree.bionda.permissions.locationPermissions
 import wing.tree.bionda.scheduler.AlarmScheduler
 import wing.tree.bionda.top.level.emptyPersistentSet
@@ -92,6 +93,13 @@ class MainViewModel @Inject constructor(
     }
 
     private val uvIdx = location.flatMap(livingWthrIdxRepository::getUVIdx)
+    private val livingWthrIdx = combine(airDiffusionIdx, uvIdx) { airDiffusionIdx, uvIdx ->
+        LivingWthrIdx(
+            airDiffusionIdx = airDiffusionIdx,
+            uvIdx = uvIdx
+        )
+    }
+
     private val vilageFcst = combine(
         coordinate,
         lcRiseSetInfo,
@@ -158,17 +166,17 @@ class MainViewModel @Inject constructor(
         .stateIn(initialValue = AlarmState.initialValue)
 
     private val weatherState = combine(
-        airDiffusionIdx,
+        address,
+        livingWthrIdx,
         midLandFcstTa,
         ultraSrtNcst,
-        uvIdx,
         vilageFcst
-    ) { airDiffusionIdx, midLandFcstTa, ultraSrtNcst, uvIdx, vilageFcst ->
+    ) { address, livingWthrIdx, midLandFcstTa, ultraSrtNcst, vilageFcst ->
         WeatherState(
-            airDiffusionIdx = airDiffusionIdx,
+            address = address,
+            livingWthrIdx = livingWthrIdx,
             midLandFcstTa = midLandFcstTa.prependVilageFcst(vilageFcst),
             ultraSrtNcst = ultraSrtNcst,
-            uvIdx = uvIdx,
             vilageFcst = vilageFcst
         )
     }
