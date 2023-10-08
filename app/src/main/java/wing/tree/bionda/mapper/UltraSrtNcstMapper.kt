@@ -1,7 +1,6 @@
 package wing.tree.bionda.mapper
 
 import kotlinx.collections.immutable.toImmutableMap
-import wing.tree.bionda.data.core.Address
 import wing.tree.bionda.model.UltraSrtNcst as PresentationModel
 import wing.tree.bionda.data.model.UltraSrtNcst.Local as DataModel
 
@@ -18,13 +17,11 @@ class UltraSrtNcstMapper : DataModelMapper<DataModel, PresentationModel> {
     }
 
     fun toPresentationModel(
-        address: Address?,
         dataModel: DataModel,
         tmn: String?,
         tmx: String?
     )  = with(dataModel) {
         PresentationModel(
-            address = address,
             baseDate = baseDate,
             baseTime = baseTime,
             codeValues = items.associate {
