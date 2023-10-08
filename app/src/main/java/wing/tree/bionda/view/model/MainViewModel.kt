@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.PersistentSet
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,10 +31,8 @@ import wing.tree.bionda.data.repository.LivingWthrIdxRepository
 import wing.tree.bionda.data.repository.WeatherRepository
 import wing.tree.bionda.data.top.level.koreaCalendar
 import wing.tree.bionda.exception.PermissionsDeniedException
-import wing.tree.bionda.extension.getAddress
 import wing.tree.bionda.extension.insertLCRiseSetInfo
 import wing.tree.bionda.extension.prependVilageFcst
-import wing.tree.bionda.extension.toCoordinate
 import wing.tree.bionda.mapper.UltraSrtNcstMapper
 import wing.tree.bionda.mapper.VilageFcstMapper
 import wing.tree.bionda.permissions.locationPermissions
@@ -72,18 +69,14 @@ class MainViewModel @Inject constructor(
         .stateIn(initialValue = State.Loading)
 
     private val requestPermissions = MutableStateFlow<PersistentSet<String>>(emptyPersistentSet())
-    private val ultraSrtNcst = location.flatMap {
-        val (nx, ny) = it.toCoordinate()
-        val address = it.getAddress(getApplication())
+    private val ultraSrtNcst = coordinate.flatMap {
         val baseDate = koreaCalendar.baseDate
-
         val (tmn, tmx) = with(weatherRepository) {
             getTmn(baseDate)?.value to getTmx(baseDate)?.value
         }
 
-        weatherRepository.getUltraSrtNcst(nx = nx, ny = ny).map { dataModel ->
+        weatherRepository.getUltraSrtNcst(nx = it.nx, ny = it.ny).map { dataModel ->
             ultraSrtNcstMapper.toPresentationModel(
-                address = address,
                 dataModel = dataModel,
                 tmn = tmn,
                 tmx = tmx
@@ -99,7 +92,6 @@ class MainViewModel @Inject constructor(
     }
 
     private val uvIdx = location.flatMap(livingWthrIdxRepository::getUVIdx)
-
     private val vilageFcst = combine(
         coordinate,
         lcRiseSetInfo,
@@ -246,9 +238,7 @@ class MainViewModel @Inject constructor(
 
     fun notifyPermissionsDenied(permissions: Collection<String>) {
         if (permissions.containsAll(locationPermissions)) {
-            location.value = Complete.Failure(
-                PermissionsDeniedException(locationPermissions)
-            )
+            updateLocation(Complete.Failure(PermissionsDeniedException(locationPermissions)))
         }
 
         requestPermissions.update {
@@ -258,9 +248,7 @@ class MainViewModel @Inject constructor(
 
     fun notifyPermissionDenied(permission: String) {
         if (permission in locationPermissions) {
-            location.value = Complete.Failure(
-                PermissionsDeniedException(persistentListOf(permission))
-            )
+            updateLocation(Complete.Failure(PermissionsDeniedException(permission)))
         }
 
         requestPermissions.update {

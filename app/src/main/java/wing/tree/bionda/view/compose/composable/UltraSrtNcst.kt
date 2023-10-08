@@ -1,7 +1,6 @@
 package wing.tree.bionda.view.compose.composable
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,12 +22,10 @@ import wing.tree.bionda.model.UltraSrtNcst
 import wing.tree.bionda.view.compose.composable.core.DegreeText
 import wing.tree.bionda.view.compose.composable.core.HorizontalSpacer
 import wing.tree.bionda.view.compose.composable.core.Loading
-import wing.tree.bionda.view.state.WeatherState.Action
 
 @Composable
 fun UltraSrtNcst(
     state: State<UltraSrtNcst>,
-    onAction: (Action) -> Unit,
     modifier: Modifier = Modifier
 ) {
     AnimatedContent(
@@ -38,15 +35,12 @@ fun UltraSrtNcst(
         contentKey = {
             it::class.qualifiedName
         }
-    ) { targetState ->
-        when (targetState) {
+    ) {
+        when (it) {
             State.Loading -> Loading(modifier = Modifier)
-            is State.Complete.Success -> Content(
-                ultraSrtNcst = targetState.value,
-                onAction = onAction
-            )
+            is State.Complete.Success -> Content(ultraSrtNcst = it.value)
             is State.Complete.Failure -> {
-                val text = targetState.exception.message ?: "${targetState.exception}"
+                val text = it.exception.message ?: "${it.exception}"
 
                 Text(text = text)
             }
@@ -81,7 +75,6 @@ private fun Address(
 @Composable
 private fun Content(
     ultraSrtNcst: UltraSrtNcst,
-    onAction: (Action) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(modifier = modifier) {
@@ -90,13 +83,6 @@ private fun Content(
                 modifier = Modifier.weight(Float.full),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Address(
-                    address = address,
-                    modifier = Modifier.clickable {
-                        onAction(Action.Click.Area)
-                    }
-                )
-
                 DegreeText(
                     text = "${t1h.ifNull(String::empty)}",
                     style = typography.displayMedium

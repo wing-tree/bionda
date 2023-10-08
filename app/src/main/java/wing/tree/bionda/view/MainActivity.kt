@@ -3,6 +3,7 @@ package wing.tree.bionda.view
 import android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
 import android.Manifest.permission.POST_NOTIFICATIONS
 import android.Manifest.permission.SCHEDULE_EXACT_ALARM
+import android.app.Activity
 import android.app.AlarmManager
 import android.content.Intent
 import android.os.Build.VERSION
@@ -11,6 +12,7 @@ import android.os.Bundle
 import android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.AnimatedContent
@@ -42,21 +44,24 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import wing.tree.bionda.data.constant.EXTRA_AREA
 import wing.tree.bionda.data.extension.containsAny
 import wing.tree.bionda.data.extension.empty
 import wing.tree.bionda.data.extension.full
 import wing.tree.bionda.data.extension.`is`
+import wing.tree.bionda.data.extension.isNotNull
 import wing.tree.bionda.data.extension.one
 import wing.tree.bionda.data.extension.toggle
 import wing.tree.bionda.data.extension.zero
+import wing.tree.bionda.data.model.Area
 import wing.tree.bionda.data.top.level.koreaCalendar
+import wing.tree.bionda.extension.Intent
 import wing.tree.bionda.extension.add
 import wing.tree.bionda.extension.launchApplicationDetailsSettings
 import wing.tree.bionda.extension.rememberWindowSizeClass
 import wing.tree.bionda.extension.remove
 import wing.tree.bionda.extension.requestAccessBackgroundLocationPermission
 import wing.tree.bionda.extension.showMaterialTimePicker
-import wing.tree.bionda.extension.startActivity
 import wing.tree.bionda.extension.toggle
 import wing.tree.bionda.permissions.PermissionChecker
 import wing.tree.bionda.permissions.RequestMultiplePermissions
@@ -94,22 +99,39 @@ class MainActivity : AppCompatActivity(), PermissionChecker {
 
     private val viewModel by viewModels<MainViewModel>()
 
+
+    private val activityResultLauncher = registerForActivityResult(StartActivityForResult()) {
+        if (it.resultCode `is` Activity.RESULT_OK) {
+            val data = it.data
+
+            if (data.isNotNull()) {
+                val area = if (VERSION.SDK_INT >= VERSION_CODES.TIRAMISU) {
+                    data.getParcelableExtra(EXTRA_AREA, Area::class.java)
+                } else {
+                    @Suppress("DEPRECATION")
+                    data.getParcelableExtra(EXTRA_AREA)
+                }
+
+                viewModel.updateArea(area)
+            }
+        }
+    }
+
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
+
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
+            repeatOnLifecycle(Lifecycle.State.CREATED) {
                 val (granted, denied) = requestMultiplePermissions.request(permissions)
 
-                with(viewModel) {
-                    if (granted.containsAny(locationPermissions)) {
-                        load()
-                    }
-
-                    notifyPermissionsDenied(denied)
+                if (granted.containsAny(locationPermissions)) {
+                    viewModel.load()
                 }
+
+                viewModel.notifyPermissionsDenied(denied)
             }
         }
 
@@ -183,9 +205,10 @@ class MainActivity : AppCompatActivity(), PermissionChecker {
                                     onAction = { action ->
                                         when (action) {
                                             is WeatherState.Action.Click -> when (action) {
-                                                is WeatherState.Action.Click.Area -> {
-                                                    startActivity<AreaSearchActivity>()
-                                                }
+                                                is WeatherState.Action.Click.Area ->
+                                                    activityResultLauncher.launch(
+                                                        Intent(AreaSearchActivity::class.java)
+                                                    )
                                             }
 
                                             else -> viewModel.onAction(action)

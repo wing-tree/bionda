@@ -1,7 +1,6 @@
 package wing.tree.bionda.model
 
 import kotlinx.collections.immutable.ImmutableMap
-import wing.tree.bionda.data.core.Address
 import wing.tree.bionda.data.core.Season
 import wing.tree.bionda.data.core.season
 import wing.tree.bionda.data.extension.int
@@ -15,7 +14,6 @@ import wing.tree.bionda.top.level.calculateHeatIndex
 import wing.tree.bionda.top.level.calculateWindChill
 
 data class UltraSrtNcst(
-    val address: Address? = null,
     val baseDate: String,
     val baseTime: String,
     val codeValues: ImmutableMap<String, Double>,
