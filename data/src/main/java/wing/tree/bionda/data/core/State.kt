@@ -25,6 +25,21 @@ class PartialSuccess<T>(
     val exception: Throwable,
 ) : Complete.Success<T>(value)
 
+fun <T> State<T>.getOrNull() = when {
+    isSuccess() -> value
+    else -> null
+}
+
+@OptIn(ExperimentalContracts::class)
+fun <T> State<T>.isSuccess(): Boolean {
+    contract {
+        returns(true) implies (this@isSuccess is Complete.Success<T>)
+        returns(false) implies (this@isSuccess is Complete.Failure)
+    }
+
+    return this is Complete.Success<T>
+}
+
 inline fun <R, T> State<T>.flatMap(transform: (T) -> State<R>): State<R> {
     return when (this) {
         Loading -> Loading
@@ -43,16 +58,6 @@ inline fun <R, T> State<T>.map(transform: (T) -> R): State<R> {
             is Complete.Failure -> Complete.Failure(exception)
         }
     }
-}
-
-@OptIn(ExperimentalContracts::class)
-fun <T> State<T>.isSuccess(): Boolean {
-    contract {
-        returns(true) implies (this@isSuccess is Complete.Success<T>)
-        returns(false) implies (this@isSuccess is Complete.Failure)
-    }
-
-    return this is Complete.Success<T>
 }
 
 @OptIn(ExperimentalContracts::class)
@@ -82,7 +87,7 @@ inline fun <T> State<T>.onFailure(action: (exception: Throwable) -> Unit): State
 }
 
 @OptIn(ExperimentalContracts::class)
-inline fun <T> Complete<T>.ifFailure(defaultValue: (throwable: Throwable) -> Complete<T>): Complete<T> {
+inline fun <T> Complete<T>.ifFailure(defaultValue: (exception: Throwable) -> Complete<T>): Complete<T> {
     contract {
         callsInPlace(defaultValue, InvocationKind.AT_MOST_ONCE)
     }
