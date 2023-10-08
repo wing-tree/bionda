@@ -10,10 +10,12 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import wing.tree.bionda.data.core.State
 import wing.tree.bionda.data.core.State.Complete
+import wing.tree.bionda.data.core.getOrNull
 import wing.tree.bionda.data.core.map
 import wing.tree.bionda.data.extension.isNotNull
 import wing.tree.bionda.data.model.Area
 import wing.tree.bionda.data.provider.LocationProvider
+import wing.tree.bionda.extension.getAddress
 import wing.tree.bionda.extension.toCoordinate
 
 abstract class LocationProviderViewModel(
@@ -23,7 +25,7 @@ abstract class LocationProviderViewModel(
     private val area = MutableStateFlow<Area?>(null)
 
     private val _location = MutableStateFlow<State<Location?>>(State.Loading)
-    val location = combine(locationProvider.location, area) { location, area ->
+    val location = combine(_location, area) { location, area ->
         if (area.isNotNull()) {
             Location(null)
                 .apply {
@@ -39,6 +41,10 @@ abstract class LocationProviderViewModel(
         }
     }
         .stateIn(initialValue = State.Loading)
+
+    val address = combine(_location, area) { location, area ->
+        area?.toAddress() ?: location.getOrNull()?.getAddress(application)
+    }
 
     val coordinate = location.map {
         it.map(Location::toCoordinate)
