@@ -1,6 +1,7 @@
 package wing.tree.bionda.data.provider
 
-import android.Manifest
+import android.Manifest.permission.ACCESS_COARSE_LOCATION
+import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.content.Context
 import android.location.Location
 import androidx.annotation.RequiresPermission
@@ -12,11 +13,12 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.location.LocationSettingsResponse
 import com.google.android.gms.location.Priority
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.suspendCancellableCoroutine
 import timber.log.Timber
 import wing.tree.bionda.data.core.State
 import wing.tree.bionda.data.core.ifFailureOrNull
-import wing.tree.bionda.data.core.ifNull
 import wing.tree.bionda.data.exception.OnCanceledException
 import wing.tree.bionda.data.extension.empty
 import wing.tree.bionda.data.extension.zero
@@ -42,7 +44,13 @@ class LocationProvider(private val context: Context)  {
             .build()
     }
 
-    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION])
+    val location: Flow<State.Complete<Location?>>
+        @RequiresPermission(anyOf = [ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION])
+        get() = flow {
+            emit(getLocation())
+        }
+
+    @RequiresPermission(anyOf = [ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION])
     suspend fun getLocation(): State.Complete<Location?> {
         val currentLocation = getCurrentLocation()
             .ifFailureOrNull {
@@ -50,22 +58,11 @@ class LocationProvider(private val context: Context)  {
                 getCurrentLocation(currentLocationRequest)
             }
 
-        return when (currentLocation) {
-            is State.Complete.Success -> currentLocation
-                .ifNull {
-                    getLastLocation()
-                        .ifFailureOrNull {
-                            Timber.e(it)
-                            getLastLocation(lastLocationRequest)
-                        }
-                }
-            is State.Complete.Failure -> {
-                Timber.e(currentLocation.exception)
-                getLastLocation()
-                    .ifFailureOrNull {
-                        Timber.e(it)
-                        getLastLocation(lastLocationRequest)
-                    }
+        return currentLocation.ifFailureOrNull {
+            Timber.e(it)
+            getLastLocation().ifFailureOrNull { t ->
+                Timber.e(t)
+                getLastLocation(lastLocationRequest)
             }
         }
     }
@@ -98,7 +95,7 @@ class LocationProvider(private val context: Context)  {
         }
     }
 
-    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION])
+    @RequiresPermission(anyOf = [ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION])
     suspend fun getCurrentLocation(): State.Complete<Location?> {
         return suspendCancellableCoroutine {
             fusedLocationProviderClient.getCurrentLocation(
@@ -115,7 +112,7 @@ class LocationProvider(private val context: Context)  {
         }
     }
 
-    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION])
+    @RequiresPermission(anyOf = [ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION])
     suspend fun getCurrentLocation(currentLocationRequest: CurrentLocationRequest): State.Complete<Location?> {
         return suspendCancellableCoroutine {
             fusedLocationProviderClient
@@ -132,7 +129,7 @@ class LocationProvider(private val context: Context)  {
         }
     }
 
-    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION])
+    @RequiresPermission(anyOf = [ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION])
     suspend fun getLastLocation(): State.Complete<Location?> {
         return suspendCancellableCoroutine {
             fusedLocationProviderClient.lastLocation
@@ -146,7 +143,7 @@ class LocationProvider(private val context: Context)  {
         }
     }
 
-    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION])
+    @RequiresPermission(anyOf = [ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION])
     suspend fun getLastLocation(lastLocationRequest: LastLocationRequest): State.Complete<Location?> {
         return suspendCancellableCoroutine {
             fusedLocationProviderClient.getLastLocation(lastLocationRequest)
