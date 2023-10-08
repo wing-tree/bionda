@@ -4,11 +4,11 @@ import wing.tree.bionda.data.extension.isNotNull
 
 data class Address(
     val adminArea: String?,
-    val subAdminArea: String?,
+    val subAdminArea: String? = null,
     val locality: String?,
-    val subLocality: String?,
+    val subLocality: String? = null,
     val thoroughfare: String?,
-    val subThoroughfare: String?
+    val subThoroughfare: String? = null
 ) {
     companion object {
         fun get(geocode: List<android.location.Address>): Address {
