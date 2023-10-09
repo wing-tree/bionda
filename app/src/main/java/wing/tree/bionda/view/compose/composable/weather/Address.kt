@@ -9,6 +9,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import wing.tree.bionda.data.core.Address
+import wing.tree.bionda.data.extension.`is`
+import wing.tree.bionda.data.extension.isNotNanOrBlank
 import wing.tree.bionda.data.extension.isNotNull
 
 @Composable
@@ -16,14 +18,21 @@ fun Address(
     address: Address?,
     modifier: Modifier = Modifier
 ) {
-    val thoroughfare = address?.thoroughfare
+    val text = address?.let {
+        when {
+            it.thoroughfare?.isNotNanOrBlank() `is` true -> it.thoroughfare
+            it.locality?.isNotNanOrBlank() `is` true -> it.locality
+            it.adminArea?.isNotNanOrBlank() `is` true -> it.adminArea
+            else -> null
+        }
+    }
 
-    if (thoroughfare.isNotNull()) {
+    if (text.isNotNull()) {
         Row(
             modifier = modifier,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = thoroughfare)
+            Text(text = text)
             Icon(
                 imageVector = Icons.Default.LocationOn,
                 contentDescription = null
