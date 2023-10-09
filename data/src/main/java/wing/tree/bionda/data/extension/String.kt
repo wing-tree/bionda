@@ -29,7 +29,13 @@ fun String.advanceHourOfDayBy(hourOfDay: Int, pattern: String): String {
     }
 }
 
-fun String.ifZero(defaultValue: () -> String) = if (this `is` String.zero) {
+fun String.isNan(defaultValue: () -> String) = if (`is`(String.nan)) {
+    defaultValue()
+} else {
+    this
+}
+
+fun String.ifZero(defaultValue: () -> String) = if (`is`(String.zero)) {
     defaultValue()
 } else {
     this
