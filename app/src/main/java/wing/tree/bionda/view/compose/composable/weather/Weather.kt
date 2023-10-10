@@ -92,8 +92,8 @@ fun Weather(
                             }
                         }
                 ) {
-                    Address(
-                        address = state.address,
+                    Area(
+                        area = state.area,
                         modifier = Modifier.clickable {
                             onAction(Action.Click.Area)
                         }

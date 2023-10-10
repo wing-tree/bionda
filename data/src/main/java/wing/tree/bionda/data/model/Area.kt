@@ -7,7 +7,6 @@ import androidx.room.PrimaryKey
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import wing.tree.bionda.data.constant.SPACE
-import wing.tree.bionda.data.core.Address
 import wing.tree.bionda.data.extension.isNotNanOrBlank
 
 @Entity(tableName = "area")
@@ -39,10 +38,4 @@ data class Area(
             append(level3)
         }
     }
-
-    fun toAddress() = Address(
-        adminArea = level1,
-        locality = level2,
-        thoroughfare = level3
-    )
 }

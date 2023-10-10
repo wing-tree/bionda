@@ -25,7 +25,6 @@ import wing.tree.bionda.data.extension.long
 import wing.tree.bionda.data.extension.negativeOne
 import wing.tree.bionda.data.model.Alarm
 import wing.tree.bionda.data.model.MidLandFcstTa
-import wing.tree.bionda.data.provider.LocationProvider
 import wing.tree.bionda.data.repository.AlarmRepository
 import wing.tree.bionda.data.repository.LivingWthrIdxRepository
 import wing.tree.bionda.data.repository.WeatherRepository
@@ -49,12 +48,11 @@ import wing.tree.bionda.data.model.LCRiseSetInfo.Local as LCRiseSetInfo
 @HiltViewModel
 class MainViewModel @Inject constructor(
     application: Application,
-    locationProvider: LocationProvider,
     private val alarmRepository: AlarmRepository,
     private val alarmScheduler: AlarmScheduler,
     private val livingWthrIdxRepository: LivingWthrIdxRepository,
     private val weatherRepository: WeatherRepository
-) : LocationProviderViewModel(application, locationProvider) {
+) : LocationProviderViewModel(application) {
     private val airDiffusionIdx =  location
         .flatMap(livingWthrIdxRepository::getAirDiffusionIdx)
         .stateIn(initialValue = State.Loading)
@@ -164,14 +162,14 @@ class MainViewModel @Inject constructor(
         .stateIn(initialValue = AlarmState.initialValue)
 
     private val weatherState = combine(
-        address,
+        area,
         livingWthrIdx,
         midLandFcstTa,
         ultraSrtNcst,
         vilageFcst
-    ) { address, livingWthrIdx, midLandFcstTa, ultraSrtNcst, vilageFcst ->
+    ) { area, livingWthrIdx, midLandFcstTa, ultraSrtNcst, vilageFcst ->
         WeatherState(
-            address = address,
+            area = area,
             livingWthrIdx = livingWthrIdx,
             midLandFcstTa = midLandFcstTa.prependVilageFcst(vilageFcst),
             ultraSrtNcst = ultraSrtNcst,
