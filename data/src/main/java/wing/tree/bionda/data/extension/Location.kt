@@ -2,7 +2,7 @@ package wing.tree.bionda.data.extension
 
 import android.location.Location
 import wing.tree.bionda.data.core.LatLon
-import kotlin.math.atan2
+import kotlin.math.asin
 import kotlin.math.cos
 import kotlin.math.pow
 import kotlin.math.sin
@@ -15,11 +15,11 @@ fun Location.haversine(latLon: LatLon): Double {
         .half()
 
     val a = sin(delta.lat).pow(Int.two) +
-            cos(latitude.radians) *
-            cos(latLon.lon.radians) *
-            sin(delta.lon).pow(Int.two)
+            sin(delta.lon).pow(Int.two) *
+            cos(latLon.lat.radians) *
+            cos(latitude.radians)
 
-    val c = atan2(sqrt(a), sqrt(Double.one.minus(a))).double
+    val c = asin(sqrt(a)).double
 
-    return 6371.times(c)
+    return 6372.8.times(c)
 }
