@@ -4,7 +4,7 @@ import kotlinx.collections.immutable.toImmutableMap
 import wing.tree.bionda.model.UltraSrtNcst as PresentationModel
 import wing.tree.bionda.data.model.UltraSrtNcst.Local as DataModel
 
-class UltraSrtNcstMapper : DataModelMapper<DataModel, PresentationModel> {
+object UltraSrtNcstMapper : DataModelMapper<DataModel, PresentationModel> {
     override fun toPresentationModel(dataModel: DataModel): PresentationModel = with(dataModel) {
         PresentationModel(
             baseDate = baseDate,

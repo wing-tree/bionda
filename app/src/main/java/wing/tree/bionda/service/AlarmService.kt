@@ -53,9 +53,6 @@ class AlarmService : Service(), PermissionChecker {
     lateinit var notificationChannelProvider: NotificationChannelProvider
 
     @Inject
-    lateinit var vilageFcstMapper: VilageFcstMapper
-
-    @Inject
     lateinit var weatherRepository: WeatherRepository
 
     private val context = this
@@ -102,9 +99,9 @@ class AlarmService : Service(), PermissionChecker {
                                 nx = nx,
                                 ny = ny
                             ).map {
-                                vilageFcstMapper.toPresentationModel(it).run {
+                                VilageFcstMapper.toPresentationModel(it).run {
                                     if (ultraSrtFcst.await().isSuccess()) {
-                                        overwrite(vilageFcstMapper.toPresentationModel(it))
+                                        overwrite(VilageFcstMapper.toPresentationModel(it))
                                     } else {
                                         this
                                     }

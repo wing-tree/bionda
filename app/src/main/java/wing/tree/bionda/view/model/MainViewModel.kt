@@ -53,8 +53,6 @@ class MainViewModel @Inject constructor(
     private val alarmRepository: AlarmRepository,
     private val alarmScheduler: AlarmScheduler,
     private val livingWthrIdxRepository: LivingWthrIdxRepository,
-    private val ultraSrtNcstMapper: UltraSrtNcstMapper,
-    private val vilageFcstMapper: VilageFcstMapper,
     private val weatherRepository: WeatherRepository
 ) : LocationProviderViewModel(application, locationProvider) {
     private val airDiffusionIdx =  location
@@ -77,7 +75,7 @@ class MainViewModel @Inject constructor(
         }
 
         weatherRepository.getUltraSrtNcst(nx = it.nx, ny = it.ny).map { dataModel ->
-            ultraSrtNcstMapper.toPresentationModel(
+            UltraSrtNcstMapper.toPresentationModel(
                 dataModel = dataModel,
                 tmn = tmn,
                 tmx = tmx
@@ -88,7 +86,7 @@ class MainViewModel @Inject constructor(
 
     private val ultraSrtFcst = coordinate.flatMap { (nx, ny) ->
         weatherRepository.getUltraSrtFcst(nx = nx, ny = ny).map { ultraSrtFcst ->
-            vilageFcstMapper.toPresentationModel(ultraSrtFcst)
+            VilageFcstMapper.toPresentationModel(ultraSrtFcst)
         }
     }
 
@@ -107,7 +105,7 @@ class MainViewModel @Inject constructor(
     ) { coordinate, lcRiseSetInfo, ultraSrtFcst ->
         coordinate.flatMap { (nx, ny) ->
             weatherRepository.getVilageFcst(nx = nx, ny = ny).map { vilageFcst ->
-                vilageFcstMapper
+                VilageFcstMapper
                     .toPresentationModel(vilageFcst)
                     .run {
                         if (ultraSrtFcst.isSuccess()) {
