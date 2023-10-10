@@ -1,7 +1,5 @@
 package wing.tree.bionda.data.core
 
-import wing.tree.bionda.data.extension.isNotNull
-
 data class Address(
     val adminArea: String?,
     val subAdminArea: String? = null,
@@ -24,28 +22,28 @@ data class Address(
             }
         }
 
-        private val List<android.location.Address>.adminArea: String? get() = firstOrNull {
-            it.adminArea.isNotNull()
-        }?.adminArea
+        private val List<android.location.Address>.adminArea: String? get() = firstNotNullOfOrNull {
+            it.adminArea
+        }
 
-        private val List<android.location.Address>.subAdminArea: String? get() = firstOrNull {
-            it.subAdminArea.isNotNull()
-        }?.subAdminArea
+        private val List<android.location.Address>.subAdminArea: String? get() = firstNotNullOfOrNull {
+            it.subAdminArea
+        }
 
-        private val List<android.location.Address>.locality: String? get() = firstOrNull {
-            it.locality.isNotNull()
-        }?.locality
+        private val List<android.location.Address>.locality: String? get() = firstNotNullOfOrNull {
+            it.locality
+        }
 
-        private val List<android.location.Address>.subLocality: String? get() = firstOrNull {
-            it.subLocality.isNotNull()
-        }?.subLocality
+        private val List<android.location.Address>.subLocality: String? get() = firstNotNullOfOrNull {
+            it.subLocality
+        }
 
-        private val List<android.location.Address>.thoroughfare: String? get() = firstOrNull {
-            it.thoroughfare.isNotNull()
-        }?.thoroughfare
+        private val List<android.location.Address>.thoroughfare: String? get() = firstNotNullOfOrNull {
+            it.thoroughfare
+        }
 
-        private val List<android.location.Address>.subThoroughfare: String? get() = firstOrNull {
-            it.subThoroughfare.isNotNull()
-        }?.subThoroughfare
+        private val List<android.location.Address>.subThoroughfare: String? get() = firstNotNullOfOrNull {
+            it.subThoroughfare
+        }
     }
 }
