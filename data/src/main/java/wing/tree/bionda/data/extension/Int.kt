@@ -25,6 +25,7 @@ val Int.dec: Int get() = dec()
 val Int.float: Float get() = toFloat()
 val Int.half: Int get() = div(2)
 val Int.halfAfFloat: Float get() = div(Float.two)
+val Int.hundreds: Int get() = times(Int.oneHundred)
 val Int.inc: Int get() = inc()
 val Int.isNegative: Boolean get() = this < 0
 val Int.isNonNegative: Boolean get() = this >= 0
