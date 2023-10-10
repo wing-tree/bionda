@@ -207,7 +207,7 @@ class MainActivity : AppCompatActivity(), PermissionChecker {
                                             is WeatherState.Action.Click -> when (action) {
                                                 is WeatherState.Action.Click.Area ->
                                                     activityResultLauncher.launch(
-                                                        Intent(AreaSearchActivity::class.java)
+                                                        Intent(AreaSelectionActivity::class.java)
                                                     )
                                             }
 
