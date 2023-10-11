@@ -13,8 +13,9 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.location.LocationSettingsResponse
 import com.google.android.gms.location.Priority
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.suspendCancellableCoroutine
 import timber.log.Timber
 import wing.tree.bionda.data.core.State
@@ -44,11 +45,10 @@ class LocationProvider(private val context: Context)  {
             .build()
     }
 
+    @OptIn(FlowPreview::class)
     val location: Flow<State.Complete<Location?>>
         @RequiresPermission(anyOf = [ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION])
-        get() = flow {
-            emit(getLocation())
-        }
+        get() = ::getLocation.asFlow()
 
     @RequiresPermission(anyOf = [ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION])
     suspend fun getLocation(): State.Complete<Location?> {
