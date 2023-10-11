@@ -38,7 +38,6 @@ abstract class LocationProviderViewModel(application: Application) : BaseViewMod
     }
 
     val location = combine(_area, _location) { area, location ->
-
         if (area.isNotNull()) {
             Location(null)
                 .apply {
