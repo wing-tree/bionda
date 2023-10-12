@@ -5,6 +5,7 @@ import wing.tree.bionda.data.extension.isNotNull
 import wing.tree.bionda.data.extension.julianDay
 import wing.tree.bionda.data.extension.mostCommon
 import wing.tree.bionda.data.extension.roundToOneDecimalPlace
+import wing.tree.bionda.data.extension.two
 import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.data.model.MidLandFcst.Local.LandFcst
 import wing.tree.bionda.data.top.level.baseDateFormat
@@ -19,10 +20,10 @@ object LandFcstMapper : DataModelMapper<List<Item>, LandFcst?> {
         }
 
         val (rnStAm, wfAm) = filter {
-            it.fcstTime.int < LocalTime.NOON.hour
-        }.let {
+            it.fcstTime.take(Int.two).int < LocalTime.NOON.hour
+        }.run {
             val rnStAm = mapNotNull {
-                it.reh?.int
+                it.pop?.int
             }
                 .average()
                 .roundToOneDecimalPlace()
@@ -35,8 +36,8 @@ object LandFcstMapper : DataModelMapper<List<Item>, LandFcst?> {
             val wfAm = if (ptyAm.isNotNull()) {
                 ptyToWf(ptyAm)
             } else {
-                mapNotNull {
-                    it.sky.value
+                mapNotNull { item ->
+                    item.sky.value
                 }
                     .mostCommon()
                     ?.let {
@@ -48,10 +49,10 @@ object LandFcstMapper : DataModelMapper<List<Item>, LandFcst?> {
         }
 
         val (rnStPm, wfPm) = filterNot {
-            it.fcstTime.int < LocalTime.NOON.hour
-        }.let {
+            it.fcstTime.take(Int.two).int < LocalTime.NOON.hour
+        }.run {
             val rnStPm = mapNotNull {
-                it.reh?.int
+                it.pop?.int
             }
                 .average()
                 .roundToOneDecimalPlace()
