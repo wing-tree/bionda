@@ -1,6 +1,9 @@
 package wing.tree.bionda.view.compose.composable.weather
 
-import androidx.compose.animation.Crossfade
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,6 +23,7 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.unit.dp
+import kotlinx.collections.immutable.persistentListOf
 import wing.tree.bionda.data.core.State
 import wing.tree.bionda.data.core.State.Complete
 import wing.tree.bionda.data.extension.delayHourOfDayBy
@@ -47,9 +51,15 @@ fun UVIdx(
     modifier: Modifier = Modifier
 ) {
     ElevatedCard(modifier = modifier) {
-        Crossfade(
+        AnimatedContent(
             targetState = state,
-            label = String.empty
+            transitionSpec = {
+                fadeIn() togetherWith fadeOut()
+            },
+            label = String.empty,
+            contentKey = {
+                it::class.qualifiedName
+            }
         ) {
             when (it) {
                 State.Loading -> Loading(modifier = Modifier)
@@ -126,7 +136,7 @@ private fun H(
                 .height(height)
                 .background(
                     brush = Brush.verticalGradient(
-                        listOf(
+                        persistentListOf(
                             Purple,
                             Red,
                             Orange,
@@ -147,7 +157,9 @@ private fun H(
                         else -> LightGray
                     }
 
-                    val y = height.div(11).times(11.minus(h))
+                    val y = height
+                        .div(11)
+                        .times(11.minus(h))
 
                     drawCircle(
                         color = color,

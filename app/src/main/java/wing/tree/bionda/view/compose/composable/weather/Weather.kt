@@ -1,6 +1,5 @@
 package wing.tree.bionda.view.compose.composable.weather
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -94,9 +93,7 @@ fun Weather(
                 ) {
                     Area(
                         area = state.area,
-                        modifier = Modifier.clickable {
-                            onAction(Action.Click.Area)
-                        }
+                        onAction = onAction
                     )
                     
                     UltraSrtNcst(state = state.ultraSrtNcst)
