@@ -252,7 +252,6 @@ class WeatherRepository(
     ): Complete<VilageFcst.Local> {
         return try {
             val baseCalendar = baseCalendar(Decorator.Calendar.VilageFcst)
-            val hourOfDay = baseCalendar.hourOfDay
             val params = VilageFcstInfoService.Params(
                 baseCalendar = baseCalendar,
                 nx = nx,
@@ -260,15 +259,7 @@ class WeatherRepository(
             )
 
             // TODO, make as const. val.. etc.
-            var numOfRows = 580.plus(23.minus(hourOfDay).times(12))
-
-            if (hourOfDay in listOf(2)) {
-                numOfRows += Int.one
-            }
-
-            if (hourOfDay in listOf(2, 5, 8, 11)) {
-                numOfRows += Int.one
-            }
+            val numOfRows = 870
 
             val vilageFcst = localDataSource.loadVilageFcst(
                 params = params
