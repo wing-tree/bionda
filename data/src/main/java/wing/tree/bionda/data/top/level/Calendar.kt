@@ -19,12 +19,9 @@ val dayAfterTomorrow: Calendar get() = tomorrow.apply {
 }
 
 val koreaCalendar: Calendar get() = koreaCalendar()
+val today: Calendar get() = koreaCalendar()
 val tomorrow: Calendar get() = koreaCalendar.apply {
     date += Int.one
-}
-
-val yesterday: Calendar get() = koreaCalendar.apply {
-    date -= Int.one
 }
 
 fun baseCalendar(decorator: Decorator.Calendar): Calendar = koreaCalendar.cloneAsBaseCalendar(decorator)
