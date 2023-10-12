@@ -1,10 +1,12 @@
 package wing.tree.bionda.model
 
 import wing.tree.bionda.data.core.State
+import wing.tree.bionda.data.model.LivingWthrIdx.AirDiffusionIdx
+import wing.tree.bionda.data.model.LivingWthrIdx.UVIdx
 
 data class LivingWthrIdx(
-    val airDiffusionIdx: State<wing.tree.bionda.data.model.LivingWthrIdx.AirDiffusionIdx>,
-    val uvIdx: State<wing.tree.bionda.data.model.LivingWthrIdx.UVIdx>
+    val airDiffusionIdx: State<AirDiffusionIdx>,
+    val uvIdx: State<UVIdx>
 ) {
     companion object {
         val initialValue = LivingWthrIdx(
