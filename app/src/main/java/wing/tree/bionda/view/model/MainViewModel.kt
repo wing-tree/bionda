@@ -242,7 +242,7 @@ class MainViewModel @Inject constructor(
 
     fun notifyPermissionsDenied(permissions: Collection<String>) {
         if (permissions.containsAll(locationPermissions)) {
-            updateLocation(Complete.Failure(PermissionsDeniedException(locationPermissions)))
+            update(Complete.Failure(PermissionsDeniedException(locationPermissions)))
         }
 
         requestPermissions.update {
@@ -252,7 +252,7 @@ class MainViewModel @Inject constructor(
 
     fun notifyPermissionDenied(permission: String) {
         if (permission in locationPermissions) {
-            updateLocation(Complete.Failure(PermissionsDeniedException(permission)))
+            update(Complete.Failure(PermissionsDeniedException(permission)))
         }
 
         requestPermissions.update {
@@ -269,7 +269,14 @@ class MainViewModel @Inject constructor(
     fun onAction(action: WeatherState.Action) {
         when (action) {
             WeatherState.Action.Refresh -> refresh()
-            is WeatherState.Action.Click -> noOperations
+            is WeatherState.Action.Area -> when (action) {
+                is WeatherState.Action.Area.Favorite -> update(
+                    with(action.area) {
+                        copy(favorited = favorited.not())
+                    }
+                )
+                else -> noOperations
+            }
         }
     }
 

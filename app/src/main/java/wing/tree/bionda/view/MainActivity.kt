@@ -111,8 +111,9 @@ class MainActivity : AppCompatActivity(), PermissionChecker {
                     @Suppress("DEPRECATION")
                     data.getParcelableExtra(EXTRA_AREA)
                 }
+                    ?: return@registerForActivityResult
 
-                viewModel.updateArea(area)
+                viewModel.update(area)
             }
         }
     }
@@ -204,12 +205,8 @@ class MainActivity : AppCompatActivity(), PermissionChecker {
                                     windowSizeClass = windowSizeClass,
                                     onAction = { action ->
                                         when (action) {
-                                            is WeatherState.Action.Click -> when (action) {
-                                                is WeatherState.Action.Click.Area ->
-                                                    activityResultLauncher.launch(
-                                                        Intent(AreaSelectionActivity::class.java)
-                                                    )
-                                            }
+                                            is WeatherState.Action.Area.Click -> activityResultLauncher
+                                                .launch(Intent(AreaSelectionActivity::class.java))
 
                                             else -> viewModel.onAction(action)
                                         }

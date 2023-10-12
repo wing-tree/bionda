@@ -62,19 +62,24 @@ abstract class LocationProviderViewModel(application: Application) : BaseViewMod
             locationProvider.location
                 .collect {
                     _location.value = it.map { location ->
-                        location ?: LocationProvider.seoul
+                        // todo check and remove.. create가 문제?
+                        location!! // ?: LocationProvider.seoul
                     }
                 }
         }
     }
 
-    fun updateArea(value: Area?) {
+    fun update(value: Area) {
+        viewModelScope.launch {
+            areaDataSource.update(value)
+        }
+
         _area.update { _ ->
             value
         }
     }
 
-    fun updateLocation(value: State<Location>) {
+    fun update(value: State<Location>) {
         _location.update { _ ->
             value
         }
