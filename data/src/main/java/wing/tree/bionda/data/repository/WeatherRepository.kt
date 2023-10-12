@@ -154,7 +154,6 @@ class WeatherRepository(
 
     suspend fun getMidLandFcstTa(location: Location): Complete<MidLandFcstTa> = coroutineScope {
         try {
-            val tmFcCalendar = tmFcCalendar()
             val tmFc = tmFcCalendar.tmFc
             val midLandFcst = async(ioDispatcher) {
                 val regId = localDataSource.getRegId(location, RegId.MidLandFcst)

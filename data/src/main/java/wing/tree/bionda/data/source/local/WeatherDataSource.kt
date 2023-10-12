@@ -26,7 +26,7 @@ import wing.tree.bionda.data.model.Tmn
 import wing.tree.bionda.data.model.Tmx
 import wing.tree.bionda.data.service.RiseSetInfoService
 import wing.tree.bionda.data.service.VilageFcstInfoService
-import wing.tree.bionda.data.top.level.yesterday
+import wing.tree.bionda.data.top.level.today
 import wing.tree.bionda.data.model.LCRiseSetInfo.Local as LCRiseSetInfo
 import wing.tree.bionda.data.model.MidLandFcst.Local as MidLandFcst
 import wing.tree.bionda.data.model.MidTa.Local as MidTa
@@ -112,7 +112,7 @@ class WeatherDataSource(
 
     fun cache(midTa: MidTa) {
         supervisorScope.launch {
-            midTaDao.clearAndInsert(midTa)
+            midTaDao.cacheInTransaction(midTa)
         }
     }
 
@@ -151,7 +151,7 @@ class WeatherDataSource(
                     cache(tmn = tmn, tmx = tmx)
                 }
 
-                with(yesterday) {
+                with(today) {
                     tmnDao.deleteBefore(baseDate)
                     tmxDao.deleteBefore(baseDate)
                 }

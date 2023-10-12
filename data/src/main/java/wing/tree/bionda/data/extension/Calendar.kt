@@ -23,11 +23,15 @@ val Calendar.locdate: String get() = locdateFormat.format(this)
 val Calendar.tmFc: String get() = tmFcFormat.format(this)
 val Calendar.timeRange: String get() = buildString {
     append(timeRangeFirstFormat.format(cloneAsCalendar()))
-    append(timeRangeLastFormat.format(cloneAsCalendar().delayHourOfDayBy(3))) // TODO make to const. or property
+    append(timeRangeLastFormat.format(cloneAsCalendar().delayHourOfDayBy(Int.three)))
 }
 
 val Calendar.tomorrow: Calendar get() = cloneAsCalendar().apply {
     date += Int.one
+}
+
+val Calendar.yesterday: Calendar get() = cloneAsCalendar().apply {
+    date -= Int.one
 }
 
 var Calendar.date: Int

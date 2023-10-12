@@ -19,6 +19,17 @@ val dayAfterTomorrow: Calendar get() = tomorrow.apply {
 }
 
 val koreaCalendar: Calendar get() = koreaCalendar()
+val tmFcCalendar: Calendar get() = koreaCalendar(minute = Int.zero).apply {
+    hourOfDay = when {
+        hourOfDay < 6 -> {
+            date -= Int.one; 18
+        }
+
+        hourOfDay < 18 -> 6
+        else -> 18
+    }
+}
+
 val today: Calendar get() = koreaCalendar()
 val tomorrow: Calendar get() = koreaCalendar.apply {
     date += Int.one
@@ -64,15 +75,4 @@ fun may(dayOfMonth: Calendar.() -> Int) = koreaCalendar.clearBelowDate().also {
 fun september(dayOfMonth: Calendar.() -> Int) = koreaCalendar.clearBelowDate().also {
     it.month = Calendar.SEPTEMBER
     it.dayOfMonth = dayOfMonth(it)
-}
-
-fun tmFcCalendar() = koreaCalendar(minute = Int.zero).apply {
-    hourOfDay = when {
-        hourOfDay < 6 -> {
-            date -= Int.one; 18
-        }
-
-        hourOfDay < 18 -> 6
-        else -> 18
-    }
 }
