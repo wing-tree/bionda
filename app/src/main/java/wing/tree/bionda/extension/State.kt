@@ -64,7 +64,7 @@ fun State<MidLandFcstTa>.prependVilageFcst(
         when (val value = value) {
             is BothSuccess -> {
                 fun LandFcst?.toItem(ta: Ta?): BothSuccess.Item? = ta?.let {
-                    if (this.isNull()) {
+                    if (isNull()) {
                         return null
                     }
 
@@ -75,8 +75,7 @@ fun State<MidLandFcstTa>.prependVilageFcst(
                     )
                 }
 
-                val builder = persistentListOf<BothSuccess.Item>()
-                    .builder()
+                val builder = persistentListOf<BothSuccess.Item>().builder()
 
                 landFcst.dayAfterTomorrow()
                     .toItem(ta.dayAfterTomorrow())
