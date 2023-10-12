@@ -13,7 +13,6 @@ interface AreaDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(area: Area)
 
-    @Suppress("unused")
     @Update
     suspend fun update(area: Area)
 
