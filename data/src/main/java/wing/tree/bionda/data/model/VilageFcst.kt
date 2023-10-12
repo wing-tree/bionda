@@ -70,12 +70,9 @@ sealed interface VilageFcst {
                     // 아이템이, 2시간전보다 최신이면,
                     // 지금이 14시면, 12시 이후의 데이터들을 추출함.
                     // 첫 번째 데이터 보다, 이전의 데이터여야함.
-                    println("ppppppp111:$it")
                     koreaCalendar < it.calendar &&
                             it.calendar < items.first().calendar
                 }.let { elements ->
-                    println("pppppppp:$elements")
-
                     copy(
                         items = items.mutate {
                             it.addAll(Int.firstIndex, elements)
