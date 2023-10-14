@@ -4,10 +4,8 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
+import wing.tree.bionda.data.constant.PATTERN_TM_FC
 import wing.tree.bionda.data.extension.advanceHourOfDayBy
-import wing.tree.bionda.data.extension.tmFc
-import wing.tree.bionda.data.extension.yesterday
-import wing.tree.bionda.data.top.level.tmFcCalendar
 import java.time.LocalTime
 import wing.tree.bionda.data.model.MidTa.Local as MidTa
 
@@ -24,7 +22,13 @@ interface MidTaDao {
 
     @Transaction
     suspend fun cacheInTransaction(midTa: MidTa) {
-        deleteUpTo(tmFcCalendar.advanceHourOfDayBy(LocalTime.NOON.hour).tmFc)
+        deleteUpTo(
+            midTa.tmFc.advanceHourOfDayBy(
+                LocalTime.NOON.hour,
+                PATTERN_TM_FC
+            )
+        )
+
         insert(midTa)
     }
 }
