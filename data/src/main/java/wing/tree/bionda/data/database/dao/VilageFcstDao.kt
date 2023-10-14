@@ -14,6 +14,15 @@ interface VilageFcstDao {
 
     @Query(
         """
+            DELETE FROM vilage_fcst 
+            WHERE baseDate < :baseDate 
+            OR (baseDate = :baseDate AND baseTime < :baseTime)
+        """
+    )
+    suspend fun deleteBefore(baseDate: String, baseTime: String)
+
+    @Query(
+        """
             SELECT * FROM vilage_fcst 
             WHERE baseDate = :baseDate 
             AND baseTime = :baseTime 
@@ -27,15 +36,6 @@ interface VilageFcstDao {
         nx: Int,
         ny: Int
     ): VilageFcst?
-
-    @Query(
-        """
-            DELETE FROM vilage_fcst 
-            WHERE baseDate < :baseDate 
-            OR (baseDate = :baseDate AND baseTime < :baseTime)
-        """
-    )
-    suspend fun deleteBefore(baseDate: String, baseTime: String)
 
     @Transaction
     suspend fun cacheInTransaction(vilageFcst: VilageFcst) {

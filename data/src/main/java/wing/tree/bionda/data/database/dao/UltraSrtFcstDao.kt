@@ -14,6 +14,15 @@ interface UltraSrtFcstDao {
 
     @Query(
         """
+            DELETE FROM ultra_srt_fcst 
+            WHERE baseDate < :baseDate 
+            OR (baseDate = :baseDate AND baseTime < :baseTime)
+        """
+    )
+    suspend fun deleteBefore(baseDate: String, baseTime: String)
+
+    @Query(
+        """
             SELECT * FROM ultra_srt_fcst 
             WHERE baseDate = :baseDate 
             AND baseTime = :baseTime 
@@ -45,15 +54,6 @@ interface UltraSrtFcstDao {
         ny: Int,
         minute: Int,
     ): UltraSrtFcst?
-
-    @Query(
-        """
-            DELETE FROM ultra_srt_fcst 
-            WHERE baseDate < :baseDate 
-            OR (baseDate = :baseDate AND baseTime < :baseTime)
-        """
-    )
-    suspend fun deleteBefore(baseDate: String, baseTime: String)
 
     @Transaction
     suspend fun cacheInTransaction(ultraSrtFcst: UltraSrtFcst) {

@@ -12,11 +12,11 @@ interface MidTaDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(midTa: MidTa)
 
-    @Query("SELECT * FROM mid_ta WHERE regId = :regId AND tmFc = :tmFc")
-    suspend fun load(regId: String, tmFc: String): MidTa?
-
     @Query("DELETE FROM mid_ta WHERE tmFc < :tmFc")
     suspend fun deleteBefore(tmFc: String)
+
+    @Query("SELECT * FROM mid_ta WHERE regId = :regId AND tmFc = :tmFc")
+    suspend fun load(regId: String, tmFc: String): MidTa?
 
     @Transaction
     suspend fun cacheInTransaction(midTa: MidTa) {

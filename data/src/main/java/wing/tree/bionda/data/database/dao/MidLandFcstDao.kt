@@ -12,15 +12,15 @@ interface MidLandFcstDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(midLandFcst: MidLandFcst)
 
+    @Query("DELETE FROM mid_land_fcst WHERE tmFc < :tmFc")
+    suspend fun deleteBefore(tmFc: String)
+
     @Query("SELECT * FROM mid_land_fcst WHERE regId = :regId AND tmFc = :tmFc")
     suspend fun load(regId: String, tmFc: String): MidLandFcst?
 
-    @Query("DELETE FROM mid_land_fcst")
-    suspend fun clear()
-
     @Transaction
-    suspend fun clearAndInsert(midLandFcst: MidLandFcst) {
-        clear()
+    suspend fun cacheInTransaction(midLandFcst: MidLandFcst) {
+        deleteBefore(midLandFcst.tmFc)
         insert(midLandFcst)
     }
 }

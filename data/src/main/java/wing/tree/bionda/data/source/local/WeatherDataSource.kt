@@ -97,7 +97,7 @@ class WeatherDataSource(
 
     fun cache(midLandFcst: MidLandFcst) {
         supervisorScope.launch {
-            midLandFcstDao.clearAndInsert(midLandFcst)
+            midLandFcstDao.cacheInTransaction(midLandFcst)
         }
     }
 

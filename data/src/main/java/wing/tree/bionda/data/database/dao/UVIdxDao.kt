@@ -12,6 +12,9 @@ interface UVIdxDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(uvIdx: UVIdx)
 
+    @Query("DELETE FROM uv_idx WHERE time < :time")
+    suspend fun deleteBefore(time: String)
+
     @Query(
         """
             SELECT * FROM uv_idx 
@@ -23,9 +26,6 @@ interface UVIdxDao {
         areaNo: String,
         time: String
     ): UVIdx?
-
-    @Query("DELETE FROM uv_idx WHERE time < :time")
-    suspend fun deleteBefore(time: String)
 
     @Transaction
     suspend fun cacheInTransaction(uvIdx: UVIdx) {

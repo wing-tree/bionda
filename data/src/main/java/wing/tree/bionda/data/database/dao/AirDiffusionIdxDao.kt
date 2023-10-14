@@ -12,6 +12,9 @@ interface AirDiffusionIdxDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(airDiffusionIdx: AirDiffusionIdx)
 
+    @Query("DELETE FROM air_diffusion_idx WHERE time < :time")
+    suspend fun deleteBefore(time: String)
+
     @Query(
         """
             SELECT * FROM air_diffusion_idx 
@@ -23,9 +26,6 @@ interface AirDiffusionIdxDao {
         areaNo: String,
         time: String
     ): AirDiffusionIdx?
-
-    @Query("DELETE FROM air_diffusion_idx WHERE time < :time")
-    suspend fun deleteBefore(time: String)
 
     @Transaction
     suspend fun cacheInTransaction(airDiffusionIdx: AirDiffusionIdx) {
