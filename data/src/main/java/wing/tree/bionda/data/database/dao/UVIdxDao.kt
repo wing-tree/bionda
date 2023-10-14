@@ -2,13 +2,14 @@ package wing.tree.bionda.data.database.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import wing.tree.bionda.data.model.LivingWthrIdx.UVIdx.Local as UVIdx
 
 @Dao
 interface UVIdxDao {
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(uvIdx: UVIdx)
 
     @Query(

@@ -2,13 +2,14 @@ package wing.tree.bionda.data.database.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import wing.tree.bionda.data.model.MidLandFcst.Local as MidLandFcst
 
 @Dao
 interface MidLandFcstDao {
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(midLandFcst: MidLandFcst)
 
     @Query("SELECT * FROM mid_land_fcst WHERE regId = :regId AND tmFc = :tmFc")
