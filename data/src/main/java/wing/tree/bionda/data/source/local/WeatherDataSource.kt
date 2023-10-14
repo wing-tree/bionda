@@ -130,7 +130,7 @@ class WeatherDataSource(
 
     fun cache(vilageFcst: VilageFcst) {
         supervisorScope.launch {
-            vilageFcstDao.clearAndInsert(vilageFcst)
+            vilageFcstDao.cacheInTransaction(vilageFcst)
 
             launch {
                 vilageFcst.items.groupBy {

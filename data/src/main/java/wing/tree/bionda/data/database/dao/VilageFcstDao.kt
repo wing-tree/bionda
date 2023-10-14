@@ -31,7 +31,7 @@ interface VilageFcstDao {
     suspend fun clear()
 
     @Transaction
-    suspend fun clearAndInsert(vilageFcst: VilageFcst) {
+    suspend fun cacheInTransaction(vilageFcst: VilageFcst) {
         clear()
         insert(vilageFcst)
     }
