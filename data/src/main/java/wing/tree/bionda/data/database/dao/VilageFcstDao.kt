@@ -42,8 +42,8 @@ interface VilageFcstDao {
     @Transaction
     suspend fun cacheInTransaction(vilageFcst: VilageFcst) {
         deleteUpTo(
-            vilageFcst.baseDate,
-            vilageFcst.baseTime.advanceHourOfDayBy(
+            baseDate = vilageFcst.baseDate,
+            baseTime = vilageFcst.baseTime.advanceHourOfDayBy(
                 3, // TODO Replace with const.
                 PATTERN_BASE_TIME
             )

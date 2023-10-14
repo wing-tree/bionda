@@ -60,8 +60,8 @@ interface UltraSrtFcstDao {
     @Transaction
     suspend fun cacheInTransaction(ultraSrtFcst: UltraSrtFcst) {
         deleteUpTo(
-            ultraSrtFcst.baseDate,
-            ultraSrtFcst.baseTime.advanceHourOfDayBy(
+            baseDate = ultraSrtFcst.baseDate,
+            baseTime = ultraSrtFcst.baseTime.advanceHourOfDayBy(
                 1,
                 PATTERN_BASE_TIME
             )
