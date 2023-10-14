@@ -49,7 +49,7 @@ interface UltraSrtFcstDao {
 
     @Query(
         """
-            DELETE FROM vilage_fcst 
+            DELETE FROM ultra_srt_fcst 
             WHERE baseDate < :baseDate 
             OR (baseDate = :baseDate AND baseTime <= :baseTime)
         """
