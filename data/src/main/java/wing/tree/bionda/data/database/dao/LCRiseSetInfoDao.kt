@@ -16,7 +16,7 @@ interface LCRiseSetInfoDao {
     @Query(
         """
             SELECT * FROM lc_rise_set_info 
-            WHERE locdate = :locdate
+            WHERE locdate = :locdate 
             AND longitude = :longitude 
             AND latitude = :latitude
         """
@@ -30,7 +30,7 @@ interface LCRiseSetInfoDao {
     @Query(
         """
             DELETE FROM lc_rise_set_info 
-            WHERE locdate < :locdate
+            WHERE locdate < :locdate 
             AND longitude = :longitude 
             AND latitude = :latitude
         """

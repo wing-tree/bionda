@@ -34,7 +34,7 @@ interface UltraSrtFcstDao {
             WHERE baseDate = :baseDate 
             AND baseTime = :baseTime 
             AND nx = :nx 
-            AND ny = :ny
+            AND ny = :ny 
             AND minute = :minute
         """
     )
