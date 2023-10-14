@@ -33,7 +33,7 @@ interface UltraSrtNcstDao {
     suspend fun clear()
 
     @Transaction
-    suspend fun clearAndInsert(vilageFcst: UltraSrtNcst.Local) {
+    suspend fun cacheInTransaction(vilageFcst: UltraSrtNcst.Local) {
         clear()
         insert(vilageFcst)
     }
