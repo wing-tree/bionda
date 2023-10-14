@@ -30,22 +30,22 @@ interface LCRiseSetInfoDao {
     @Query(
         """
             DELETE FROM lc_rise_set_info 
-            WHERE locdate = :locdate
+            WHERE locdate < :locdate
             AND longitude = :longitude 
             AND latitude = :latitude
         """
     )
-    suspend fun delete(locdate: String, longitude: String, latitude: String)
+    suspend fun deleteBefore(locdate: String, longitude: String, latitude: String)
 
     @Transaction
     suspend fun deleteAndInsert(
         params: RiseSetInfoService.Params,
         lcRiseSetInfo: LCRiseSetInfo
     ) {
-        delete(
+        deleteBefore(
             locdate = params.locdate,
             longitude = params.longitude,
-            latitude = params.latitude,
+            latitude = params.latitude
         )
 
         insert(lcRiseSetInfo)
