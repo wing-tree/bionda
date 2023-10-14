@@ -29,12 +29,19 @@ interface VilageFcstDao {
         ny: Int
     ): VilageFcst?
 
-    @Query("DELETE FROM vilage_fcst WHERE baseTime <= :baseTime")
-    suspend fun deleteUpTo(baseTime: String)
+    @Query(
+        """
+            DELETE FROM vilage_fcst 
+            WHERE baseDate < :baseDate 
+            OR (baseDate = :baseDate AND baseTime <= :baseTime)
+        """
+    )
+    suspend fun deleteUpTo(baseDate: String, baseTime: String)
 
     @Transaction
     suspend fun cacheInTransaction(vilageFcst: VilageFcst) {
         deleteUpTo(
+            vilageFcst.baseDate,
             vilageFcst.baseTime.advanceHourOfDayBy(
                 3, // TODO Replace with const.
                 PATTERN_BASE_TIME

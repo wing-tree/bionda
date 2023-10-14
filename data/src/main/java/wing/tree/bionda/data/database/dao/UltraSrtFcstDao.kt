@@ -4,6 +4,8 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
+import wing.tree.bionda.data.constant.PATTERN_BASE_TIME
+import wing.tree.bionda.data.extension.advanceHourOfDayBy
 import wing.tree.bionda.data.model.UltraSrtFcst.Local as UltraSrtFcst
 
 @Dao
@@ -45,12 +47,25 @@ interface UltraSrtFcstDao {
         minute: Int,
     ): UltraSrtFcst?
 
-    @Query("DELETE FROM ultra_srt_fcst")
-    suspend fun clear()
+    @Query(
+        """
+            DELETE FROM vilage_fcst 
+            WHERE baseDate < :baseDate 
+            OR (baseDate = :baseDate AND baseTime <= :baseTime)
+        """
+    )
+    suspend fun deleteUpTo(baseDate: String, baseTime: String)
 
     @Transaction
-    suspend fun clearAndInsert(ultraSrtFcst: UltraSrtFcst) {
-        clear()
+    suspend fun cacheInTransaction(ultraSrtFcst: UltraSrtFcst) {
+        deleteUpTo(
+            ultraSrtFcst.baseDate,
+            ultraSrtFcst.baseTime.advanceHourOfDayBy(
+                1,
+                PATTERN_BASE_TIME
+            )
+        )
+
         insert(ultraSrtFcst)
     }
 }

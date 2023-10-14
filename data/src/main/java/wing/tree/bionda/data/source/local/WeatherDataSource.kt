@@ -118,7 +118,7 @@ class WeatherDataSource(
 
     fun cache(ultraSrtFcst: UltraSrtFcst) {
         supervisorScope.launch {
-            ultraSrtFcstDao.clearAndInsert(ultraSrtFcst)
+            ultraSrtFcstDao.cacheInTransaction(ultraSrtFcst)
         }
     }
 
