@@ -4,6 +4,8 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
+import wing.tree.bionda.data.constant.PATTERN_BASE_TIME
+import wing.tree.bionda.data.extension.advanceHourOfDayBy
 import wing.tree.bionda.data.model.VilageFcst.Local as VilageFcst
 
 @Dao
@@ -27,12 +29,18 @@ interface VilageFcstDao {
         ny: Int
     ): VilageFcst?
 
-    @Query("DELETE FROM vilage_fcst")
-    suspend fun clear()
+    @Query("DELETE FROM vilage_fcst WHERE baseTime <= :baseTime")
+    suspend fun deleteUpTo(baseTime: String)
 
     @Transaction
     suspend fun cacheInTransaction(vilageFcst: VilageFcst) {
-        clear()
+        deleteUpTo(
+            vilageFcst.baseTime.advanceHourOfDayBy(
+                3, // TODO Replace with const.
+                PATTERN_BASE_TIME
+            )
+        )
+
         insert(vilageFcst)
     }
 }
