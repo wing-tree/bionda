@@ -24,12 +24,12 @@ interface AirDiffusionIdxDao {
         time: String
     ): AirDiffusionIdx?
 
-    @Query("DELETE FROM air_diffusion_idx")
-    suspend fun clear()
+    @Query("DELETE FROM air_diffusion_idx WHERE time < :time")
+    suspend fun deleteBefore(time: String)
 
     @Transaction
-    suspend fun clearAndInsert(airDiffusionIdx: AirDiffusionIdx) {
-        clear()
+    suspend fun cacheInTransaction(airDiffusionIdx: AirDiffusionIdx) {
+        deleteBefore(airDiffusionIdx.time)
         insert(airDiffusionIdx)
     }
 }

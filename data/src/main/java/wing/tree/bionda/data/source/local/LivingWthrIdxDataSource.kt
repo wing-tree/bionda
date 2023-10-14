@@ -16,13 +16,13 @@ class LivingWthrIdxDataSource(
 
     fun cache(airDiffusionIdx: LivingWthrIdx.AirDiffusionIdx.Local) {
         supervisorScope.launch {
-            airDiffusionIdxDao.clearAndInsert(airDiffusionIdx)
+            airDiffusionIdxDao.cacheInTransaction(airDiffusionIdx)
         }
     }
 
     fun cache(uvIdx: LivingWthrIdx.UVIdx.Local) {
         supervisorScope.launch {
-            uvIdxDao.clearAndInsert(uvIdx)
+            uvIdxDao.cacheInTransaction(uvIdx)
         }
     }
 

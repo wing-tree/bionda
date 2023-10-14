@@ -24,12 +24,12 @@ interface UVIdxDao {
         time: String
     ): UVIdx?
 
-    @Query("DELETE FROM uv_idx")
-    suspend fun clear()
+    @Query("DELETE FROM uv_idx WHERE time < :time")
+    suspend fun deleteBefore(time: String)
 
     @Transaction
-    suspend fun clearAndInsert(uvIdx: UVIdx) {
-        clear()
+    suspend fun cacheInTransaction(uvIdx: UVIdx) {
+        deleteBefore(uvIdx.time)
         insert(uvIdx)
     }
 }
