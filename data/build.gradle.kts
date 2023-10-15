@@ -58,6 +58,7 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 
     api("androidx.core:core-ktx:1.12.0")
+    api("com.google.android.material:material:1.10.0")
     api("com.jakewharton.timber:timber:5.0.1")
     api("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.5")
 
@@ -67,7 +68,6 @@ dependencies {
     implementation("androidx.room:room-ktx:2.5.2")
     implementation("androidx.room:room-runtime:2.5.2")
     implementation("com.google.android.gms:play-services-location:21.0.1")
-    implementation("com.google.android.material:material:1.9.0")
     implementation("com.google.dagger:hilt-android:2.47")
     implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
@@ -78,7 +78,7 @@ dependencies {
     implementation("com.tickaroo.tikxml:core:0.8.13")
     //noinspection GradleDependency
     implementation("com.tickaroo.tikxml:retrofit-converter:0.8.13")
-    implementation("org.jetbrains.kotlin:kotlin-reflect:1.8.20")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.8.22")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
 
     kapt("com.google.dagger:hilt-android-compiler:2.47")
