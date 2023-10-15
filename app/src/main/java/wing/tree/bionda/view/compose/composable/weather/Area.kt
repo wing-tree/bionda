@@ -93,7 +93,7 @@ private fun Content(
                 onAction(Action.Area.Favorite(value))
             }
         ) {
-            val tint = if (value.favorited) {
+            val tint = if (value.favorited.value) {
                 colorScheme.primary
             } else {
                 LocalContentColor.current

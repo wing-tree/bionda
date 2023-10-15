@@ -18,21 +18,27 @@ import wing.tree.bionda.data.source.local.AreaDataSource
 import wing.tree.bionda.model.Coordinate
 import javax.inject.Inject
 
-abstract class LocationProviderViewModel(application: Application) : BaseViewModel(application) {
-    @Inject
-    lateinit var areaDataSource: AreaDataSource
-
+abstract class LocationProviderViewModel(
+    application: Application,
+    private val areaDataSource: AreaDataSource
+) : BaseViewModel(application) {
     @Inject
     lateinit var locationProvider: LocationProvider
 
     private val _area = MutableStateFlow<Area?>(null)
     private val _location = MutableStateFlow<State<Location>>(State.Loading)
 
-    val area = combine(_area, _location) { area, location ->
+    val area = combine(_area, _location, areaDataSource.favorites) { area, location, favorites ->
         when {
-            area.isNotNull() -> Complete.Success(area)
+            area.isNotNull() -> Complete.Success(
+                area.apply {
+                    favorited.value = favorites.contains(no)
+                }
+            )
             else -> location.map {
-                areaDataSource.nearestArea(it)
+                areaDataSource.nearestArea(it).apply {
+                    favorited.value = favorites.contains(no)
+                }
             }
         }
     }
@@ -82,6 +88,12 @@ abstract class LocationProviderViewModel(application: Application) : BaseViewMod
     fun update(value: State<Location>) {
         _location.update { _ ->
             value
+        }
+    }
+
+    fun update(value: Area, favorited: Boolean) {
+        viewModelScope.launch {
+            areaDataSource.update(value, favorited)
         }
     }
 }

@@ -28,6 +28,7 @@ import wing.tree.bionda.data.model.MidLandFcstTa
 import wing.tree.bionda.data.repository.AlarmRepository
 import wing.tree.bionda.data.repository.LivingWthrIdxRepository
 import wing.tree.bionda.data.repository.WeatherRepository
+import wing.tree.bionda.data.source.local.AreaDataSource
 import wing.tree.bionda.data.top.level.koreaCalendar
 import wing.tree.bionda.exception.PermissionsDeniedException
 import wing.tree.bionda.extension.insertLCRiseSetInfo
@@ -48,11 +49,12 @@ import wing.tree.bionda.data.model.LCRiseSetInfo.Local as LCRiseSetInfo
 @HiltViewModel
 class MainViewModel @Inject constructor(
     application: Application,
+    areaDataSource: AreaDataSource,
     private val alarmRepository: AlarmRepository,
     private val alarmScheduler: AlarmScheduler,
     private val livingWthrIdxRepository: LivingWthrIdxRepository,
     private val weatherRepository: WeatherRepository
-) : LocationProviderViewModel(application) {
+) : LocationProviderViewModel(application, areaDataSource) {
     private val airDiffusionIdx =  location
         .flatMap(livingWthrIdxRepository::getAirDiffusionIdx)
         .stateIn(initialValue = State.Loading)
@@ -270,11 +272,9 @@ class MainViewModel @Inject constructor(
         when (action) {
             WeatherState.Action.Refresh -> refresh()
             is WeatherState.Action.Area -> when (action) {
-                is WeatherState.Action.Area.Favorite -> update(
-                    with(action.area) {
-                        copy(favorited = favorited.not())
-                    }
-                )
+                is WeatherState.Action.Area.Favorite -> with(action.area) {
+                    update(this, favorited.value.not())
+                }
                 else -> noOperations
             }
         }

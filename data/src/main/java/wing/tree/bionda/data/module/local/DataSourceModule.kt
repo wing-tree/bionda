@@ -1,6 +1,8 @@
 package wing.tree.bionda.data.module.local
 
 import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -25,10 +27,12 @@ object DataSourceModule {
 
     @Provides
     fun providesAreaDataSource(
-        database: AreaDatabase
+        database: AreaDatabase,
+        dataStore: DataStore<Preferences>
     ): AreaDataSource {
         return AreaDataSource(
-            dao = database.dao
+            dao = database.dao,
+            dataStore = dataStore
         )
     }
 

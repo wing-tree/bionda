@@ -1,6 +1,7 @@
 package wing.tree.bionda.data.model
 
 import android.os.Parcelable
+import androidx.compose.runtime.mutableStateOf
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
@@ -21,8 +22,11 @@ data class Area(
     val ny: Int,
     val longitude: Double,
     val latitude: Double,
-    val favorited: Boolean
 ) : Parcelable {
+    @Ignore
+    @IgnoredOnParcel
+    val favorited = mutableStateOf(false)
+
     @Ignore
     @IgnoredOnParcel
     val name: String = buildString {
