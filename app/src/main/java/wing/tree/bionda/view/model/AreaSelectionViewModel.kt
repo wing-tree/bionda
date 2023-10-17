@@ -8,9 +8,9 @@ import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.sample
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -35,9 +35,8 @@ class AreaSelectionViewModel @Inject constructor(
     application: Application,
     areaDataSource: AreaDataSource
 ) : BaseViewModel(application) {
-    private val area = flow {
-        emit(areaDataSource.load())
-    }
+    private val area = areaDataSource::load
+        .asFlow()
         .stateIn(persistentListOf())
 
     private val level = MutableStateFlow(Level())
