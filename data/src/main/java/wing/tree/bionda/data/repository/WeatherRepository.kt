@@ -266,11 +266,11 @@ class WeatherRepository(
                 .times(12)
             var numOfRows = 580.plus(other)
 
-            if (hourOfDay in listOf(2)) {
+            if (hourOfDay in listOf(2, 23)) {
                 numOfRows += Int.one
             }
 
-            if (hourOfDay in listOf(2, 5, 8, 11)) {
+            if (hourOfDay in listOf(2, 5, 8, 11, 23)) {
                 numOfRows += Int.one
             }
 
