@@ -90,7 +90,7 @@ private fun Content(
     ) {
         IconButton(
             onClick = {
-                onAction(Action.Area.Favorite(value))
+                onAction(Action.Area.Favorite(value.no))
             }
         ) {
             val tint = if (value.favorited.value) {
