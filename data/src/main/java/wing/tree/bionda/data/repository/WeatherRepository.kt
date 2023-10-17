@@ -16,6 +16,7 @@ import wing.tree.bionda.data.extension.delayDateBy
 import wing.tree.bionda.data.extension.exceptions
 import wing.tree.bionda.data.extension.failed
 import wing.tree.bionda.data.extension.hourOfDay
+import wing.tree.bionda.data.extension.ifZero
 import wing.tree.bionda.data.extension.isSingle
 import wing.tree.bionda.data.extension.julianDay
 import wing.tree.bionda.data.extension.locdate
@@ -252,6 +253,7 @@ class WeatherRepository(
     ): Complete<VilageFcst.Local> {
         return try {
             val baseCalendar = baseCalendar(Decorator.Calendar.VilageFcst)
+            val hourOfDay = baseCalendar.hourOfDay
             val params = VilageFcstInfoService.Params(
                 baseCalendar = baseCalendar,
                 nx = nx,
@@ -259,7 +261,18 @@ class WeatherRepository(
             )
 
             // TODO, make as const. val.. etc.
-            val numOfRows = 870
+            val other = 23.minus(hourOfDay)
+                .ifZero(8)
+                .times(12)
+            var numOfRows = 580.plus(other)
+
+            if (hourOfDay in listOf(2)) {
+                numOfRows += Int.one
+            }
+
+            if (hourOfDay in listOf(2, 5, 8, 11)) {
+                numOfRows += Int.one
+            }
 
             val vilageFcst = localDataSource.loadVilageFcst(
                 params = params
