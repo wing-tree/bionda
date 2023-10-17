@@ -87,6 +87,7 @@ data class WeatherState(
         sealed interface Area : Action {
             data class Favorite(val areaNo: String) : Area
             object Click : Area
+            object MyLocation : Area
         }
     }
 

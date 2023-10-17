@@ -273,6 +273,7 @@ class MainViewModel @Inject constructor(
             WeatherState.Action.Refresh -> refresh()
             is WeatherState.Action.Area -> when (action) {
                 is WeatherState.Action.Area.Favorite -> toggle(action.areaNo)
+                is WeatherState.Action.Area.MyLocation -> updateArea(null)
                 else -> noOperations
             }
         }

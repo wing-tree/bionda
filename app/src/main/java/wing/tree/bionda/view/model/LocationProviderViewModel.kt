@@ -76,11 +76,7 @@ abstract class LocationProviderViewModel(
         }
     }
 
-    fun update(value: Area) {
-        viewModelScope.launch {
-            areaDataSource.update(value)
-        }
-
+    fun updateArea(value: Area?) {
         _area.update { _ ->
             value
         }

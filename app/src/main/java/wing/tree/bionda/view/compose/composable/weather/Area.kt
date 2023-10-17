@@ -20,7 +20,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import wing.tree.bionda.R
 import wing.tree.bionda.data.core.State
 import wing.tree.bionda.data.core.State.Complete
 import wing.tree.bionda.data.core.isSuccess
@@ -125,6 +127,17 @@ private fun Content(
                 imageVector = Icons.Default.LocationOn,
                 contentDescription = null,
                 modifier = Modifier.size(20.dp)
+            )
+        }
+
+        IconButton(
+            onClick = {
+                onAction(Action.Area.MyLocation)
+            }
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.baseline_my_location_24),
+                contentDescription = null
             )
         }
     }

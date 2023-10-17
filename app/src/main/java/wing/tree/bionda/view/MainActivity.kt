@@ -113,7 +113,7 @@ class MainActivity : AppCompatActivity(), PermissionChecker {
                 }
                     ?: return@registerForActivityResult
 
-                viewModel.update(area)
+                viewModel.updateArea(area)
             }
         }
     }

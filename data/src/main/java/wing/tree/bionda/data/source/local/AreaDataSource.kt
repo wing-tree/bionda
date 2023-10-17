@@ -28,8 +28,4 @@ class AreaDataSource(
     suspend fun nearestArea(location: Location) = load().minBy {
         location.haversine(LatLon(lat = it.latitude, lon = it.longitude))
     }
-
-    suspend fun update(area: Area) {
-        dao.update(area)
-    }
 }
