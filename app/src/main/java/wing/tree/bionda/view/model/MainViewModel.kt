@@ -7,11 +7,13 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import wing.tree.bionda.data.core.State
@@ -41,6 +43,7 @@ import wing.tree.bionda.scheduler.AlarmScheduler
 import wing.tree.bionda.top.level.emptyPersistentSet
 import wing.tree.bionda.top.level.noOperations
 import wing.tree.bionda.view.state.AlarmState
+import wing.tree.bionda.view.state.DrawerContentState
 import wing.tree.bionda.view.state.MainState
 import wing.tree.bionda.view.state.WeatherState
 import javax.inject.Inject
@@ -119,6 +122,11 @@ class MainViewModel @Inject constructor(
         }
     }
         .stateIn(initialValue = State.Loading)
+
+    val drawerContentState = areaDataSource.favorites.map {
+        DrawerContentState(Complete.Success(it.toPersistentList()))
+    }
+        .stateIn(DrawerContentState.initialValue)
 
     val inSelectionMode = MutableStateFlow(false)
     val selected = MutableStateFlow<PersistentSet<Long>>(persistentSetOf())
@@ -274,6 +282,7 @@ class MainViewModel @Inject constructor(
             is WeatherState.Action.Area -> when (action) {
                 is WeatherState.Action.Area.Favorite -> toggle(action.areaNo)
                 is WeatherState.Action.Area.MyLocation -> updateArea(null)
+                is WeatherState.Action.Area.Select -> updateArea(action.area)
                 else -> noOperations
             }
         }

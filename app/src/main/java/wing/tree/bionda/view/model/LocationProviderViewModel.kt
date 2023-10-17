@@ -29,16 +29,16 @@ abstract class LocationProviderViewModel(
     private val _location = MutableStateFlow<State<Location>>(State.Loading)
     private val favorites = areaDataSource.favorites
 
-    val area = combine(_area, _location, favorites()) { area, location, favorites ->
+    val area = combine(_area, _location, favorites) { area, location, favorites ->
         when {
             area.isNotNull() -> Complete.Success(
                 area.apply {
-                    favorited.value = favorites.contains(no)
+                    favorited.value = favorites.contains(this)
                 }
             )
             else -> location.map {
                 areaDataSource.nearestArea(it).apply {
-                    favorited.value = favorites.contains(no)
+                    favorited.value = favorites.contains(this)
                 }
             }
         }
@@ -90,7 +90,7 @@ abstract class LocationProviderViewModel(
 
     fun toggle(value: String) {
         viewModelScope.launch {
-            favorites.toggle(value)
+            areaDataSource.toggleFavorite(value)
         }
     }
 }

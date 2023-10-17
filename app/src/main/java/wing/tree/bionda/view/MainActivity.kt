@@ -21,22 +21,31 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberDrawerState
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -70,6 +79,7 @@ import wing.tree.bionda.theme.BiondaTheme
 import wing.tree.bionda.top.level.noOperations
 import wing.tree.bionda.view.compose.composable.SingleChoiceSegmentedButtonRow
 import wing.tree.bionda.view.compose.composable.alarm.Alarm
+import wing.tree.bionda.view.compose.composable.weather.DrawerContent
 import wing.tree.bionda.view.compose.composable.weather.Weather
 import wing.tree.bionda.view.model.MainViewModel
 import wing.tree.bionda.view.state.AlarmState.Action
@@ -98,7 +108,6 @@ class MainActivity : AppCompatActivity(), PermissionChecker {
     }
 
     private val viewModel by viewModels<MainViewModel>()
-
 
     private val activityResultLauncher = registerForActivityResult(StartActivityForResult()) {
         if (it.resultCode `is` Activity.RESULT_OK) {
@@ -139,89 +148,134 @@ class MainActivity : AppCompatActivity(), PermissionChecker {
         setContent {
             BiondaTheme {
                 val state by viewModel.state.collectAsStateWithLifecycle()
+                val coroutineScope = rememberCoroutineScope()
+                val drawerContentState by viewModel.drawerContentState.collectAsStateWithLifecycle()
+                val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
                 val inSelectionMode = state.inSelectionMode
                 val windowSizeClass = rememberWindowSizeClass()
+
+                val enabled = when {
+                    drawerState.isOpen -> true
+                    inSelectionMode -> true
+                    else -> false
+                }
 
                 var selectedSegmentedButtonIndex by remember {
                     mutableIntStateOf(Int.zero)
                 }
 
-                BackHandler(enabled = inSelectionMode) {
-                    viewModel.inSelectionMode.toggle()
+                BackHandler(enabled = enabled) {
+                    when {
+                        drawerState.isOpen -> coroutineScope.launch {
+                            drawerState.close()
+                        }
+
+                        inSelectionMode -> viewModel.inSelectionMode.toggle()
+                    }
                 }
 
-                Scaffold(
-                    topBar = {
-                        CenterAlignedTopAppBar(
-                            title = noOperations,
-                            navigationIcon = {
-                                SingleChoiceSegmentedButtonRow(
-                                    selectedSegmentedButtonIndex = selectedSegmentedButtonIndex,
-                                    onClick = {
-                                        selectedSegmentedButtonIndex = it
-                                    },
-                                    modifier = Modifier.padding(windowSizeClass.marginValues)
-                                )
-                            },
-                            actions = {
-                                IconButton(onClick = { /*TODO*/ }) {
-                                    Icon(
-                                        imageVector = Icons.Default.Menu,
-                                        contentDescription = null
-                                    )
-                                }
-                            },
-                            colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                                containerColor = colorScheme.background
-                            )
-                        )
-                    }
-                ) { innerPadding ->
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(innerPadding)
-                    ) {
-                        AnimatedContent(
-                            targetState = selectedSegmentedButtonIndex,
-                            modifier = Modifier.weight(Float.full),
-                            transitionSpec = {
-                                val slideDirection = if (targetState `is` Int.zero) {
-                                    SlideDirection.Right
-                                } else {
-                                    SlideDirection.Left
-                                }
-
-                                val enter = slideIntoContainer(slideDirection).plus(fadeIn())
-                                val exit = slideOutOfContainer(slideDirection).plus(fadeOut())
-
-                                enter togetherWith exit
-                            },
-                            label = String.empty
-                        ) { targetState ->
-                            when (targetState) {
-                                Int.zero -> Weather(
-                                    state = state.weatherState,
-                                    windowSizeClass = windowSizeClass,
-                                    onAction = { action ->
-                                        when (action) {
-                                            is WeatherState.Action.Area.Click -> activityResultLauncher
-                                                .launch(Intent(AreaSelectionActivity::class.java))
-
-                                            else -> viewModel.onAction(action)
+                CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+                    ModalNavigationDrawer(
+                        drawerContent = {
+                            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+                                DrawerContent(
+                                    state = drawerContentState,
+                                    onAction = {
+                                        viewModel.onAction(it)
+                                        coroutineScope.launch {
+                                            drawerState.close()
                                         }
                                     },
-                                    modifier = Modifier.fillMaxSize()
+                                    modifier = Modifier.width(IntrinsicSize.Max)
                                 )
+                            }
+                        },
+                        drawerState = drawerState
+                    ) {
+                        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+                            Scaffold(
+                                topBar = {
+                                    CenterAlignedTopAppBar(
+                                        title = noOperations,
+                                        navigationIcon = {
+                                            SingleChoiceSegmentedButtonRow(
+                                                selectedSegmentedButtonIndex = selectedSegmentedButtonIndex,
+                                                onClick = {
+                                                    selectedSegmentedButtonIndex = it
+                                                },
+                                                modifier = Modifier.padding(windowSizeClass.marginValues)
+                                            )
+                                        },
+                                        actions = {
+                                            IconButton(
+                                                onClick = {
+                                                    coroutineScope.launch {
+                                                        drawerState.open()
+                                                    }
+                                                }
+                                            ) {
+                                                Icon(
+                                                    imageVector = Icons.Default.Menu,
+                                                    contentDescription = null
+                                                )
+                                            }
+                                        },
+                                        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                                            containerColor = colorScheme.background
+                                        )
+                                    )
+                                }
+                            ) { innerPadding ->
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(innerPadding)
+                                ) {
+                                    AnimatedContent(
+                                        targetState = selectedSegmentedButtonIndex,
+                                        modifier = Modifier.weight(Float.full),
+                                        transitionSpec = {
+                                            val slideDirection = if (targetState `is` Int.zero) {
+                                                SlideDirection.Right
+                                            } else {
+                                                SlideDirection.Left
+                                            }
 
-                                Int.one -> Alarm(
-                                    state = state.alarmState,
-                                    inSelectionMode = inSelectionMode,
-                                    onAction = {
-                                        onAction(it, inSelectionMode)
-                                    },
-                                    windowSizeClass = windowSizeClass
-                                )
+                                            val enter =
+                                                slideIntoContainer(slideDirection).plus(fadeIn())
+                                            val exit =
+                                                slideOutOfContainer(slideDirection).plus(fadeOut())
+
+                                            enter togetherWith exit
+                                        },
+                                        label = String.empty
+                                    ) { targetState ->
+                                        when (targetState) {
+                                            Int.zero -> Weather(
+                                                state = state.weatherState,
+                                                windowSizeClass = windowSizeClass,
+                                                onAction = { action ->
+                                                    when (action) {
+                                                        is WeatherState.Action.Area.Click -> activityResultLauncher
+                                                            .launch(Intent(AreaSelectionActivity::class.java))
+
+                                                        else -> viewModel.onAction(action)
+                                                    }
+                                                },
+                                                modifier = Modifier.fillMaxSize()
+                                            )
+
+                                            Int.one -> Alarm(
+                                                state = state.alarmState,
+                                                inSelectionMode = inSelectionMode,
+                                                onAction = {
+                                                    onAction(it, inSelectionMode)
+                                                },
+                                                windowSizeClass = windowSizeClass
+                                            )
+                                        }
+                                    }
+                                }
                             }
                         }
                     }

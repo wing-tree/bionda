@@ -2,6 +2,7 @@ package wing.tree.bionda.view.state
 
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentSetOf
 import wing.tree.bionda.data.core.State
 import wing.tree.bionda.data.model.Alarm
@@ -74,6 +75,16 @@ sealed interface AlarmState {
     }
 }
 
+data class DrawerContentState(
+    val favorites: State<PersistentList<Area>>
+) {
+    companion object {
+        val initialValue = DrawerContentState(
+            favorites = State.Loading
+        )
+    }
+}
+
 data class WeatherState(
     val area: State<Area>,
     val livingWthrIdx: LivingWthrIdx,
@@ -86,6 +97,7 @@ data class WeatherState(
 
         sealed interface Area : Action {
             data class Favorite(val areaNo: String) : Area
+            data class Select(val area: wing.tree.bionda.data.model.Area) : Area
             object Click : Area
             object MyLocation : Area
         }
