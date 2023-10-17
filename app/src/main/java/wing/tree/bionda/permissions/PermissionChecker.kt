@@ -8,12 +8,12 @@ interface PermissionChecker {
         operator fun component1(): Set<String> = granted()
         operator fun component2(): Set<String> = denied()
 
-        fun denied() = filterValues {
+        private fun denied() = filterValues {
             it is State.Denied
         }
             .keys
 
-        fun granted() = filterValues {
+        private fun granted() = filterValues {
             it is State.Granted
         }
             .keys
@@ -35,10 +35,6 @@ interface PermissionChecker {
         return permissions.all {
             checkSelfPermission(it) == PackageManager.PERMISSION_GRANTED
         }
-    }
-
-    fun Context.checkSelfPermission(vararg permissions: String): Boolean {
-        return checkSelfMultiplePermissions(permissions)
     }
 
     fun Context.checkSelfSinglePermission(permission: String): Boolean {
