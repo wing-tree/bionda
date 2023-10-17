@@ -85,7 +85,7 @@ data class WeatherState(
         object Refresh : Action
 
         sealed interface Area : Action {
-            data class Favorite(val area: wing.tree.bionda.data.model.Area) : Area
+            data class Favorite(val areaNo: String) : Area
             object Click : Area
         }
     }

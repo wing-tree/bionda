@@ -272,9 +272,7 @@ class MainViewModel @Inject constructor(
         when (action) {
             WeatherState.Action.Refresh -> refresh()
             is WeatherState.Action.Area -> when (action) {
-                is WeatherState.Action.Area.Favorite -> with(action.area) {
-                    update(this, favorited.value.not())
-                }
+                is WeatherState.Action.Area.Favorite -> toggle(action.areaNo)
                 else -> noOperations
             }
         }

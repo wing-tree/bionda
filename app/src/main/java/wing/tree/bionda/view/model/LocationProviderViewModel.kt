@@ -27,8 +27,9 @@ abstract class LocationProviderViewModel(
 
     private val _area = MutableStateFlow<Area?>(null)
     private val _location = MutableStateFlow<State<Location>>(State.Loading)
+    private val favorites = areaDataSource.favorites
 
-    val area = combine(_area, _location, areaDataSource.favorites) { area, location, favorites ->
+    val area = combine(_area, _location, favorites()) { area, location, favorites ->
         when {
             area.isNotNull() -> Complete.Success(
                 area.apply {
@@ -91,9 +92,9 @@ abstract class LocationProviderViewModel(
         }
     }
 
-    fun update(value: Area, favorited: Boolean) {
+    fun toggle(value: String) {
         viewModelScope.launch {
-            areaDataSource.update(value, favorited)
+            favorites.toggle(value)
         }
     }
 }
