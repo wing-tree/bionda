@@ -2,7 +2,7 @@ package wing.tree.bionda.view.compose.composable.weather
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -52,15 +52,16 @@ private fun Content(
         it.level.isBlank()
     }
 
-    Column(modifier = modifier.padding(16.dp)) {
-        LazyRow(modifier = Modifier.fillMaxWidth()) {
-            items(items) { item ->
-               Item(
-                   item = item,
-                   date = date,
-                   modifier = Modifier.padding(horizontal = 8.dp)
-               )
-            }
+    LazyRow(
+        modifier = modifier,
+        contentPadding = PaddingValues(16.dp)
+    ) {
+        items(items) { item ->
+            Item(
+                item = item,
+                date = date,
+                modifier = Modifier.padding(horizontal = 8.dp)
+            )
         }
     }
 }

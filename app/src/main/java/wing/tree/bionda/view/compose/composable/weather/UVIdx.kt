@@ -7,9 +7,9 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -78,16 +78,17 @@ private fun Content(
     uvIdx: UVIdx,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier.padding(16.dp)) {
-        val date = uvIdx.item.date
+    val date = uvIdx.item.date
 
-        LazyRow(modifier = Modifier.fillMaxWidth()) {
-            items(uvIdx.items) { item ->
-                Item(
-                    item = item,
-                    date = date
-                )
-            }
+    LazyRow(
+        modifier = modifier.fillMaxWidth(),
+        contentPadding = PaddingValues(16.dp)
+    ) {
+        items(uvIdx.items) { item ->
+            Item(
+                item = item,
+                date = date
+            )
         }
     }
 }
