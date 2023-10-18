@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -51,6 +50,7 @@ import wing.tree.bionda.extension.drawWsd
 import wing.tree.bionda.extension.offsets
 import wing.tree.bionda.model.VilageFcst
 import wing.tree.bionda.model.style.ChartStyle
+import wing.tree.bionda.view.compose.composable.core.Error
 import wing.tree.bionda.view.compose.composable.core.Loading
 import wing.tree.bionda.view.compose.composable.core.VerticalSpacer
 import java.util.Locale
@@ -80,7 +80,7 @@ fun VilageFcst(
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                is Complete.Failure -> Text(text = "${it.exception}")
+                is Complete.Failure -> Error(it.exception)
             }
         }
     }
