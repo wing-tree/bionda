@@ -15,6 +15,7 @@ import wing.tree.bionda.data.extension.full
 import wing.tree.bionda.data.extension.ifNull
 import wing.tree.bionda.model.UltraSrtNcst
 import wing.tree.bionda.view.compose.composable.core.DegreeText
+import wing.tree.bionda.view.compose.composable.core.Error
 import wing.tree.bionda.view.compose.composable.core.Loading
 
 @Composable
@@ -33,11 +34,7 @@ fun UltraSrtNcst(
         when (it) {
             State.Loading -> Loading(modifier = Modifier)
             is State.Complete.Success -> Content(ultraSrtNcst = it.value)
-            is State.Complete.Failure -> {
-                val text = it.exception.message ?: "${it.exception}"
-
-                Text(text = text)
-            }
+            is State.Complete.Failure -> Error(exception = it.exception)
         }
     }
 }

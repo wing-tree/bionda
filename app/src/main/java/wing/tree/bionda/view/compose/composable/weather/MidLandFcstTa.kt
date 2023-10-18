@@ -46,6 +46,7 @@ import wing.tree.bionda.data.top.level.koreaCalendar
 import wing.tree.bionda.model.WeatherIcons
 import wing.tree.bionda.theme.temperature
 import wing.tree.bionda.view.compose.composable.core.DegreeText
+import wing.tree.bionda.view.compose.composable.core.Error
 import wing.tree.bionda.view.compose.composable.core.Loading
 import wing.tree.bionda.view.compose.composable.core.VerticalSpacer
 import java.util.Locale
@@ -202,8 +203,8 @@ private fun OneOfSuccess(
                 }
             }
         }
-
-        Text(text = oneOfSuccess.exception.message ?: "${oneOfSuccess.exception}")
+        
+        Error(exception = oneOfSuccess.exception)
     }
 }
 

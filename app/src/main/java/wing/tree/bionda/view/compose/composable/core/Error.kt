@@ -9,5 +9,8 @@ fun Error(
     exception: Throwable,
     modifier: Modifier = Modifier
 ) {
-    Text(text = exception.message ?: "$exception")
+    Text(
+        text = exception.message ?: "$exception",
+        modifier = modifier
+    )
 }

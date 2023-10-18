@@ -43,6 +43,7 @@ import wing.tree.bionda.theme.Orange
 import wing.tree.bionda.theme.Purple
 import wing.tree.bionda.theme.Red
 import wing.tree.bionda.theme.Yellow
+import wing.tree.bionda.view.compose.composable.core.Error
 import wing.tree.bionda.view.compose.composable.core.Loading
 
 @Composable
@@ -65,7 +66,7 @@ fun UVIdx(
                 State.Loading -> Loading(modifier = Modifier)
                 is Complete -> when (it) {
                     is Complete.Success -> Content(uvIdx = it.value)
-                    is Complete.Failure -> Text(it.exception.message ?: "${it.exception}")
+                    is Complete.Failure -> Error(exception = it.exception)
                 }
             }
         }

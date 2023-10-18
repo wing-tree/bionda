@@ -50,6 +50,7 @@ import wing.tree.bionda.data.extension.isNonNegative
 import wing.tree.bionda.data.extension.negated
 import wing.tree.bionda.data.model.Area
 import wing.tree.bionda.theme.BiondaTheme
+import wing.tree.bionda.view.compose.composable.core.Error
 import wing.tree.bionda.view.compose.composable.core.Loading
 import wing.tree.bionda.view.model.AreaSelectionViewModel
 import wing.tree.bionda.view.state.AreaState
@@ -202,9 +203,7 @@ class AreaSelectionActivity : ComponentActivity() {
                                 }
                             )
 
-                            is AreaState.Error -> Text(
-                                text = targetState.exception.message ?: "unknown"
-                            )
+                            is AreaState.Error -> Error(exception = targetState.exception)
                         }
                     }
                 }

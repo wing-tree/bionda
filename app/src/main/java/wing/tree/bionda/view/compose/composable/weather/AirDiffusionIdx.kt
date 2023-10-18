@@ -21,6 +21,7 @@ import wing.tree.bionda.data.model.LivingWthrIdx
 import wing.tree.bionda.data.top.level.koreaCalendar
 import wing.tree.bionda.data.top.level.timeFormat
 import wing.tree.bionda.extension.level
+import wing.tree.bionda.view.compose.composable.core.Error
 import wing.tree.bionda.view.compose.composable.core.Loading
 
 @Composable
@@ -34,7 +35,7 @@ fun AirDiffusionIdx(
                 State.Loading -> Loading(modifier = Modifier)
                 is Complete -> when (it) {
                     is Complete.Success -> Content(value = it.value)
-                    is Complete.Failure -> Text(it.exception.message ?: "${it.exception}")
+                    is Complete.Failure -> Error(exception = it.exception)
                 }
             }
         }
