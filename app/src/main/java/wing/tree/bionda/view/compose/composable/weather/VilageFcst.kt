@@ -8,7 +8,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -52,7 +51,6 @@ import wing.tree.bionda.model.VilageFcst
 import wing.tree.bionda.model.style.ChartStyle
 import wing.tree.bionda.view.compose.composable.core.Error
 import wing.tree.bionda.view.compose.composable.core.Loading
-import wing.tree.bionda.view.compose.composable.core.VerticalSpacer
 import java.util.Locale
 import kotlin.math.min
 
@@ -61,26 +59,31 @@ fun VilageFcst(
     state: State<VilageFcst>,
     modifier: Modifier = Modifier
 ) {
-    AnimatedContent(
-        targetState = state,
-        modifier = modifier,
-        transitionSpec = {
-            fadeIn() togetherWith fadeOut()
-        },
-        label = String.empty,
-        contentKey = {
-            it::class.qualifiedName
-        }
-    ) {
-        when (it) {
-            State.Loading -> Loading(modifier = Modifier)
-            is Complete -> when (it) {
-                is Complete.Success -> Content(
-                    vilageFcst = it.value,
-                    modifier = Modifier.fillMaxWidth()
-                )
+    val style = ChartStyle.defaultValue
 
-                is Complete.Failure -> Error(it.exception)
+    ElevatedCard(modifier = modifier.height(style.calculateHeight())) {
+        AnimatedContent(
+            targetState = state,
+            modifier = Modifier.fillMaxSize(),
+            transitionSpec = {
+                fadeIn() togetherWith fadeOut()
+            },
+            label = String.empty,
+            contentKey = {
+                it::class.qualifiedName
+            }
+        ) {
+            when (it) {
+                State.Loading -> Loading(modifier = Modifier)
+                is Complete -> when (it) {
+                    is Complete.Success -> Content(
+                        vilageFcst = it.value,
+                        style = style,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    is Complete.Failure -> Error(it.exception)
+                }
             }
         }
     }
@@ -89,33 +92,14 @@ fun VilageFcst(
 @Composable
 private fun Content(
     vilageFcst: VilageFcst,
+    style: ChartStyle,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier) {
-        VerticalSpacer(16.dp)
-
-        // TODO 아래 내용 체크, [기본 api] 제공도 확인,
-//        contentPadding = windowSizeClass.marginValues.copy(
-//            top = Dp.zero,
-//            bottom = Dp.zero
-//        )
-
-        ElevatedCard(
-            modifier = Modifier
-                .fillMaxWidth() // todo, style에서 계산 필요. or requireHeight 등도 확인.
-        ) {
-            val style = ChartStyle.defaultValue
-
-            Chart(
-                items = vilageFcst.items,
-                style = style,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .height(style.calculateHeight())
-                    .padding(vertical = 12.dp)
-            )
-        }
-    }
+    Chart(
+        items = vilageFcst.items,
+        style = style,
+        modifier = modifier.padding(vertical = 12.dp)
+    )
 }
 
 @Composable
