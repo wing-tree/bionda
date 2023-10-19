@@ -66,10 +66,6 @@ class MainViewModel @Inject constructor(
         .flatMap(weatherRepository::getLCRiseSetInfo)
         .stateIn(initialValue = State.Loading)
 
-    private val midLandFcstTa: StateFlow<State<MidLandFcstTa>> = location
-        .flatMap(weatherRepository::getMidLandFcstTa)
-        .stateIn(initialValue = State.Loading)
-
     private val requestPermissions = MutableStateFlow<PersistentSet<String>>(emptyPersistentSet())
     private val ultraSrtNcst = coordinate.flatMap {
         val baseDate = koreaCalendar.baseDate
@@ -88,9 +84,7 @@ class MainViewModel @Inject constructor(
         .stateIn(initialValue = State.Loading)
 
     private val ultraSrtFcst = coordinate.flatMap { (nx, ny) ->
-        weatherRepository.getUltraSrtFcst(nx = nx, ny = ny).map { ultraSrtFcst ->
-            VilageFcstMapper.toPresentationModel(ultraSrtFcst)
-        }
+        weatherRepository.getUltraSrtFcst(nx = nx, ny = ny).map(VilageFcstMapper::toPresentationModel)
     }
 
     private val uvIdx = location.flatMap(livingWthrIdxRepository::getUVIdx)
@@ -119,6 +113,16 @@ class MainViewModel @Inject constructor(
                     }
             }
                 .insertLCRiseSetInfo(lcRiseSetInfo)
+        }
+    }
+        .stateIn(initialValue = State.Loading)
+
+    private val midLandFcstTa: StateFlow<State<MidLandFcstTa>> = combine(
+        location,
+        vilageFcst
+    ) { location, vilageFcst ->
+        location.flatMap {
+            weatherRepository.getMidLandFcstTa(it).prependVilageFcst(vilageFcst)
         }
     }
         .stateIn(initialValue = State.Loading)
@@ -181,7 +185,7 @@ class MainViewModel @Inject constructor(
         WeatherState(
             area = area,
             livingWthrIdx = livingWthrIdx,
-            midLandFcstTa = midLandFcstTa.prependVilageFcst(vilageFcst),
+            midLandFcstTa = midLandFcstTa,
             ultraSrtNcst = ultraSrtNcst,
             vilageFcst = vilageFcst
         )
