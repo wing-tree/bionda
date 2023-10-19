@@ -38,7 +38,7 @@ interface LCRiseSetInfoDao {
     suspend fun deleteBefore(locdate: String, longitude: String, latitude: String)
 
     @Transaction
-    suspend fun deleteAndInsert(
+    suspend fun cacheInTransaction(
         params: RiseSetInfoService.Params,
         lcRiseSetInfo: LCRiseSetInfo
     ) {

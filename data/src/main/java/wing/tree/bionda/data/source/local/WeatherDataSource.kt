@@ -103,7 +103,7 @@ class WeatherDataSource(
 
     fun cache(params: RiseSetInfoService.Params, lcRiseSetInfo: LCRiseSetInfo) {
         supervisorScope.launch {
-            lcRiseSetInfoDao.deleteAndInsert(
+            lcRiseSetInfoDao.cacheInTransaction(
                 params = params,
                 lcRiseSetInfo = lcRiseSetInfo
             )
