@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.launch
 import wing.tree.bionda.data.core.State
 import wing.tree.bionda.data.core.State.Complete
@@ -62,11 +61,11 @@ class MainViewModel @Inject constructor(
 ) : LocationProviderViewModel(application, areaDataSource) {
     private val airDiffusionIdx =  location
         .flatMap(livingWthrIdxRepository::getAirDiffusionIdx)
-        .stateIn(initialValue = State.Loading)
+        .stateIn()
 
     private val lcRiseSetInfo: StateFlow<State<ImmutableList<LCRiseSetInfo>>> = location
         .flatMap(weatherRepository::getLCRiseSetInfo)
-        .stateIn(initialValue = State.Loading)
+        .stateIn()
 
     private val requestPermissions = MutableStateFlow<PersistentSet<String>>(emptyPersistentSet())
     private val ultraSrtNcst = coordinate.flatMap {
@@ -83,7 +82,7 @@ class MainViewModel @Inject constructor(
             )
         }
     }
-        .stateIn(initialValue = State.Loading)
+        .stateIn()
 
     private val ultraSrtFcst = coordinate.flatMap { (nx, ny) ->
         weatherRepository.getUltraSrtFcst(nx = nx, ny = ny).map(VilageFcstMapper::toPresentationModel)
@@ -116,7 +115,7 @@ class MainViewModel @Inject constructor(
                 .insertLCRiseSetInfo(lcRiseSetInfo)
         }
     }
-        .stateIn(initialValue = State.Loading)
+        .stateIn()
 
     private val midLandFcstTa: StateFlow<State<MidLandFcstTa>> = combine(
         location,
@@ -126,7 +125,7 @@ class MainViewModel @Inject constructor(
             weatherRepository.getMidLandFcstTa(it).prependVilageFcst(vilageFcst)
         }
     }
-        .stateIn(initialValue = State.Loading)
+        .stateIn()
 
     val drawerContentState = areaDataSource.favorites.map {
         DrawerContentState(Complete.Success(it.toPersistentList()))

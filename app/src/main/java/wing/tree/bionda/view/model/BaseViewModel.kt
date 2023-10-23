@@ -6,10 +6,17 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
+import wing.tree.bionda.data.core.State
 import wing.tree.bionda.data.extension.fiveSecondsInMilliseconds
 
 abstract class BaseViewModel(application: Application) : AndroidViewModel(application) {
     protected fun <T> Flow<T>.stateIn(initialValue: T) = stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(Long.fiveSecondsInMilliseconds),
+        initialValue = initialValue
+    )
+
+    protected fun <T> Flow<State<T>>.stateIn(initialValue: State<T> = State.Loading) = stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(Long.fiveSecondsInMilliseconds),
         initialValue = initialValue
