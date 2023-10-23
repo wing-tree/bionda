@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.launch
 import wing.tree.bionda.data.core.State
 import wing.tree.bionda.data.core.State.Complete
@@ -25,6 +26,7 @@ import wing.tree.bionda.data.extension.baseDate
 import wing.tree.bionda.data.extension.flatMap
 import wing.tree.bionda.data.extension.long
 import wing.tree.bionda.data.extension.negativeOne
+import wing.tree.bionda.data.extension.zipAsPair
 import wing.tree.bionda.data.model.Alarm
 import wing.tree.bionda.data.model.MidLandFcstTa
 import wing.tree.bionda.data.repository.AlarmRepository
@@ -97,9 +99,8 @@ class MainViewModel @Inject constructor(
 
     private val vilageFcst = combine(
         coordinate,
-        lcRiseSetInfo,
-        ultraSrtFcst
-    ) { coordinate, lcRiseSetInfo, ultraSrtFcst ->
+        lcRiseSetInfo.zipAsPair(ultraSrtFcst),
+    ) { coordinate, (lcRiseSetInfo, ultraSrtFcst) ->
         coordinate.flatMap { (nx, ny) ->
             weatherRepository.getVilageFcst(nx = nx, ny = ny).map { vilageFcst ->
                 VilageFcstMapper
