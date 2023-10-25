@@ -29,7 +29,7 @@ import wing.tree.bionda.top.level.calculateHeatIndex
 import wing.tree.bionda.top.level.calculateWindChill
 import wing.tree.bionda.top.level.emptyPersistentMap
 
-data class VilageFcst(val items: PersistentList<Item>) {
+data class VilageFcst(val items: PersistentList<Item>) : PersistentList<VilageFcst.Item> by items  {
     data class Item(
         val fcstDate: String,
         val fcstTime: String,
