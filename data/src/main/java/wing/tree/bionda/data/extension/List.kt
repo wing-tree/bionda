@@ -11,5 +11,3 @@ fun <T> List<T>.mostCommon(vararg excluded: T): T? {
             it.value
         }?.key
 }
-
-fun <T> List<T>.updatedWith(function: MutableList<T>.() -> Unit): List<T> = toMutableList().apply(function)
