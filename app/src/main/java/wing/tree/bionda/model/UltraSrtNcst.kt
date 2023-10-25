@@ -1,6 +1,6 @@
 package wing.tree.bionda.model
 
-import kotlinx.collections.immutable.ImmutableMap
+import kotlinx.collections.immutable.PersistentMap
 import wing.tree.bionda.data.core.Season
 import wing.tree.bionda.data.core.season
 import wing.tree.bionda.data.extension.int
@@ -16,7 +16,7 @@ import wing.tree.bionda.top.level.calculateWindChill
 data class UltraSrtNcst(
     val baseDate: String,
     val baseTime: String,
-    val codeValues: ImmutableMap<String, Double>,
+    val codeValues: PersistentMap<String, Double>,
     val tmn: String? = null,
     val tmx: String? = null
 ) {
@@ -57,6 +57,8 @@ data class UltraSrtNcst(
     val pty: CodeValue.Pty get() = CodeValue.Pty(code = codeValues[Category.PTY]?.code)
     val vec = codeValues[Category.VEC]
     val wsd = codeValues[Category.WSD]
+
+    val sky = codeValues[Category.SKY]
 
     private val Double.code: String get() = int.string
 }
