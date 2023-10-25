@@ -70,6 +70,7 @@ abstract class LocationProviderViewModel(
                 .collect {
                     _location.value = it.map { location ->
                         // todo check and remove.. create가 문제?
+                        // 리트라이 로직.
                         location!! // ?: LocationProvider.seoul
                     }
                 }
