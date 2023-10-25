@@ -1,6 +1,6 @@
 package wing.tree.bionda.mapper
 
-import kotlinx.collections.immutable.toImmutableMap
+import kotlinx.collections.immutable.toPersistentHashMap
 import wing.tree.bionda.model.UltraSrtNcst as PresentationModel
 import wing.tree.bionda.data.model.UltraSrtNcst.Local as DataModel
 
@@ -12,7 +12,7 @@ object UltraSrtNcstMapper : DataModelMapper<DataModel, PresentationModel> {
             codeValues = items.associate {
                 it.category to it.obsrValue
             }
-                .toImmutableMap()
+                .toPersistentHashMap()
         )
     }
 
@@ -27,7 +27,7 @@ object UltraSrtNcstMapper : DataModelMapper<DataModel, PresentationModel> {
             codeValues = items.associate {
                 it.category to it.obsrValue
             }
-                .toImmutableMap(),
+                .toPersistentHashMap(),
             tmn = tmn,
             tmx = tmx
         )
