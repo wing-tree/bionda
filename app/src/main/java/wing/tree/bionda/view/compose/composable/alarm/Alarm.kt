@@ -16,7 +16,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -48,14 +47,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import wing.tree.bionda.R
 import wing.tree.bionda.data.extension.empty
 import wing.tree.bionda.data.extension.full
 import wing.tree.bionda.data.model.Alarm
 import wing.tree.bionda.data.top.level.koreaCalendar
-import wing.tree.bionda.extension.zero
 import wing.tree.bionda.model.WindowSizeClass
 import wing.tree.bionda.view.compose.composable.core.HorizontalSpacer
 import wing.tree.bionda.view.compose.composable.core.Loading
@@ -240,14 +237,7 @@ private fun Content(
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
-        modifier = modifier,
-        contentPadding = PaddingValues(
-            bottom = if (inSelectionMode) {
-                72.dp
-            } else {
-                Dp.zero
-            }
-        ),
+        modifier = modifier.padding(bottom = 72.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(
