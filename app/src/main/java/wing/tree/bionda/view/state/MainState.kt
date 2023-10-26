@@ -75,9 +75,7 @@ sealed interface AlarmState {
     }
 }
 
-data class DrawerContentState(
-    val favorites: State<PersistentList<Area>>
-) {
+data class DrawerContentState(val favorites: State<PersistentList<Area>>) {
     companion object {
         val initialValue = DrawerContentState(
             favorites = State.Loading
