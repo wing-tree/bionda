@@ -63,10 +63,10 @@ dependencies {
     api("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.5")
 
     implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("androidx.compose.runtime:runtime:1.5.3")
+    implementation("androidx.compose.runtime:runtime:1.5.4")
     implementation("androidx.datastore:datastore-preferences:1.0.0")
-    implementation("androidx.room:room-ktx:2.5.2")
-    implementation("androidx.room:room-runtime:2.5.2")
+    implementation("androidx.room:room-ktx:2.6.0")
+    implementation("androidx.room:room-runtime:2.6.0")
     implementation("com.google.android.gms:play-services-location:21.0.1")
     implementation("com.google.dagger:hilt-android:2.47")
     implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0")
@@ -85,8 +85,8 @@ dependencies {
     //noinspection GradleDependency
     kapt("com.tickaroo.tikxml:processor:0.8.13")
 
-    ksp("androidx.room:room-compiler:2.5.2")
-    ksp("androidx.room:room-ktx:2.5.2")
+    ksp("androidx.room:room-compiler:2.6.0")
+    ksp("androidx.room:room-ktx:2.6.0")
 
     testImplementation("junit:junit:4.13.2")
 }
