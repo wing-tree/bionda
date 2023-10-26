@@ -58,7 +58,7 @@ data class UltraSrtNcst(
     val vec = codeValues[Category.VEC]
     val wsd = codeValues[Category.WSD]
 
-    val sky = codeValues[Category.SKY]
+    val sky = CodeValue.Sky(code = codeValues[Category.SKY]?.code)
 
     private val Double.code: String get() = int.string
 }

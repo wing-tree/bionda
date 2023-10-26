@@ -5,7 +5,10 @@ import kotlinx.collections.immutable.persistentListOf
 import wing.tree.bionda.data.core.State
 import wing.tree.bionda.data.core.isSuccess
 import wing.tree.bionda.data.core.map
+import wing.tree.bionda.data.extension.doubleOrNull
+import wing.tree.bionda.data.extension.filterNotNullValues
 import wing.tree.bionda.data.extension.isNull
+import wing.tree.bionda.data.extension.putAllIfAbsent
 import wing.tree.bionda.data.model.LCRiseSetInfo
 import wing.tree.bionda.data.model.MidLandFcst.Local.LandFcst
 import wing.tree.bionda.data.model.MidLandFcstTa
@@ -13,7 +16,25 @@ import wing.tree.bionda.data.model.MidLandFcstTa.BothSuccess
 import wing.tree.bionda.data.model.MidTa.Local.Ta
 import wing.tree.bionda.mapper.LandFcstMapper
 import wing.tree.bionda.mapper.TaMapper
+import wing.tree.bionda.model.UltraSrtNcst
 import wing.tree.bionda.model.VilageFcst
+
+fun State<UltraSrtNcst>.prependUltraSrtFcst(
+    ultraSrtFcst: State<VilageFcst>
+) = map {
+    if (ultraSrtFcst.isSuccess()) {
+        val value = ultraSrtFcst.value
+        val first = value.firstOrNull() ?: return this
+        val m = first.codeValues.mapValues { (_, value) ->
+            value.doubleOrNull
+        }
+            .filterNotNullValues()
+
+        it.copy(codeValues = it.codeValues.putAllIfAbsent(m))
+    } else {
+        it
+    }
+}
 
 fun State<VilageFcst>.insertLCRiseSetInfo(
     lcRiseSetInfo: State<ImmutableList<LCRiseSetInfo.Local>>

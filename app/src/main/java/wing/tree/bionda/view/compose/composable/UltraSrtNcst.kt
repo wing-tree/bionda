@@ -66,7 +66,7 @@ private fun Content(
                 modifier = Modifier.weight(Float.full),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = pty.value ?: String.empty)
+                Text(text = pty.value ?: sky.value ?: String.empty)
             }
         }
     }

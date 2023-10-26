@@ -35,6 +35,7 @@ import wing.tree.bionda.data.source.local.AreaDataSource
 import wing.tree.bionda.data.top.level.koreaCalendar
 import wing.tree.bionda.exception.PermissionsDeniedException
 import wing.tree.bionda.extension.insertLCRiseSetInfo
+import wing.tree.bionda.extension.prependUltraSrtFcst
 import wing.tree.bionda.extension.prependVilageFcst
 import wing.tree.bionda.mapper.UltraSrtNcstMapper
 import wing.tree.bionda.mapper.VilageFcstMapper
@@ -68,6 +69,10 @@ class MainViewModel @Inject constructor(
         .stateIn()
 
     private val requestPermissions = MutableStateFlow<PersistentSet<String>>(emptyPersistentSet())
+    private val ultraSrtFcst = coordinate.flatMap { (nx, ny) ->
+        weatherRepository.getUltraSrtFcst(nx = nx, ny = ny).map(VilageFcstMapper::toPresentationModel)
+    }
+
     private val ultraSrtNcst = coordinate.flatMap {
         val baseDate = koreaCalendar.baseDate
         val (tmn, tmx) = with(weatherRepository) {
@@ -83,10 +88,6 @@ class MainViewModel @Inject constructor(
         }
     }
         .stateIn()
-
-    private val ultraSrtFcst = coordinate.flatMap { (nx, ny) ->
-        weatherRepository.getUltraSrtFcst(nx = nx, ny = ny).map(VilageFcstMapper::toPresentationModel)
-    }
 
     private val uvIdx = location.flatMap(livingWthrIdxRepository::getUVIdx)
     private val livingWthrIdx = combine(airDiffusionIdx, uvIdx) { airDiffusionIdx, uvIdx ->
@@ -186,7 +187,7 @@ class MainViewModel @Inject constructor(
             area = area,
             livingWthrIdx = livingWthrIdx,
             midLandFcstTa = midLandFcstTa,
-            ultraSrtNcst = ultraSrtNcst,
+            ultraSrtNcst = ultraSrtNcst.prependUltraSrtFcst(vilageFcst),
             vilageFcst = vilageFcst
         )
     }
