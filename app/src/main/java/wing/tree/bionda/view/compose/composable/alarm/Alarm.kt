@@ -35,7 +35,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRowDefaults
+import androidx.compose.material3.TabRowDefaults.primaryContainerColor
+import androidx.compose.material3.TabRowDefaults.primaryContentColor
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -139,8 +140,8 @@ private fun SelectionMode(
         }
     ) {
         Surface(
-            color = TabRowDefaults.containerColor,
-            contentColor = TabRowDefaults.contentColor
+            color = primaryContainerColor,
+            contentColor = primaryContentColor
         ) {
             Row {
                 Tab(
