@@ -73,7 +73,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.7"
+        kotlinCompilerExtensionVersion = "1.5.3"
     }
 
     packaging {
@@ -102,7 +102,6 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
     implementation("androidx.window:window:1.1.0")
-    implementation("com.github.GIGAMOLE:ComposeFadingEdges:1.0.4")
     implementation("com.google.dagger:hilt-android:2.47")
     implementation("com.google.android.gms:play-services-location:21.0.1")
     implementation("com.jakewharton.timber:timber:5.0.1")

@@ -45,7 +45,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.7"
+        kotlinCompilerExtensionVersion = "1.5.3"
     }
 
     ksp {
@@ -78,7 +78,7 @@ dependencies {
     implementation("com.tickaroo.tikxml:core:0.8.13")
     //noinspection GradleDependency
     implementation("com.tickaroo.tikxml:retrofit-converter:0.8.13")
-    implementation("org.jetbrains.kotlin:kotlin-reflect:1.8.22")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.9.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
 
     kapt("com.google.dagger:hilt-android-compiler:2.47")
