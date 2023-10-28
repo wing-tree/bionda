@@ -81,6 +81,7 @@ fun Weather(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 val livingWthrIdx = state.livingWthrIdx
+                val vilageFcstInfo = state.vilageFcstInfo
 
                 Column(
                     modifier = Modifier
@@ -96,11 +97,11 @@ fun Weather(
                         onAction = onAction
                     )
                     
-                    UltraSrtNcst(state = state.ultraSrtNcst)
+                    UltraSrtNcst(state = vilageFcstInfo.ultraSrtNcst)
                 }
 
                 VilageFcst(
-                    state = state.vilageFcst,
+                    state = vilageFcstInfo.vilageFcst,
                     modifier = Modifier.fillMaxWidth()
                 )
 

@@ -27,7 +27,6 @@ import wing.tree.bionda.data.extension.long
 import wing.tree.bionda.data.extension.negativeOne
 import wing.tree.bionda.data.extension.zipAsPair
 import wing.tree.bionda.data.model.Alarm
-import wing.tree.bionda.data.model.MidLandFcstTa
 import wing.tree.bionda.data.repository.AlarmRepository
 import wing.tree.bionda.data.repository.LivingWthrIdxRepository
 import wing.tree.bionda.data.repository.WeatherRepository
@@ -40,6 +39,7 @@ import wing.tree.bionda.extension.prependVilageFcst
 import wing.tree.bionda.mapper.UltraSrtNcstMapper
 import wing.tree.bionda.mapper.VilageFcstMapper
 import wing.tree.bionda.model.LivingWthrIdx
+import wing.tree.bionda.model.VilageFcstInfo
 import wing.tree.bionda.permissions.locationPermissions
 import wing.tree.bionda.scheduler.AlarmScheduler
 import wing.tree.bionda.top.level.emptyPersistentSet
@@ -90,13 +90,7 @@ class MainViewModel @Inject constructor(
         .stateIn()
 
     private val uvIdx = location.flatMap(livingWthrIdxRepository::getUVIdx)
-    private val livingWthrIdx = combine(airDiffusionIdx, uvIdx) { airDiffusionIdx, uvIdx ->
-        LivingWthrIdx(
-            airDiffusionIdx = airDiffusionIdx,
-            uvIdx = uvIdx
-        )
-    }
-
+    private val livingWthrIdx = combine(airDiffusionIdx, uvIdx, ::LivingWthrIdx)
     private val vilageFcst = combine(
         coordinate,
         lcRiseSetInfo.zipAsPair(ultraSrtFcst),
@@ -118,15 +112,20 @@ class MainViewModel @Inject constructor(
     }
         .stateIn()
 
-    private val midLandFcstTa: StateFlow<State<MidLandFcstTa>> = combine(
-        location,
-        vilageFcst
-    ) { location, vilageFcst ->
+    private val midLandFcstTa = combine(location, vilageFcst) { location, vilageFcst ->
         location.flatMap {
             weatherRepository.getMidLandFcstTa(it).prependVilageFcst(vilageFcst)
         }
     }
         .stateIn()
+
+    private val vilageFcstInfo = combine(ultraSrtNcst, vilageFcst) { ultraSrtNcst, vilageFcst ->
+        VilageFcstInfo(
+            ultraSrtNcst = ultraSrtNcst.prependUltraSrtFcst(vilageFcst),
+            vilageFcst = vilageFcst
+        )
+    }
+        .stateIn(VilageFcstInfo.initialValue)
 
     val drawerContentState = areaDataSource.favorites.map {
         DrawerContentState(Complete.Success(it.toPersistentList()))
@@ -180,30 +179,17 @@ class MainViewModel @Inject constructor(
         area,
         livingWthrIdx,
         midLandFcstTa,
-        ultraSrtNcst,
-        vilageFcst
-    ) { area, livingWthrIdx, midLandFcstTa, ultraSrtNcst, vilageFcst ->
-        WeatherState(
-            area = area,
-            livingWthrIdx = livingWthrIdx,
-            midLandFcstTa = midLandFcstTa,
-            ultraSrtNcst = ultraSrtNcst.prependUltraSrtFcst(vilageFcst),
-            vilageFcst = vilageFcst
-        )
-    }
+        vilageFcstInfo,
+        ::WeatherState
+    )
         .stateIn(initialValue = WeatherState.initialValue)
 
     val state: StateFlow<MainState> = combine(
         alarmState,
         inSelectionMode,
-        weatherState
-    ) { alarmState, inSelectionMode, weatherState ->
-        MainState(
-            alarmState = alarmState,
-            inSelectionMode = inSelectionMode,
-            weatherState = weatherState
-        )
-    }
+        weatherState,
+        ::MainState
+    )
         .stateIn(initialValue = MainState.initialValue)
 
     private fun refresh() = load()

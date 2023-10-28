@@ -9,8 +9,7 @@ import wing.tree.bionda.data.model.Alarm
 import wing.tree.bionda.data.model.Area
 import wing.tree.bionda.data.model.MidLandFcstTa
 import wing.tree.bionda.model.LivingWthrIdx
-import wing.tree.bionda.model.UltraSrtNcst
-import wing.tree.bionda.model.VilageFcst
+import wing.tree.bionda.model.VilageFcstInfo
 
 data class MainState(
     val alarmState: AlarmState,
@@ -57,7 +56,7 @@ sealed interface AlarmState {
             DELETE_ALL
         }
 
-        object Add : Action
+        data object Add : Action
 
         sealed interface Alarms : Action {
             val alarm: Alarm
@@ -87,17 +86,16 @@ data class WeatherState(
     val area: State<Area>,
     val livingWthrIdx: LivingWthrIdx,
     val midLandFcstTa: State<MidLandFcstTa>,
-    val ultraSrtNcst: State<UltraSrtNcst>,
-    val vilageFcst: State<VilageFcst>
+    val vilageFcstInfo: VilageFcstInfo
 ) {
     sealed interface Action {
-        object Refresh : Action
+        data object Refresh : Action
 
         sealed interface Area : Action {
             data class Favorite(val areaNo: String) : Area
             data class Select(val area: wing.tree.bionda.data.model.Area) : Area
-            object Click : Area
-            object MyLocation : Area
+            data object Click : Area
+            data object MyLocation : Area
         }
     }
 
@@ -106,8 +104,7 @@ data class WeatherState(
             area = State.Loading,
             livingWthrIdx = LivingWthrIdx.initialValue,
             midLandFcstTa = State.Loading,
-            ultraSrtNcst = State.Loading,
-            vilageFcst = State.Loading
+            vilageFcstInfo = VilageFcstInfo.initialValue
         )
     }
 }
