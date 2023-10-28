@@ -57,7 +57,7 @@ sealed interface AlarmState {
             DELETE_ALL
         }
 
-        object Add : Action
+        data object Add : Action
 
         sealed interface Alarms : Action {
             val alarm: Alarm
@@ -91,13 +91,13 @@ data class WeatherState(
     val vilageFcst: State<VilageFcst>
 ) {
     sealed interface Action {
-        object Refresh : Action
+        data object Refresh : Action
 
         sealed interface Area : Action {
             data class Favorite(val areaNo: String) : Area
             data class Select(val area: wing.tree.bionda.data.model.Area) : Area
-            object Click : Area
-            object MyLocation : Area
+            data object Click : Area
+            data object MyLocation : Area
         }
     }
 
