@@ -10,29 +10,23 @@ import wing.tree.bionda.permissions.PermissionChecker.State
 class RequestMultiplePermissions(componentActivity: ComponentActivity) : PermissionChecker {
     private val activityResultLauncher = with(componentActivity) {
         registerForActivityResult(RequestMultiplePermissions()) { result ->
-            result.mapValues { (key, value) ->
+            val m = result.mapValues { (key, value) ->
                 if (value) {
                     State.Granted
                 } else {
                     State.Denied(shouldShowRequestPermissionRationale(key))
                 }
-            }.let {
-                with(channel) {
-                    checkNotNull(this)
-                    trySend(Result(it))
-                }
             }
+
+            channel.trySend(Result(m))
         }
     }
 
-    private var channel: Channel<Result>? = null
+    private val channel = Channel<Result>(Int.single)
 
     suspend fun request(permissions: Set<String>): Result {
-        return with(Channel<Result>(Int.single)) {
-            channel = this
+        activityResultLauncher.launch(permissions.toTypedArray())
 
-            activityResultLauncher.launch(permissions.toTypedArray())
-            receive()
-        }
+        return channel.receive()
     }
 }

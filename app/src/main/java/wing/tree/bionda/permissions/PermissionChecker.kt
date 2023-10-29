@@ -2,6 +2,7 @@ package wing.tree.bionda.permissions
 
 import android.content.Context
 import android.content.pm.PackageManager
+import wing.tree.bionda.data.extension.`is`
 
 interface PermissionChecker {
     class Result(m: Map<String, State>) : Map<String, State> by HashMap(m) {
@@ -22,22 +23,22 @@ interface PermissionChecker {
     sealed interface State {
         val shouldShowRequestPermissionRationale: Boolean
 
-        object Granted : State {
-            override val shouldShowRequestPermissionRationale: Boolean = false
-        }
-
         data class Denied(
             override val shouldShowRequestPermissionRationale: Boolean
         ) : State
+
+        data object Granted : State {
+            override val shouldShowRequestPermissionRationale: Boolean = false
+        }
     }
 
     fun Context.checkSelfMultiplePermissions(permissions: Array<out String>): Boolean {
         return permissions.all {
-            checkSelfPermission(it) == PackageManager.PERMISSION_GRANTED
+            checkSelfPermission(it) `is` PackageManager.PERMISSION_GRANTED
         }
     }
 
     fun Context.checkSelfSinglePermission(permission: String): Boolean {
-        return checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED
+        return checkSelfPermission(permission) `is` PackageManager.PERMISSION_GRANTED
     }
 }
