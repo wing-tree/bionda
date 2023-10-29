@@ -103,10 +103,7 @@ class MainActivity : AppCompatActivity(), PermissionChecker {
         }
     }
 
-    private val requestMultiplePermissions = RequestMultiplePermissions().also {
-        it.initialize(this)
-    }
-
+    private val requestMultiplePermissions = RequestMultiplePermissions(this)
     private val viewModel by viewModels<MainViewModel>()
 
     private val activityResultLauncher = registerForActivityResult(StartActivityForResult()) {

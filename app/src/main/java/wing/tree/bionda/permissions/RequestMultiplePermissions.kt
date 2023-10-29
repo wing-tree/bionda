@@ -1,20 +1,15 @@
 package wing.tree.bionda.permissions
 
 import androidx.activity.ComponentActivity
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions
 import kotlinx.coroutines.channels.Channel
-import wing.tree.bionda.data.extension.one
+import wing.tree.bionda.data.extension.single
 import wing.tree.bionda.permissions.PermissionChecker.Result
 import wing.tree.bionda.permissions.PermissionChecker.State
 
-class RequestMultiplePermissions : PermissionChecker {
-    private val contract = ActivityResultContracts.RequestMultiplePermissions()
-    private var activityResultLauncher: ActivityResultLauncher<Array<String>>? = null
-    private var channel: Channel<Result>? = null
-
-    fun initialize(componentActivity: ComponentActivity) = with(componentActivity) {
-        activityResultLauncher = registerForActivityResult(contract) { result ->
+class RequestMultiplePermissions(componentActivity: ComponentActivity) : PermissionChecker {
+    private val activityResultLauncher = with(componentActivity) {
+        registerForActivityResult(RequestMultiplePermissions()) { result ->
             result.mapValues { (key, value) ->
                 if (value) {
                     State.Granted
@@ -30,12 +25,10 @@ class RequestMultiplePermissions : PermissionChecker {
         }
     }
 
+    private var channel: Channel<Result>? = null
+
     suspend fun request(permissions: Set<String>): Result {
-        val activityResultLauncher = activityResultLauncher
-
-        checkNotNull(activityResultLauncher)
-
-        return with(Channel<Result>(Int.one)) {
+        return with(Channel<Result>(Int.single)) {
             channel = this
 
             activityResultLauncher.launch(permissions.toTypedArray())
