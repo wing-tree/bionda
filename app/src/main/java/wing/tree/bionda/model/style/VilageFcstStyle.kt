@@ -33,9 +33,17 @@ data class VilageFcstStyle(
     val wsd: Text
 ) {
     private val elements = persistentListOf(
-        day, fcstTime, feelsLikeTemperature,
-        reh, pcp, pop, tmp, tmpChart, vec,
-        weatherIcon, wsd
+        day,
+        fcstTime,
+        feelsLikeTemperature,
+        reh,
+        pcp,
+        pop,
+        tmp,
+        tmpChart,
+        vec,
+        weatherIcon,
+        wsd
     )
 
     @Composable
