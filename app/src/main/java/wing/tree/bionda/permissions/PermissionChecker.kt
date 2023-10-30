@@ -9,19 +9,15 @@ interface PermissionChecker {
         operator fun component1(): Set<String> = granted()
         operator fun component2(): Set<String> = denied()
 
-        private fun denied() = filterValues {
-            it is State.Denied
-        }
-            .keys
-
-        private fun granted() = filterValues {
-            it is State.Granted
-        }
-            .keys
+        private fun denied() = filterValues(State::isDenied).keys
+        private fun granted() = filterValues(State::isGranted).keys
     }
 
     sealed interface State {
         val shouldShowRequestPermissionRationale: Boolean
+
+        fun isDenied() = this is Denied
+        fun isGranted() = this is Granted
 
         data class Denied(
             override val shouldShowRequestPermissionRationale: Boolean
