@@ -177,10 +177,13 @@ class MainActivity : AppCompatActivity(), PermissionChecker {
                             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
                                 DrawerContent(
                                     state = drawerContentState,
-                                    onAction = {
-                                        viewModel.onAction(it)
-                                        coroutineScope.launch {
-                                            drawerState.close()
+                                    onAction = { action ->
+                                        viewModel.onAction(action)
+
+                                        if (action is WeatherState.Action.Area.Select) {
+                                            coroutineScope.launch {
+                                                drawerState.close()
+                                            }
                                         }
                                     },
                                     modifier = Modifier.width(IntrinsicSize.Max)

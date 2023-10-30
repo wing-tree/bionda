@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
@@ -31,6 +31,7 @@ import wing.tree.bionda.data.extension.`is`
 import wing.tree.bionda.data.extension.isNotNanOrBlank
 import wing.tree.bionda.data.model.Area
 import wing.tree.bionda.top.level.rememberMutableInteractionSource
+import wing.tree.bionda.view.compose.composable.core.Error
 import wing.tree.bionda.view.compose.composable.core.HorizontalSpacer
 import wing.tree.bionda.view.compose.composable.core.Loading
 import wing.tree.bionda.view.state.WeatherState.Action
@@ -65,7 +66,7 @@ fun Area(
                     modifier = Modifier.fillMaxSize()
                 )
 
-                is Complete.Failure -> {}
+                is Complete.Failure -> Error(exception = it.exception)
             }
         }
     }
@@ -102,7 +103,7 @@ private fun Content(
             }
 
             Icon(
-                imageVector = Icons.Default.Star,
+                imageVector = Icons.Rounded.Star,
                 contentDescription = null,
                 tint = tint
             )

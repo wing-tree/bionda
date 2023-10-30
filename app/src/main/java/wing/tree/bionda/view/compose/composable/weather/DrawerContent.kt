@@ -1,16 +1,25 @@
 package wing.tree.bionda.view.compose.composable.weather
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Star
+import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -20,6 +29,7 @@ import wing.tree.bionda.data.core.State
 import wing.tree.bionda.data.core.State.Complete
 import wing.tree.bionda.data.extension.empty
 import wing.tree.bionda.data.model.Area
+import wing.tree.bionda.top.level.rememberMutableInteractionSource
 import wing.tree.bionda.view.compose.composable.core.Loading
 import wing.tree.bionda.view.state.DrawerContentState
 import wing.tree.bionda.view.state.WeatherState
@@ -45,8 +55,12 @@ private fun Favorites(
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
-        Text(stringResource(id = R.string.favorites), modifier = Modifier.padding(16.dp))
-        HorizontalDivider()
+        Text(
+            text = stringResource(id = R.string.favorites),
+            modifier = Modifier.padding(16.dp),
+            style = typography.titleSmall
+        )
+
         AnimatedContent(
             targetState = state,
             transitionSpec = {
@@ -69,6 +83,28 @@ private fun Favorites(
                                 selected = false,
                                 onClick = {
                                     onAction(WeatherState.Action.Area.Select(it))
+                                },
+                                icon = {
+                                    val tint by animateColorAsState(
+                                        targetValue = if (it.favorited.value) {
+                                            colorScheme.primary
+                                        } else {
+                                            LocalContentColor.current
+                                        },
+                                        label = String.empty
+                                    )
+
+                                    Icon(
+                                        imageVector = Icons.Rounded.Star,
+                                        contentDescription = null,
+                                        modifier = Modifier.clickable(
+                                            interactionSource = rememberMutableInteractionSource(),
+                                            indication = rememberRipple(bounded = false)
+                                        ) {
+                                            onAction(WeatherState.Action.Area.Favorite(it.no))
+                                        },
+                                        tint = tint
+                                    )
                                 }
                             )
                         }

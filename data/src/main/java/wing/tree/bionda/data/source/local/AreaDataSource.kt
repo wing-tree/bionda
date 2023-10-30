@@ -3,7 +3,6 @@ package wing.tree.bionda.data.source.local
 import android.location.Location
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.combine
 import wing.tree.bionda.data.core.LatLon
@@ -18,10 +17,11 @@ class AreaDataSource(
 ) {
     private val _favorites = Favorites(dataStore)
 
-    @OptIn(FlowPreview::class)
     val favorites = combine(::load.asFlow(), Favorites(dataStore).invoke()) { areas, favorites ->
         areas.filter {
             it.no in favorites
+        }.onEach {
+            it.favorited.value = true
         }
     }
 
