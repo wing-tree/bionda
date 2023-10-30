@@ -13,7 +13,7 @@ import wing.tree.bionda.data.extension.`is`
 import wing.tree.bionda.data.extension.zero
 import wing.tree.bionda.data.top.level.dayAfterTomorrow
 import wing.tree.bionda.data.top.level.tomorrow
-import wing.tree.bionda.model.style.ChartStyle
+import wing.tree.bionda.model.style.VilageFcstStyle
 import wing.tree.bionda.model.VilageFcst
 
 fun List<VilageFcst.Item>.dayAfterTomorrow() = with(dayAfterTomorrow) {
@@ -26,7 +26,7 @@ fun List<VilageFcst.Item>.dayAfterTomorrow() = with(dayAfterTomorrow) {
 
 fun List<VilageFcst.Item>.offsets(
     density: Float,
-    style: ChartStyle
+    style: VilageFcstStyle
 ): List<Offset> {
     if (isEmpty()) {
         return emptyList()

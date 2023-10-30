@@ -18,7 +18,7 @@ import wing.tree.bionda.extension.height
 import wing.tree.bionda.extension.toTextPaint
 import wing.tree.bionda.extension.zero
 
-data class ChartStyle(
+data class VilageFcstStyle(
     val segment: Segment,
     val day: Text,
     val fcstTime: Text,
@@ -125,7 +125,7 @@ data class ChartStyle(
             override val verticalPaddingValues: VerticalPaddingValues = verticalPaddingValues
         }
 
-        val defaultValue: ChartStyle
+        val defaultValue: VilageFcstStyle
             @Composable
             get() = run {
                 val contentColor = LocalContentColor.current
@@ -137,7 +137,7 @@ data class ChartStyle(
                     .copy(textAlign = TextAlign.Center)
                     .toTextPaint()
 
-                ChartStyle(
+                VilageFcstStyle(
                     segment = Segment(width = 48.dp),
                     day = Text(labelSmall),
                     feelsLikeTemperature = Text(labelSmall),

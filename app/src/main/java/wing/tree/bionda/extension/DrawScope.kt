@@ -29,15 +29,15 @@ import wing.tree.bionda.data.extension.`is`
 import wing.tree.bionda.data.extension.isZero
 import wing.tree.bionda.data.extension.quarter
 import wing.tree.bionda.data.extension.zero
-import wing.tree.bionda.model.style.ChartStyle
+import wing.tree.bionda.model.style.VilageFcstStyle
 
 val DrawScope.nativeCanvas: Canvas get() = drawContext.canvas.nativeCanvas
 
 fun DrawScope.drawText(
     text: String,
     point: PointF,
-    chartStyle: ChartStyle.Text
-) = with(chartStyle) {
+    vilageFcstStyle: VilageFcstStyle.Text
+) = with(vilageFcstStyle) {
     point.y += verticalPaddingValues.top.toPx()
     point.y += textPaint.height
 
@@ -53,9 +53,9 @@ fun DrawScope.drawText(
 
 fun DrawScope.drawText(
     point: PointF,
-    chartStyle: ChartStyle.Text,
+    vilageFcstStyle: VilageFcstStyle.Text,
     draw: DrawScope.() -> Unit
-) = with(chartStyle) {
+) = with(vilageFcstStyle) {
     point.y += verticalPaddingValues.top.toPx()
     point.y += textPaint.height
 
@@ -67,73 +67,73 @@ fun DrawScope.drawText(
 fun DrawScope.drawDay(
     day: String,
     point: PointF,
-    chartStyle: ChartStyle.Text
+    vilageFcstStyle: VilageFcstStyle.Text
 ) = drawText(
     text = day,
     point = point,
-    chartStyle = chartStyle
+    vilageFcstStyle = vilageFcstStyle
 )
 
 fun DrawScope.drawFcstTime(
     fcstTime: String,
     point: PointF,
-    chartStyle: ChartStyle.Text
+    vilageFcstStyle: VilageFcstStyle.Text
 ) = drawText(
     text = fcstTime,
     point = point,
-    chartStyle = chartStyle
+    vilageFcstStyle = vilageFcstStyle
 )
 
 fun DrawScope.drawFeelsLikeTemperature(
     feelsLikeTemperature: String,
     point: PointF,
-    chartStyle: ChartStyle.Text
+    vilageFcstStyle: VilageFcstStyle.Text
 ) = drawText(
     text = feelsLikeTemperature,
     point = point,
-    chartStyle = chartStyle
+    vilageFcstStyle = vilageFcstStyle
 )
 
 fun DrawScope.drawPcp(
     pcp: String,
     point: PointF,
-    chartStyle: ChartStyle.Text
+    vilageFcstStyle: VilageFcstStyle.Text
 ) = drawText(
     text = pcp,
     point = point,
-    chartStyle = chartStyle
+    vilageFcstStyle = vilageFcstStyle
 )
 
 fun DrawScope.drawPop(
     pop: String,
     point: PointF,
-    chartStyle: ChartStyle.Text
+    vilageFcstStyle: VilageFcstStyle.Text
 ) = drawText(
     text = pop,
     point = point,
-    chartStyle = chartStyle
+    vilageFcstStyle = vilageFcstStyle
 )
 
 fun DrawScope.drawReh(
     reh: String,
     point: PointF,
-    chartStyle: ChartStyle.Text
+    vilageFcstStyle: VilageFcstStyle.Text
 ) = drawText(
     text = reh,
     point = point,
-    chartStyle = chartStyle
+    vilageFcstStyle = vilageFcstStyle
 )
 
 fun DrawScope.drawTmp(
     tmp: String,
     point: PointF,
     offset: Offset,
-    chartStyle: ChartStyle.Text
+    vilageFcstStyle: VilageFcstStyle.Text
 ) = drawText(
     point = point,
-    chartStyle = chartStyle
+    vilageFcstStyle = vilageFcstStyle
 ) {
-    val textPaint = chartStyle.textPaint
+    val textPaint = vilageFcstStyle.textPaint
     val text = buildString {
         if (tmp.isNotBlank()) {
             append(tmp)
@@ -157,7 +157,7 @@ fun DrawScope.drawTmpChart(
     offsets: List<Offset>,
     path: Path,
     pointF: PointF,
-    style: ChartStyle.TmpChart
+    style: VilageFcstStyle.TmpChart
 ) {
     val height = style.height.toPx()
 
@@ -212,7 +212,7 @@ fun DrawScope.drawWeatherIcon(
     @DrawableRes weatherIcon: Int?,
     context: Context,
     point: PointF,
-    style: ChartStyle.Icon
+    style: VilageFcstStyle.Icon
 ) {
     val width = style.width.toPx()
     val height = style.height.toPx()
@@ -243,10 +243,10 @@ fun DrawScope.drawVec(
     vec: Float?,
     context: Context,
     point: PointF,
-    chartStyle: ChartStyle.Icon
+    vilageFcstStyle: VilageFcstStyle.Icon
 ) {
-    val width = chartStyle.width.toPx()
-    val height = chartStyle.height.toPx()
+    val width = vilageFcstStyle.width.toPx()
+    val height = vilageFcstStyle.height.toPx()
 
     vec ?: run {
         point.y += height.half; return
@@ -264,7 +264,7 @@ fun DrawScope.drawVec(
                     point.x.minus(width.half),
                     point.y,
                 ),
-                colorFilter = ColorFilter.tint(chartStyle.color, BlendMode.SrcAtop)
+                colorFilter = ColorFilter.tint(vilageFcstStyle.color, BlendMode.SrcAtop)
             )
         }
     }
@@ -275,17 +275,17 @@ fun DrawScope.drawVec(
 fun DrawScope.drawWsd(
     wsd: String,
     point: PointF,
-    chartStyle: ChartStyle.Text
+    vilageFcstStyle: VilageFcstStyle.Text
 ) = drawText(
     text = wsd,
     point = point,
-    chartStyle = chartStyle
+    vilageFcstStyle = vilageFcstStyle
 )
 
 fun DrawScope.fillGradient(
     path: Path,
     pointF: PointF,
-    style: ChartStyle.TmpChart
+    style: VilageFcstStyle.TmpChart
 ) {
     val height = style.height.toPx()
     val y = pointF.y.plus(height.plus(height.half))

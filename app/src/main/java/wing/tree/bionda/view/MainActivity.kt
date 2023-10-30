@@ -104,9 +104,7 @@ class MainActivity : AppCompatActivity(), PermissionChecker {
     }
 
     private val requestMultiplePermissions = RequestMultiplePermissions(this)
-    private val viewModel by viewModels<MainViewModel>()
-
-    private val activityResultLauncher = registerForActivityResult(StartActivityForResult()) {
+    private val startActivityForResult = registerForActivityResult(StartActivityForResult()) {
         if (it.resultCode `is` Activity.RESULT_OK) {
             val data = it.data
 
@@ -123,6 +121,8 @@ class MainActivity : AppCompatActivity(), PermissionChecker {
             }
         }
     }
+
+    private val viewModel by viewModels<MainViewModel>()
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -256,7 +256,7 @@ class MainActivity : AppCompatActivity(), PermissionChecker {
                                                 windowSizeClass = windowSizeClass,
                                                 onAction = { action ->
                                                     when (action) {
-                                                        is WeatherState.Action.Area.Click -> activityResultLauncher
+                                                        is WeatherState.Action.Area.Click -> startActivityForResult
                                                             .launch(Intent(AreaSelectionActivity::class.java))
 
                                                         else -> viewModel.onAction(action)

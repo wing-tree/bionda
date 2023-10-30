@@ -48,7 +48,7 @@ import wing.tree.bionda.extension.drawWeatherIcon
 import wing.tree.bionda.extension.drawWsd
 import wing.tree.bionda.extension.offsets
 import wing.tree.bionda.model.VilageFcst
-import wing.tree.bionda.model.style.ChartStyle
+import wing.tree.bionda.model.style.VilageFcstStyle
 import wing.tree.bionda.view.compose.composable.core.Error
 import wing.tree.bionda.view.compose.composable.core.Loading
 import java.util.Locale
@@ -59,7 +59,7 @@ fun VilageFcst(
     state: State<VilageFcst>,
     modifier: Modifier = Modifier
 ) {
-    val style = ChartStyle.defaultValue
+    val style = VilageFcstStyle.defaultValue
 
     ElevatedCard(modifier = modifier.height(style.calculateHeight())) {
         AnimatedContent(
@@ -92,7 +92,7 @@ fun VilageFcst(
 @Composable
 private fun Content(
     vilageFcst: VilageFcst,
-    style: ChartStyle,
+    style: VilageFcstStyle,
     modifier: Modifier = Modifier
 ) {
     Chart(
@@ -105,7 +105,7 @@ private fun Content(
 @Composable
 private fun Chart(
     items: ImmutableList<VilageFcst.Item>,
-    style: ChartStyle,
+    style: VilageFcstStyle,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -162,7 +162,7 @@ private fun Chart(
                 drawDay(
                     day = day ?: String.empty,
                     point = point,
-                    chartStyle = style.day
+                    vilageFcstStyle = style.day
                 )
 
                 drawFcstTime(
@@ -170,7 +170,7 @@ private fun Chart(
                         koreaCalendar(hourOfDay = item.hourOfDay)
                     ),
                     point = point,
-                    chartStyle = style.fcstTime
+                    vilageFcstStyle = style.fcstTime
                 )
 
                 drawWeatherIcon(
@@ -186,7 +186,7 @@ private fun Chart(
                     offset = with(min(offsets[index].y, offsets[index.inc()].y)) {
                         offsets[index].copy(y = this)
                     },
-                    chartStyle = style.tmp
+                    vilageFcstStyle = style.tmp
                 )
 
                 drawTmpChart(
@@ -202,7 +202,7 @@ private fun Chart(
                 drawFeelsLikeTemperature(
                     feelsLikeTemperature = item.feelsLikeTemperature?.string ?: String.empty,
                     point = point,
-                    chartStyle = style.feelsLikeTemperature
+                    vilageFcstStyle = style.feelsLikeTemperature
                 )
 
                 drawPcp(
@@ -211,32 +211,32 @@ private fun Chart(
                     }
                         ?: HYPHEN,
                     point = point,
-                    chartStyle = style.pcp
+                    vilageFcstStyle = style.pcp
                 )
 
                 drawPop(
                     pop = item.pop ?: String.empty,
                     point = point,
-                    chartStyle = style.pop
+                    vilageFcstStyle = style.pop
                 )
 
                 drawReh(
                     reh = item.reh ?: String.empty,
                     point = point,
-                    chartStyle = style.reh
+                    vilageFcstStyle = style.reh
                 )
 
                 drawVec(
                     vec = item.vec?.floatOrNull,
                     context = context,
                     point = point,
-                    chartStyle = style.vec
+                    vilageFcstStyle = style.vec
                 )
 
                 drawWsd(
                     wsd = item.wsd ?: String.empty,
                     point = point,
-                    chartStyle = style.wsd
+                    vilageFcstStyle = style.wsd
                 )
             }
         }
