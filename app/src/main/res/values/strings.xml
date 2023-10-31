@@ -11,6 +11,8 @@
     <string name="high">높음</string>
     <string name="hour">시</string>
     <string name="low">낮음</string>
+    <string name="no_alarms">알람이 없습니다.</string>
+    <string name="no_favorites">즐겨찾기가 없습니다.</string>
     <string name="normal">보통</string>
     <string name="pattern_fcst_hour">H시</string>
     <string name="post_notification_permission_rationale">알림을 받으시려면, 알림 권한을 허용해 주세요.</string>

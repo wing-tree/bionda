@@ -3,6 +3,7 @@ package wing.tree.bionda.view.compose.composable.alarm
 import android.icu.text.SimpleDateFormat
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -54,6 +55,7 @@ import wing.tree.bionda.data.extension.full
 import wing.tree.bionda.data.model.Alarm
 import wing.tree.bionda.data.top.level.koreaCalendar
 import wing.tree.bionda.model.WindowSizeClass
+import wing.tree.bionda.view.compose.composable.core.Empty
 import wing.tree.bionda.view.compose.composable.core.HorizontalSpacer
 import wing.tree.bionda.view.compose.composable.core.Loading
 import wing.tree.bionda.view.state.AlarmState
@@ -236,24 +238,36 @@ private fun Content(
     onAction: (Action) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LazyColumn(
+    val alarms = content.alarms
+    
+    Crossfade(
+        targetState = alarms.isNotEmpty(),
         modifier = modifier.padding(bottom = 72.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        label = String.empty
     ) {
-        items(
-            items = content.alarms,
-            key = { alarm ->
-                alarm.id
+        if (it) {
+            LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                items(
+                    items = content.alarms,
+                    key = { alarm ->
+                        alarm.id
+                    }
+                ) { item ->
+                    Item(
+                        item = item,
+                        inSelectionMode = inSelectionMode,
+                        selected = item.id in content.selected,
+                        onAction = onAction,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .animateItemPlacement()
+                    )
+                }
             }
-        ) { item ->
-            Item(
-                item = item,
-                inSelectionMode = inSelectionMode,
-                selected = item.id in content.selected,
-                onAction = onAction,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .animateItemPlacement()
+        } else {
+            Empty(
+                text = stringResource(id = R.string.no_alarms),
+                modifier = Modifier.fillMaxSize()
             )
         }
     }
@@ -313,7 +327,7 @@ private fun Item(
             )
 
             Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                Alarm.Condition.values().forEach {
+                Alarm.Condition.entries.forEach {
                     val alpha = if (it in item.conditions) {
                         1.0F
                     } else {

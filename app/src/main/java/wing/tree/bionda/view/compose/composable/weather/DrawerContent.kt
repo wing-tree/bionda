@@ -1,12 +1,14 @@
 package wing.tree.bionda.view.compose.composable.weather
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Star
@@ -30,7 +32,10 @@ import wing.tree.bionda.data.core.State.Complete
 import wing.tree.bionda.data.extension.empty
 import wing.tree.bionda.data.model.Area
 import wing.tree.bionda.top.level.rememberMutableInteractionSource
+import wing.tree.bionda.view.compose.composable.core.Empty
+import wing.tree.bionda.view.compose.composable.core.Error
 import wing.tree.bionda.view.compose.composable.core.Loading
+import wing.tree.bionda.view.compose.composable.core.Style
 import wing.tree.bionda.view.state.DrawerContentState
 import wing.tree.bionda.view.state.WeatherState
 
@@ -74,45 +79,69 @@ private fun Favorites(
             when (targetState) {
                 State.Loading -> Loading()
                 is Complete -> when (targetState) {
-                    is Complete.Success -> Column {
-                        targetState.value.forEach {
-                            NavigationDrawerItem(
-                                label = {
-                                    Text(text = it.name)
-                                },
-                                selected = false,
-                                onClick = {
-                                    onAction(WeatherState.Action.Area.Select(it))
-                                },
-                                icon = {
-                                    val tint by animateColorAsState(
-                                        targetValue = if (it.favorited.value) {
-                                            colorScheme.primary
-                                        } else {
-                                            LocalContentColor.current
-                                        },
-                                        label = String.empty
-                                    )
+                    is Complete.Success -> Content(
+                        content = targetState,
+                        onAction = onAction
+                    )
 
-                                    Icon(
-                                        imageVector = Icons.Rounded.Star,
-                                        contentDescription = null,
-                                        modifier = Modifier.clickable(
-                                            interactionSource = rememberMutableInteractionSource(),
-                                            indication = rememberRipple(bounded = false)
-                                        ) {
-                                            onAction(WeatherState.Action.Area.Favorite(it.no))
-                                        },
-                                        tint = tint
-                                    )
-                                }
-                            )
-                        }
-                    }
-
-                    is Complete.Failure -> {}
+                    is Complete.Failure -> Error(targetState.exception)
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun Content(
+    content: Complete.Success<PersistentList<Area>>,
+    onAction: (WeatherState.Action) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val value = content.value
+
+    Crossfade(targetState = value.isNotEmpty(), label = String.empty) {
+        if (it) {
+            Column(modifier = modifier) {
+                content.value.forEach {
+                    NavigationDrawerItem(
+                        label = {
+                            Text(text = it.name)
+                        },
+                        selected = false,
+                        onClick = {
+                            onAction(WeatherState.Action.Area.Select(it))
+                        },
+                        icon = {
+                            val tint by animateColorAsState(
+                                targetValue = if (it.favorited.value) {
+                                    colorScheme.primary
+                                } else {
+                                    LocalContentColor.current
+                                },
+                                label = String.empty
+                            )
+
+                            Icon(
+                                imageVector = Icons.Rounded.Star,
+                                contentDescription = null,
+                                modifier = Modifier.clickable(
+                                    interactionSource = rememberMutableInteractionSource(),
+                                    indication = rememberRipple(bounded = false)
+                                ) {
+                                    onAction(WeatherState.Action.Area.Favorite(it.no))
+                                },
+                                tint = tint
+                            )
+                        }
+                    )
+                }
+            }
+        } else {
+            Empty(
+                text = stringResource(id = R.string.no_favorites),
+                modifier = Modifier.fillMaxSize(),
+                style = Style.MEDIUM
+            )
         }
     }
 }
